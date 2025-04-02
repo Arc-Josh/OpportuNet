@@ -14,8 +14,8 @@ ALGORITHM = "HS256"
 #heroku database url
 DB_URL = "place-db-url-here"
 #aws keys for pdf storage and retrieval 
-SECRET_KEY_AWS = "+2P5umaOJvK8XIKDdrsonIdvoHSEuF2dwW6UVcHA"
-ACCESS_KEY_AWS = "AKIATBLTXXJJJYVVQSN7"
+SECRET_KEY_AWS = "hidden"
+ACCESS_KEY_AWS = "hidden"
 BUCKET_AWS = "opportunet-capstone-pdf-storage"
 REGION_AWS ="us-east-2"
 
