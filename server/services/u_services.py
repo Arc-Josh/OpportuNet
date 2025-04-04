@@ -46,7 +46,11 @@ async def login(data = UserLogin):
                 )
                 #return{"status":"failure","message":"Incorrect Password"}
         else:
-            return{"status":"failure","message":"Email Not Found"}
+            raise HTTPException(
+                status_code=400,
+                detail="Email not found"
+            )
+            #return{"status":"failure","message":"Email Not Found"}
 
     except Exception as e:
         print(f"error occured {e}")
