@@ -37,9 +37,14 @@ async def login(data = UserLogin):
             if password_validated:
                 u_data = {"email":data.email}
                 token = create_access_token(data=u_data)
+                
                 return{"status":"success","message":"Successful Login","access_token":token}
             else:
-                return{"status":"failure","message":"Incorrect Password"}
+                raise HTTPException(
+                    status_code=400,
+                    detail="Invalid Password"
+                )
+                #return{"status":"failure","message":"Incorrect Password"}
         else:
             return{"status":"failure","message":"Email Not Found"}
 
