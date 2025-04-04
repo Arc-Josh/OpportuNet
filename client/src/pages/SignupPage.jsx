@@ -6,10 +6,30 @@ const SignupPage = () => {
   const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
 
-  const handleSignup = (signupData) => {
+  const handleSignup = async(signupData) => {
     console.log('Signup data:', signupData);
     // TODO: Connect to backend
-    navigate('/dashboard'); // Will change this later
+    const response = await fetch('http://localhost:8000/signup',{
+      method: 'POST',
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({
+        //credentials: 'include',
+        name: signupData.name,
+        email: signupData.email,
+        password: signupData.password,
+      }),
+    });
+    const data = await response.json();
+    if(response.ok){
+      alert('Account created!')
+      console.log('success')
+    }else{
+      alert(data.message || 'Failed to create account')
+      console.log('failure')
+    }
+    navigate('/login'); // Will change this later
   };
 
   const toggleForm = () => {
