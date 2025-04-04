@@ -24,7 +24,7 @@ app.add_middleware(CORSMiddleware,allow_origins = origins, allow_credentials = T
 @app.post("/signup")
 async def signup(user:UserCreate):
     return await create_account(user)
-#log in (GET)
+#log in (POST)
 @app.post("/login")
 async def u_login(user:UserLogin):
     return await login(user)

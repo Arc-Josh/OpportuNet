@@ -3,7 +3,7 @@ from security.authorization import create_access_token, hash_pwd, verify_pwd
 from models.user import UserCreate, UserLogin, UserResponse
 from fastapi import HTTPException
 
-
+#any other user services, (IE database queries) will be added in this file 
 async def create_account(data = UserCreate):
     try:
         connected = await connect_db()
@@ -15,7 +15,7 @@ async def create_account(data = UserCreate):
             async with connected.transaction():
                 await connected.execute('INSERT INTO users(name,email,password) VALUES($1,$2,$3)',data.name,data.email,hashed_password)
             
-            return{"status":"success dawg","message":"Account Created!"}
+            return{"status":"success","message":"Account Created!"}
         except Exception as l:
             return{"status":"failure","message":f"Account NOTTTT Created!{l}"}
     except Exception as e:
@@ -24,7 +24,6 @@ async def create_account(data = UserCreate):
             status_code = 400,
             detail = "Unavailable credentials"
         )
-        #return {"status":"error","message":"failed to create account"}
     finally:
         await connected.close()
 
@@ -40,16 +39,8 @@ async def login(data = UserLogin):
                 token = create_access_token(data=u_data)
                 return{"status":"success","message":"Successful Login","access_token":token}
             else:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Invalid password"
-                )
-                #return{"status":"failure","message":"Incorrect Password"}
+                return{"status":"failure","message":"Incorrect Password"}
         else:
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid Email"
-            )
             return{"status":"failure","message":"Email Not Found"}
 
     except Exception as e:
@@ -58,6 +49,5 @@ async def login(data = UserLogin):
             status_code=400,
             detail="Login Unsuccessful"
         )
-        #return {"status":"error","message":"Failed to Login"}
     finally:
         await connected.close()
