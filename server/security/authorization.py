@@ -30,7 +30,7 @@ def get_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail = "token is invalid or expired",
+            detail = "token is invalid or expired"
         )
  
 def hash_pwd(password:str):

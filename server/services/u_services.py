@@ -1,5 +1,5 @@
 from database.db import connect_db
-from security.authorization import create_access_token, hash_pwd, verify_pwd
+from security.authorization import create_access_token, hash_pwd, verify_pwd, get_user
 from models.user import UserCreate, UserLogin, UserResponse
 from fastapi import HTTPException
 
@@ -38,7 +38,7 @@ async def login(data = UserLogin):
                 u_data = {"email":data.email}
                 token = create_access_token(data=u_data)
                 
-                return{"status":"success","message":"Successful Login","access_token":token}
+                return{"status":"success","message":"Successful Login","access_token":token,"token_type":"bearer"}
             else:
                 raise HTTPException(
                     status_code=400,
@@ -50,7 +50,7 @@ async def login(data = UserLogin):
                 status_code=400,
                 detail="Email not found"
             )
-            #return{"status":"failure","message":"Email Not Found"}
+            return{"status":"failure","message":"Email Not Found"}
 
     except Exception as e:
         print(f"error occured {e}")
@@ -60,3 +60,7 @@ async def login(data = UserLogin):
         )
     finally:
         await connected.close()
+
+async def change_password():
+    return 0
+
