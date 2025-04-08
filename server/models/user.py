@@ -14,4 +14,6 @@ class UserResponse(BaseModel):
     email:str
     name:str
     message:str
-    
+
+class ChatbotRequest(BaseModel):
+    question: str

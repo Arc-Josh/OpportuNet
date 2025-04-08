@@ -2,6 +2,9 @@ from database.db import connect_db
 from security.authorization import create_access_token, hash_pwd, verify_pwd, get_user
 from models.user import UserCreate, UserLogin, UserResponse
 from fastapi import HTTPException
+import os
+import json
+
 
 #any other user services, (IE database queries) will be added in this file 
 async def create_account(data = UserCreate):
@@ -64,3 +67,30 @@ async def login(data = UserLogin):
 async def change_password():
     return 0
 
+def load_faqs():
+    """
+    Load FAQ data from an external JSON file (faqs.json).
+    """
+    faq_path = os.path.join(os.path.dirname(__file__), "faqs.json")
+    try:
+        with open(faq_path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading FAQs: {e}")
+        return []
+    
+faqs = load_faqs()
+
+def get_faq_answer(question: str) -> str:
+    """
+    Return an answer by checking if any of the provided keywords exist in the question.
+    """
+    lower_question = question.lower()
+    for faq in faqs:
+        keywords = faq.get("keywords", [])
+        if any(keyword.lower() in lower_question for keyword in keywords):
+            return faq.get("answer")
+    
+    return (
+        "I'm not sure how to answer that. You can ask about jobs, scholarships, or our application processes!"
+    )

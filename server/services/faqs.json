@@ -1,0 +1,35 @@
+[
+    {
+      "keywords": ["job", "jobs", "tech", "career"],
+      "answer": "We have a variety of tech job postings. Visit the Jobs section for more details and swipe right to apply!"
+    },
+    {
+      "keywords": ["scholarship", "financial aid", "funding"],
+      "answer": "Our Scholarship & Financial Aid Finder helps you discover options tailored to your academic profile. Check the Scholarships section on your dashboard."
+    },
+    {
+      "keywords": ["application", "apply", "process"],
+      "answer": "To apply for opportunities, navigate to the application portal in your dashboard and fill out the required details."
+    },
+    {
+      "keywords": ["resume", "cv", "profile"],
+      "answer": "You can build and update your resume using our tools in the Profile section, which include professional templates and automated resume editing features."
+    },
+    {
+      "keywords": ["help", "support", "assistance"],
+      "answer": "If you need help, please check our Help section or contact our support team via support@opportunet.com."
+    },
+    {
+      "keywords": ["hello", "hi", "greetings"],
+      "answer": "Hello! How can I assist you today? You can ask about jobs, scholarships, or any questions about our platform."
+    },
+    {
+      "keywords": ["navigation", "site", "platform"],
+      "answer": "Our platform is designed to be user-friendly. Use the menu to navigate between Home, Dashboard, and account pages."
+    },
+    {
+      "keywords": ["password", "security", "reset"],
+      "answer": "To change your password, visit your account settings. We ensure that all data is securely managed."
+    }
+  ]
+  

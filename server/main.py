@@ -1,9 +1,12 @@
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, status
-from models.user import UserCreate, UserLogin,UserResponse
-from services.u_services import create_account,login
+from models.user import UserCreate, UserLogin,UserResponse, ChatbotRequest
+from services.u_services import create_account,login,get_faq_answer
 import boto3
 from security import authorization
 from io import BytesIO
+from pydantic import BaseModel 
+import json
+import os 
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,17 +34,10 @@ async def u_login(user:UserLogin):
     return await login(user)
 #change password (PUT)
 @app.put("/change-password")
-#async def change_pwd(new_password:str,user_token:str = Depends(authorization.get_user())):
 
-    #return 0
-#change username (PUT)
-#@app.put("/change-username")
-#async def change_username(new_username:str,user_token:str = Depends(authorization.get_user())):
-   # return 0 
 #change email (PUT)
 @app.put("/change-email")
-#async def change_email(new_email:str):
-   # return 0
+
 #add resume (POST)
 @app.post("/upload-resume")
 async def upload_resume():
@@ -55,3 +51,7 @@ app.delete("/delete-account")
 async def delete_account():
     return 0
 
+@app.post("/chatbot")
+async def chatbot_endpoint(request: ChatbotRequest):
+    answer = get_faq_answer(request.question)
+    return {"answer": answer}
