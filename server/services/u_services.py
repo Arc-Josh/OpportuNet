@@ -16,7 +16,7 @@ async def create_account(data = UserCreate):
         hashed_password = hashed.decode('utf-8')
         try:
             async with connected.transaction():
-                await connected.execute('INSERT INTO users(name,email,password) VALUES($1,$2,$3)',data.name,data.email,hashed_password)
+                await connected.execute('INSERT INTO users(full_name,email,password_hash) VALUES($1,$2,$3)',data.name,data.email,hashed_password)
             
             return{"status":"success","message":"Account Created!"}
         except Exception as l:
@@ -35,7 +35,7 @@ async def login(data = UserLogin):
         connected = await connect_db()
         email_validated = await connected.fetchval("""SELECT email FROM users WHERE email = $1""",data.email)
         if email_validated:
-            hashed = await connected.fetchval("""SELECT password FROM users WHERE email = $1""",data.email)
+            hashed = await connected.fetchval("""SELECT password_hash FROM users WHERE email = $1""",data.email)
             password_validated = verify_pwd(data.password,hashed)
             if password_validated:
                 u_data = {"email":data.email}

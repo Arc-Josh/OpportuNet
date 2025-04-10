@@ -44,7 +44,15 @@ async def signup(user: UserCreate):
 
 @app.post("/login")
 async def u_login(user: UserLogin):
-    return await login(user)
+    user = await login(user)
+    token = user.get("access_token")
+    if token:
+        return{"token":token}
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="no token acquired"
+        )
 #change password (PUT)
 @app.put("/change-password")
 
@@ -61,6 +69,12 @@ async def edit_resume():
     return {"message": "Resume update not yet implemented"}
 
 @app.post("/chatbot")
-async def chatbot_endpoint(request: ChatbotRequest):
+async def chatbot_endpoint(request: ChatbotRequest,token:str = Depends(authorization.oauth2_scheme)):
+    email = authorization.get_user(token)
     answer = get_faq_answer(request.question)
-    return {"answer": answer}
+    return {"email":email,"answer": answer}
+
+@app.get("/dashboard")
+async def dashoard(token:str = Depends(authorization.oauth2_scheme)):
+    email = authorization.get_user(token)
+    return {"email":email}
