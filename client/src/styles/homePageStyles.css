@@ -18,13 +18,13 @@
   .hero-content h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    color: #2b2d42;
+    color: black;
   }
   
   .hero-content p {
     font-size: 1.2rem;
     margin-bottom: 2rem;
-    color: #4a4e69;
+    color: darkgrey;
   }
   
   .cta-buttons {
@@ -41,22 +41,21 @@
   }
   
   .btn-primary {
-    background-color: #3a86ff;
-    color: white;
+    background-color: yellow;
+    color: black;
   }
   
   .btn-primary:hover {
-    background-color: #2667cc;
+    background-color: yellow;
   }
   
   .btn-secondary {
-    background-color: transparent;
-    color: #3a86ff;
-    border: 2px solid #3a86ff;
+    background-color: yellow;
+    color: black;
   }
   
   .btn-secondary:hover {
-    background-color: #f0f7ff;
+    background-color: yellow;
   }
   
   .features-section {
@@ -67,7 +66,7 @@
   .features-section h2 {
     font-size: 2rem;
     margin-bottom: 50px;
-    color: #2b2d42;
+    color: black;
   }
   
   .features-grid {
