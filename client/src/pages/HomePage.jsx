@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/homePageStyles.css'; // We'll create this CSS file next
+import { expireToken } from '../storage/token';
 
 const HomePage = () => {
+  expireToken()//resets token everytime you access it so you have to login 
   return (
     <div className="homepage">
       <section className="hero-section">
