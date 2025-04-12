@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
+import { storeToken } from '../storage/token';
+import { getToken } from '../storage/token';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const LoginPage = () => {
     });
     const data = await response.json();
     if(response.ok){
+      storeToken(data.token);
       alert('Login succesfull')
       console.log('success')
       navigate('/dashboard');
@@ -30,6 +33,7 @@ const LoginPage = () => {
     }
     //navigate('/dashboard'); // Will change this later
   };
+
 
   const toggleForm = () => {
     navigate('/signup');
