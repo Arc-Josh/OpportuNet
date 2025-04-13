@@ -7,6 +7,7 @@ import HomePage from './pages/HomePage';
 import ChatbotPage from './pages/ChatbotPage';  
 import Navbar from './components/Navbar';
 import './styles/globalStyles.css';
+import ResumeBuilderPage from "./pages/ResumeBuilderPage.jsx";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/chatbot" element={<ChatbotPage />} />  
+        <Route path="/resumebuilder" element={<ResumeBuilderPage />} />
+        
       </Routes>
     </Router>
   );
