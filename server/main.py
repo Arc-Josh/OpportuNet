@@ -1,6 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, status
-from models.user import UserCreate, UserLogin,UserResponse, ChatbotRequest
-from services.u_services import create_account,login,get_faq_answer
+from models.user import UserCreate, UserLogin,UserResponse, ChatbotRequest, JobCreate, JobResponse
+from services.u_services import create_account,login,get_faq_answer, create_job_entry, get_all_jobs
 import boto3
 from security import authorization
 from io import BytesIO
@@ -78,3 +78,11 @@ async def chatbot_endpoint(request: ChatbotRequest,token:str = Depends(authoriza
 async def dashoard(token:str = Depends(authorization.oauth2_scheme)):
     email = authorization.get_user(token)
     return {"email":email}
+
+@app.post("/jobs", response_model=JobResponse)
+async def create_job(job: JobCreate, token: str = Depends(authorization.oauth2_scheme)):
+    return await create_job_entry(job)
+
+@app.get("/jobs", response_model=list[JobResponse])
+async def list_jobs():
+    return await get_all_jobs()
