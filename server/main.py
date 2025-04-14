@@ -127,8 +127,8 @@ async def dashboard(token: str = Depends(authorization.oauth2_scheme)):
     email = authorization.get_user(token)
     return {"email": email}
 
-@app.post("/jobs", response_model=JobResponse)
-async def create_job(job: JobCreate, token: str = Depends(authorization.oauth2_scheme)):
+@app.post("/jobs-create", response_model=JobResponse)
+async def create_job(job: JobCreate):
     return await create_job_entry(job)
 
 @app.get("/jobs", response_model=list[JobResponse])

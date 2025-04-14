@@ -23,7 +23,7 @@ class JobCreate(BaseModel):
     job_name: str
     location: str
     salary: float
-    position: str
+    position: str 
     hr_contact_number: Optional[str] = None
     qualifications: Optional[str] = None
     preferences: Optional[str] = None

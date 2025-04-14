@@ -111,7 +111,38 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
 
     await page.close();
 }
+const axios = require('axios');
 
+async function sendJobsToBackend() {
+    const jobsData = JSON.parse(fs.readFileSync('indeed_jobs.json', 'utf-8'));
+    const backendUrl = config.backend_url || 'http://localhost:8000/jobs-create';
+
+    const headers = {
+        'Content-Type': 'application/json',
+    };
+
+    for (const job of jobsData) {
+        const payload = {
+            job_name: job.jobTitle || 'Unknown',
+            location: job.jobLocation || 'Unknown',
+            salary: 75000.0, //
+            position: 'Full-time',
+            hr_contact_number: '000-000-0000',
+            qualifications: 'Bachelor’s degree',
+            preferences: '1+ years experience',
+            benefits: job.benefits || 'Not specified',
+            mission_statement: 'Join our mission to connect top talent with tech careers.'
+        };
+
+        try {
+            console.log("Sending job:", payload);
+            const response = await axios.post(backendUrl, payload, { headers });
+            console.log(` Successfully sent job to backend: ${payload.job_name}`);
+        } catch (error) {
+            console.error(` Failed to send job: ${payload.job_name}`, error.response?.data || error.message);
+        }
+    }
+}
 
 (async () => {
     const browser = await puppeteer.launch({ headless: true });
@@ -142,6 +173,11 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     fs.writeFileSync('indeed_jobs.json', JSON.stringify(results, null, 2));
     console.log('Crawling complete.');
     console.log('Saving results to indeed_jobs.json');
+    await sendJobsToBackend();
     
     await browser.close();
 })();
+
+
+// Call this after saving the JSON file
+
