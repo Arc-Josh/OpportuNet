@@ -1,5 +1,6 @@
 [
   {
+<<<<<<< HEAD
     "jobTitle": "Junior Data Entry Specialist",
     "company": "Harper Group",
     "jobLocation": "Remote in Dallas, TX",
@@ -257,11 +258,30 @@
     "jobLocation": "Dallas, TX 75244",
     "jobSalary": "n/a",
     "jobUrl": "https://www.indeed.com/viewjob?jk=7f6d171122dc0706"
+=======
+    "jobTitle": "Home Lending Data Scientist Associate Sr",
+    "company": "JPMorganChase",
+    "jobLocation": "Plano, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=97bd11b5880e96ce"
+  },
+  {
+    "jobTitle": "Data Scientist – R01547941",
+    "company": "Brillio",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=12fcf0adeb26bffe"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Verizon",
+    "jobLocation": "Hybrid work in Irving, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=f4f00eea2f735312"
+>>>>>>> 7abffc293fe2b40a40bd4fc779ca539a3730e61b
   },
   {
     "jobTitle": "Data Scientist II",
     "company": "HNTB Corporation",
     "jobLocation": "Dallas, TX 75219",
+<<<<<<< HEAD
     "jobSalary": "n/a",
     "jobUrl": "https://www.indeed.com/viewjob?jk=739be69b34033ddd"
   },
@@ -299,5 +319,74 @@
     "jobLocation": "Lewisville, TX 75057",
     "jobSalary": "n/a",
     "jobUrl": "https://www.indeed.com/viewjob?jk=d2e12d2b1e90e699"
+=======
+    "jobUrl": "https://www.indeed.com/viewjob?jk=739be69b34033ddd"
+  },
+  {
+    "jobTitle": "SENIOR DATA SCIENTIST",
+    "company": "Covetus",
+    "jobLocation": "Dallas, TX 75244",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=f317f2d8d81fb34a"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Selectmindsllc.",
+    "jobLocation": "Hybrid work in Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=f345ebbf1d00e7e4"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Peoplevisor LLC",
+    "jobLocation": "Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=9e54bf71e82aa2ff"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "SelectMinds",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=4a0298aaaa5bdf3e"
+  },
+  {
+    "jobTitle": "Sr. Data Scientist",
+    "company": "Compile",
+    "jobLocation": "Irving, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=3a273e5fd4400ee5"
+  },
+  {
+    "jobTitle": "Senior Data Scientist - Pricing Analytics",
+    "company": "CVS Health",
+    "jobLocation": "Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=4dd2089946ecef03"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Gartner",
+    "jobLocation": "Hybrid work in Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=8e248bde1723fbbe"
+  },
+  {
+    "jobTitle": "Director, Data Science",
+    "company": "Liberty Mutual",
+    "jobLocation": "Plano, TX 75024",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=28bb130a808699fb"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Cyber Infotech",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=fc93d4af354c1d0f"
+  },
+  {
+    "jobTitle": "Data Scientist II, General Internal Medicine",
+    "company": "UT Southwestern",
+    "jobLocation": "Dallas, TX 75390",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=6b69c165225e9886"
+  },
+  {
+    "jobTitle": "Sr. Data Scientist",
+    "company": "McKesson",
+    "jobLocation": "Irving, TX 75038",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=1d0a40c38b3e8d35"
+>>>>>>> 7abffc293fe2b40a40bd4fc779ca539a3730e61b
   }
 ]

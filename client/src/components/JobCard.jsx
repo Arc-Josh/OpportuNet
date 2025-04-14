@@ -5,24 +5,43 @@ const JobCard = ({ job }) => {
     <div className="job-card">
       <div className="job-header">
         <div className="company-info">
-          <h2>{job.title}</h2>
-          <h3>{job.company}</h3>
+          <h2>{job.job_name}</h2>
+          <h3>{job.position}</h3>
           <div className="meta">
             <span className="location">{job.location}</span>
-            <span className="salary">{job.salary}</span>
-            <span className="posted">{job.posted}</span>
+            <span className="salary">${job.salary}</span>
           </div>
         </div>
       </div>
       
       <div className="job-details">
-        <p className="description">{job.description}</p>
+        {job.qualifications && (
+          <>
+            <h4>Qualifications:</h4>
+            <p>{job.qualifications}</p>
+          </>
+        )}
         
-        <div className="skills">
-          {job.skills.map((skill, index) => (
-            <span key={index} className="skill-tag">{skill}</span>
-          ))}
-        </div>
+        {job.benefits && (
+          <>
+            <h4>Benefits:</h4>
+            <p>{job.benefits}</p>
+          </>
+        )}
+        
+        {job.mission_statement && (
+          <>
+            <h4>Mission:</h4>
+            <p>{job.mission_statement}</p>
+          </>
+        )}
+        
+        {job.hr_contact_number && (
+          <div className="contact">
+            <h4>Contact:</h4>
+            <p>{job.hr_contact_number}</p>
+          </div>
+        )}
       </div>
     </div>
   );

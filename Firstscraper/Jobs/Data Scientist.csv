@@ -1,4 +1,5 @@
 "jobTitle","salary","description","benefits"
+<<<<<<< HEAD
 "Data Scientist","n/a","Peoplevisor is seeking an experienced Data Scientist who will support our product, sales, leadership and marketing teams with insights gained from analyzing company data. The ideal candidate is adept at using large data sets to find opportunities for product and process optimization and using models to test the effectiveness of different courses of action. They must have strong experience using a variety of data mining/data analysis methods, using a variety of data tools, building and implementing models, using/creating algorithms and creating/running simulations. They must have a proven ability to drive business results with their data-based insights.
 
 
@@ -61,3 +62,13 @@ All qualified applicants will receive consideration for employment without regar
 
 
 Applications for employment in the US must have work authorization that does not now or in the future require sponsorship of a visa for employment authorization in the United States and with Peoplevisor, LLC.","n/a"
+=======
+"Data Scientist","n/a","Build, implement and maintain predictive models through their full lifecycle.
+Identify patterns & trends in data, and provides insights to enhance business decision making.
+Identify challenges and opportunities from client strategy discussions and taking ownership of solution.
+Set up and monitor monthly model recalibration process.
+Generate complex ad-hoc analyses combining disparate concepts or creating new approaches.
+Design and create new analytic procedures & automation.
+
+Please forward your resume to contact@cyberinfotek.com","n/a"
+>>>>>>> 7abffc293fe2b40a40bd4fc779ca539a3730e61b

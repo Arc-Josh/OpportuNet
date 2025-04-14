@@ -1,6 +1,6 @@
 from database.db import connect_db
 from security.authorization import create_access_token, hash_pwd, verify_pwd, get_user
-from models.user import UserCreate, UserLogin, UserResponse
+from models.user import UserCreate, UserLogin, UserResponse, JobCreate, JobResponse
 from fastapi import HTTPException
 import os
 import json
@@ -94,3 +94,39 @@ def get_faq_answer(question: str) -> str:
     return (
         "I'm not sure how to answer that. You can ask about jobs, scholarships, or our application processes!"
     )
+async def create_job_entry(job: JobCreate):
+    try:
+        connected = await connect_db()
+        query = """
+            INSERT INTO jobs (
+                job_name, location, salary, position, hr_contact_number,
+                qualifications, preferences, benefits, mission_statement
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            RETURNING job_id, job_name, location, salary, position,
+                      hr_contact_number, qualifications, preferences,
+                      benefits, mission_statement, created_at
+        """
+        values = (
+            job.job_name, job.location, job.salary, job.position,
+            job.hr_contact_number, job.qualifications, job.preferences,
+            job.benefits, job.mission_statement
+        )
+        result = await connected.fetchrow(query, *values)
+        return JobResponse(**dict(result))
+    except Exception as e:
+        print(f"Error creating job: {e}")
+        raise HTTPException(status_code=400, detail="Job creation failed")
+    finally:
+        await connected.close()
+
+async def get_all_jobs():
+    try:
+        connected = await connect_db()
+        query = "SELECT * FROM jobs ORDER BY created_at DESC"
+        rows = await connected.fetch(query)
+        return [JobResponse(**dict(row)) for row in rows]
+    except Exception as e:
+        print(f"Error fetching jobs: {e}")
+        raise HTTPException(status_code=500, detail="Could not retrieve jobs")
+    finally:
+        await connected.close()

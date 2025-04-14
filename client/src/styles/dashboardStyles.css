@@ -169,3 +169,24 @@
     width: 100%;
   }
 }
+
+.job-card h4 {
+  margin: 15px 0 5px;
+  color: #2b2d42;
+}
+
+.contact {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #dc3545;
+}

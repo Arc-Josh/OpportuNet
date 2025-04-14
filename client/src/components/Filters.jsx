@@ -26,31 +26,31 @@ const Filters = ({ currentFilters, onFilterChange }) => {
       </div>
       
       <div className="filter-group">
-        <label>Location</label>
+        <label>Location Type</label>
         <select 
           name="location" 
           value={currentFilters.location} 
           onChange={handleChange}
         >
           <option value="">Any Location</option>
-          <option value="remote">Remote Only</option>
-          <option value="hybrid">Hybrid</option>
-          <option value="onsite">On-site</option>
+          <option value="Remote">Remote</option>
+          <option value="Hybrid">Hybrid</option>
+          <option value="On-site">On-site</option>
         </select>
       </div>
       
       <div className="filter-group">
-        <label>Experience Level</label>
+        <label>Position</label>
         <select 
-          name="experience" 
-          value={currentFilters.experience} 
+          name="position" 
+          value={currentFilters.position} 
           onChange={handleChange}
         >
-          <option value="">Any Experience</option>
-          <option value="intern">Internship</option>
-          <option value="junior">Junior (0-2 yrs)</option>
-          <option value="mid">Mid (2-5 yrs)</option>
-          <option value="senior">Senior (5+ yrs)</option>
+          <option value="">Any Position</option>
+          <option value="Frontend">Frontend</option>
+          <option value="Backend">Backend</option>
+          <option value="Fullstack">Fullstack</option>
+          <option value="Intern">Intern</option>
         </select>
       </div>
       
