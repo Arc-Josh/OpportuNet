@@ -1,0 +1,36 @@
+"jobTitle","salary","description","benefits"
+"Senior Data Engineer (SQL/Azure)","n/a","At Exeter Finance, we are committed to helping customers find the right financing for their next vehicle purchase. By building strong relationships with our customers and network of dealer partners we are able to give options that make sense, getting customers behind the wheel of their car.
+Every team member is integral to our success. Whether you’re at a servicing center helping customers with their loans, in the field building relationships with dealers, or supporting the company from its corporate offices, you'll enjoy a nurturing, invigorating and positive work environment.
+Our vision is to be a premier finance company and lender of choice known for its People, Performance and Service.
+Job Description
+This position is hybrid and will be required to be in office two times per month for collaboration working sessions.
+A Senior Data Engineer takes a lead role in the design and development of optimized and robust automated data processing solutions, while mentoring junior team members and driving innovation. This role involves developing complex data engineering projects, ensuring the efficient management and processing of data, and collaborating with cross-functional teams to support data-driven decision-making.
+Job Duties:
+Lead the design and implementation of complex data architectures inclusive of data warehouses, data lakes, and real-time data processing systems, while ensuring batch jobs and data processes are efficient, reliable, and meet performance requirements.
+Implement relational and massively parallel database solutions ensuring quality assurance and timely delivery of data, understanding how to efficiently process large data sets using appropriate query optimization, storage, and indexing options.
+Design, develop, and own scalable data processes that support ETL/ELT loads of various data sources, including internal systems, external APIs, files, streaming, and third-party services into data warehouses, data lakes and transactional databases.
+Implement data models and integration frameworks that align with organizational requirements that implement data quality standards and validation processes into solutions.
+Investigate, troubleshoot and correct data and user related system errors, and ensure data integrity.
+Develop and maintain documentation for batch jobs including database and ETL/ELT.
+Participate in the On-call developer rotation and respond to batch failures and alerts by troubleshooting and advising data operations teams through failure resolution.
+Contribute to support an IT roadmap that is forward thinking and sets the groundwork for reducing maintenance cost while meeting or exceeding business objectives.
+Participate in project team standups and report status updates.
+Ensure compliance with Exeter’s policies & procedures, safety, state and federal laws, regulations and standards.
+Other duties as assigned.
+Experience
+Minimum of 6 years of job-related experience required.
+Bachelor's Degree or equivalent in Computer Science or a related field of study preferred.
+Expert level Microsoft Transact-SQL required along with programming/scripting experience in languages such as PowerShell, C#, Python, etc.
+Strong knowledge of design, development, and implementation of OLTP database and data warehouse methodologies is required.
+Proven experience implementing data engineering projects and providing technical guidance within a large or complex organization is required.
+Detail-oriented with strong analytical and problem-solving skills, with the ability to troubleshoot and resolve complex data issues, with a focus on data accuracy, quality, and performance in a large database environment.
+Strong verbal and written communication skills, with the ability to collaborate effectively with data scientists, analysts, management and other team members.
+Knowledge and experience with a variety of cloud technologies, data lakes, data ingestion and data pipeline technologies is a plus.
+Familiarity with data engineering tools and platforms for ETL/ELT, data processing, and data integration.
+Familiarity with data lake architectures, big data technologies, real-time data processing technologies, and enterprise jobs schedulers is a plus.
+Familiarity with the auto finance industry a plus.
+#LI-Hybrid
+Exeter Finance LLC is an Equal Opportunity Employer.
+Individual compensation packages are based on various factors unique to each candidate including
+skill set, experience, qualifications and other job-related reasons.
+112,200.00 USD-$154,050.00","n/a"
