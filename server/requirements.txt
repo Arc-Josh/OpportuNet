@@ -1,6 +1,11 @@
+
 fastapi==0.115.12
-uvicorn[standard]==0.34.0
-boto3==1.37.29
-python-jose[cryptography]==3.4.0
+uvicorn==0.34.0
+python-multipart==0.0.20
+python-jose==3.4.0
+bcrypt==4.3.0
+pydantic==2.11.1
+asyncpg==0.30.0
+boto3==1.37.25
 python-dotenv==1.1.0
-asyncpg  # if using asyncpg later on
+python-dateutil==2.9.0.post0
