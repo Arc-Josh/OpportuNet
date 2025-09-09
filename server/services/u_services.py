@@ -16,10 +16,11 @@ async def create_account(data = UserCreate):
         hashed_password = hashed.decode('utf-8')
         try:
             async with connected.transaction():
-                await connected.execute('INSERT INTO users(full_name,email,password_hash) VALUES($1,$2,$3)',data.name,data.email,hashed_password)
+                await connected.execute('INSERT INTO users(full_name,email,password_hash,enabled_notifications) VALUES($1,$2,$3,$4::boolean)',data.name,data.email,hashed_password,data.enabled)
             
             return{"status":"success","message":"Account Created!"}
         except Exception as l:
+            print(f"database error: {l}")
             return{"status":"failure","message":f"Account NOTTTT Created!{l}"}
     except Exception as e:
         print(f"error occured {e}")

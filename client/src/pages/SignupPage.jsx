@@ -19,6 +19,7 @@ const SignupPage = () => {
         name: signupData.name,
         email: signupData.email,
         password: signupData.password,
+        enabled: signupData.enabled 
       }),
     });
     const data = await response.json();
