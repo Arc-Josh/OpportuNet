@@ -1,3 +1,4 @@
 #Python Cache
 __pycache__/
 *.pyc 
+venv/

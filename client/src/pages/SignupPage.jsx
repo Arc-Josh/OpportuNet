@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SignupForm from '../components/SignupForm';
+import SignupForm from '../components/oldSignupForm';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ const SignupPage = () => {
         name: signupData.name,
         email: signupData.email,
         password: signupData.password,
+        enabled: signupData.enabled 
       }),
     });
     const data = await response.json();
