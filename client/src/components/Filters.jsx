@@ -8,8 +8,9 @@ const Filters = ({ currentFilters, onFilterChange }) => {
 
   return (
     <div className="filters-panel">
-      <h3>Filter Jobs</h3>
-      
+      <h3 className="filters-title">Filter Jobs</h3>
+      <hr />
+
       <div className="filter-group">
         <label>Salary Range</label>
         <select 

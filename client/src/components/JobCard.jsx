@@ -4,12 +4,16 @@ const JobCard = ({ job }) => {
   return (
     <div className="job-card">
       <div className="job-header">
+        <div className="company-logo">
+          {/* Placeholder for logo, can replace with real logo field */}
+          <div className="logo-placeholder">{job.job_name[0]}</div>
+        </div>
         <div className="company-info">
           <h2>{job.job_name}</h2>
           <h3>{job.position}</h3>
           <div className="meta">
             <span className="location">{job.location}</span>
-            <span className="salary">${job.salary}</span>
+            <span className="salary-badge">${job.salary}</span>
           </div>
         </div>
       </div>
@@ -18,14 +22,22 @@ const JobCard = ({ job }) => {
         {job.qualifications && (
           <>
             <h4>Qualifications:</h4>
-            <p>{job.qualifications}</p>
+            <ul>
+              {job.qualifications.split(',').map((q, idx) => (
+                <li key={idx}>{q.trim()}</li>
+              ))}
+            </ul>
           </>
         )}
         
         {job.benefits && (
           <>
             <h4>Benefits:</h4>
-            <p>{job.benefits}</p>
+            <ul>
+              {job.benefits.split(',').map((b, idx) => (
+                <li key={idx}>{b.trim()}</li>
+              ))}
+            </ul>
           </>
         )}
         
