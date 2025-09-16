@@ -30,7 +30,7 @@ const SignupPage = () => {
       alert(data.message || 'Failed to create account')
       console.log('failure')
     }
-    navigate('/login'); // Will change this later
+    navigate('/login'); 
   };
 
   const toggleForm = () => {

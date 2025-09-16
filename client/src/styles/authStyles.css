@@ -108,3 +108,14 @@
   color: none;
   background: none;
 }
+
+.auth-toggle a {
+  background: none;
+  border: none;
+  color: #4CAF50;
+  cursor: pointer;
+  text-decoration: underline;
+  font: inherit;
+  padding: 0;
+  margin-left: 4px
+}
