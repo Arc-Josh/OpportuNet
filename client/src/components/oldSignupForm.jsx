@@ -7,13 +7,13 @@ const SignupForm = ({ onSignup, toggleForm }) => {
     email: '',
     password: '',
     confirmPassword: '',
+    enabled: false
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -71,6 +71,10 @@ const SignupForm = ({ onSignup, toggleForm }) => {
             required
           />
         </div>
+        <p>
+          <input type="checkbox" id="enabled" name='enabled' onChange={handleChange}/>
+          <label htmlFor="enabled">   Enable Notifications?</label>
+        </p>
         <button type="submit" className="auth-button">Sign Up</button>
       </form>
       <p className="auth-toggle">

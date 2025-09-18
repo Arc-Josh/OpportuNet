@@ -10,6 +10,7 @@ from pydantic import BaseModel
 import json
 import os 
 from fastapi.middleware.cors import CORSMiddleware
+import services.email_services
 
 # Import your user models and services (redundant imports preserved)
 from models.user import UserCreate, UserLogin, UserResponse
@@ -41,8 +42,15 @@ app.add_middleware(
 
 @app.post("/signup")
 async def signup(user: UserCreate):
-    return await create_account(user)
-
+    new_user = await create_account(user)
+    if user.enabled == True:
+        try:
+            await services.email_services.send_test_email(user.email)
+            return new_user
+        except Exception as e:
+            print("email services error:",e)
+    else:
+        return new_user
 @app.post("/login")
 async def u_login(user: UserLogin):
     user = await login(user)
