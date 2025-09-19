@@ -23,8 +23,10 @@ class ChatbotRequest(BaseModel):
 class JobCreate(BaseModel):
     job_name: str
     location: str
-    salary: float
-    position: str 
+    salary: str
+    description:str
+    company_name:str
+    application_link:str
     hr_contact_number: Optional[str] = None
     qualifications: Optional[str] = None
     preferences: Optional[str] = None

@@ -97,19 +97,23 @@ def get_faq_answer(question: str) -> str:
 async def create_job_entry(job: JobCreate):
     try:
         connected = await connect_db()
-        query = """
+        
+        query="""
             INSERT INTO jobs (
-                job_name, location, salary, position, hr_contact_number,
-                qualifications, preferences, benefits, mission_statement
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-            RETURNING job_id, job_name, location, salary, position,
+                job_name, location, salary, application_link, hr_contact_number,
+                qualifications, preferences, benefits, mission_statement,
+                company_name, description  -- <--- ADDED
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) -- <--- UPDATED
+            RETURNING job_id, job_name, location, salary, application_link,
                       hr_contact_number, qualifications, preferences,
-                      benefits, mission_statement, created_at
+                      benefits, mission_statement, created_at,
+                      company_name, description
         """
         values = (
-            job.job_name, job.location, job.salary, job.position,
+            job.job_name, job.location, job.salary, job.application_link,
             job.hr_contact_number, job.qualifications, job.preferences,
-            job.benefits, job.mission_statement
+            job.benefits, job.mission_statement,
+            job.company_name, job.description 
         )
         result = await connected.fetchrow(query, *values)
         return JobResponse(**dict(result))
