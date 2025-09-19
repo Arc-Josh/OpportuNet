@@ -24,8 +24,8 @@ class JobCreate(BaseModel):
     job_name: str
     location: str
     salary: str
-    description:str
-    company_name:str
+    description: Optional[str] = None
+    company_name: Optional[str] = None
     application_link:str
     hr_contact_number: Optional[str] = None
     qualifications: Optional[str] = None
