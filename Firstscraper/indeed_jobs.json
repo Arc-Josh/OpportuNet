@@ -1,374 +1,9 @@
 [
   {
-<<<<<<< HEAD
-    "jobTitle": "Junior Data Entry Specialist",
-    "company": "Harper Group",
-    "jobLocation": "Remote in Dallas, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=6ef28f3555680ebb"
-  },
-  {
-    "jobTitle": "Principal Data Analyst",
-    "company": "AT&T",
-    "jobLocation": "Dallas, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=b090421d7dd8f842"
-  },
-  {
-    "jobTitle": "Data Analyst",
-    "company": "Toyota",
-    "jobLocation": "Hybrid work in Plano, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=cd2a166ecc68d1c8"
-  },
-  {
-    "jobTitle": "Data Researcher (Part-Time)",
-    "company": "SportTechie",
-    "jobLocation": "Dallas, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=167cce457059c2f6"
-  },
-  {
-    "jobTitle": "Lead Data Analyst",
-    "company": "AT&T",
-    "jobLocation": "Dallas, TX \n(Downtown area)",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=db6d2393e33cc889"
-  },
-  {
-    "jobTitle": "Data Visualization",
-    "company": "JPMorganChase",
-    "jobLocation": "Plano, TX 75024",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=57a4d7e767c0e0da"
-  },
-  {
-    "jobTitle": "Senior Data Engineer (SQL/Azure)",
-    "company": "Exeter Finance LLC",
-    "jobLocation": "Hybrid work in Irving, TX 75063",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=09e9ea7e734c1dbc"
-  },
-  {
-    "jobTitle": "Documentation Analyst / Specialist",
-    "company": "GEICO",
-    "jobLocation": "Richardson, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=674f150f868c6309"
-  },
-  {
-    "jobTitle": "Mgr HR Data and Systems",
-    "company": "FedEx",
-    "jobLocation": "Hybrid work in Plano, TX 75024",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=fd781f05cf28bcc9"
-  },
-  {
-    "jobTitle": "Data Management Analyst",
-    "company": "Koch",
-    "jobLocation": "Dallas, TX 75201",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=b1408667e3757989"
-  },
-  {
-    "jobTitle": "Associate Product Data Management Specialist",
-    "company": "BOEING",
-    "jobLocation": "Richardson, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=91874bb1d9a9cbd3"
-  },
-  {
-    "jobTitle": "Data Quality Analyst C12 - IRVING/TAMPA",
-    "company": "Citi",
-    "jobLocation": "Irving, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=dafbb85168671882"
-  },
-  {
-    "jobTitle": "Associate Analyst",
-    "company": "Vizient, Inc.",
-    "jobLocation": "Irving, TX 75062",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=7ec9d0f134b97eea"
-  },
-  {
-    "jobTitle": "Data Visualization",
-    "company": "JPMorganChase",
-    "jobLocation": "Plano, TX 75024",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=57a4d7e767c0e0da"
-  },
-  {
-    "jobTitle": "Data Analyst - Career Management Center",
-    "company": "University of Texas at Dallas",
-    "jobLocation": "Hybrid work in Richardson, TX 75080",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=19f10ffef358749f"
-  },
-  {
-    "jobTitle": "Data Entry",
-    "company": "Jackie Talmo Decor",
-    "jobLocation": "Dallas, TX 75201",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=6eaba5aec1b1e3b8"
-  },
-  {
-    "jobTitle": "Analyst Product Analysis",
-    "company": "Liberty Mutual",
-    "jobLocation": "Remote in Plano, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=0bdcb2e22c735f29"
-  },
-  {
-    "jobTitle": "Associate Product Data Management Specialist",
-    "company": "BOEING",
-    "jobLocation": "Richardson, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=91874bb1d9a9cbd3"
-  },
-  {
-    "jobTitle": "Entry-Level Business Analyst",
-    "company": "Global Systems",
-    "jobLocation": "Irving, TX 75038",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=8d3c6ed7671af60e"
-  },
-  {
-    "jobTitle": "Data Analyst",
-    "company": "Toyota",
-    "jobLocation": "Hybrid work in Plano, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=cd2a166ecc68d1c8"
-  },
-  {
-    "jobTitle": "Analyst - Unbranded Analytics",
-    "company": "Sunoco LP",
-    "jobLocation": "Dallas, TX 75225",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=e4a9593483e40dd3"
-  },
-  {
-    "jobTitle": "Database Assistant - Part-Time/Temporary",
-    "company": "June Shelton School and Evaluation Center",
-    "jobLocation": "Dallas, TX 75252",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=6696c0fd489840c4"
-  },
-  {
-    "jobTitle": "Advancement Services Data Specialist",
-    "company": "Greenhill School",
-    "jobLocation": "Dallas, TX 75244",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=7f6d171122dc0706"
-  },
-  {
-    "jobTitle": "Principal Data Analyst",
-    "company": "AT&T",
-    "jobLocation": "Dallas, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=b090421d7dd8f842"
-  },
-  {
-    "jobTitle": "Data Management Analyst",
-    "company": "Koch",
-    "jobLocation": "Dallas, TX 75201",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=b1408667e3757989"
-  },
-  {
-    "jobTitle": "Data Entry Associate",
-    "company": "Gold Standard Auctions",
-    "jobLocation": "Farmers Branch, TX 75234",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=b7d43f6a77ee960a"
-  },
-  {
-    "jobTitle": "Data & Modeling Analyst",
-    "company": "Denton County Transportation Authority",
-    "jobLocation": "Lewisville, TX 75057",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=d2e12d2b1e90e699"
-  },
-  {
-    "jobTitle": "Data Quality Analyst C12 - IRVING/TAMPA",
-    "company": "Citi",
-    "jobLocation": "Irving, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=dafbb85168671882"
-  },
-  {
-    "jobTitle": "Atlassian Admin",
-    "company": "Data Analysis Inc",
-    "jobLocation": "Remote in Plano, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=96b889be51a3acac"
-  },
-  {
-    "jobTitle": "Data Services Analyst",
-    "company": "Real Time Resolutions, Inc.",
-    "jobLocation": "Hybrid work in Dallas, TX 75247",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=96e9c132b368de0a"
-  },
-  {
-    "jobTitle": "Entry-Level Business Analyst",
-    "company": "Global Systems",
-    "jobLocation": "Irving, TX 75038",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=8d3c6ed7671af60e"
-  },
-  {
     "jobTitle": "Data Scientist",
-    "company": "Peoplevisor LLC",
-    "jobLocation": "Irving, TX 75039",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=9e54bf71e82aa2ff"
-  },
-  {
-    "jobTitle": "Data Architect – R01548796",
-    "company": "Brillio",
-    "jobLocation": "Remote in Dallas, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=b48a20ee99a2d8ff"
-  },
-  {
-    "jobTitle": "Insurance Business Analyst",
-    "company": "Deloitte",
-    "jobLocation": "Dallas, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=c94e10e7e86ec39b"
-  },
-  {
-    "jobTitle": "Data Analytics Test Analyst - C13 - IRVING- Hybrid",
-    "company": "Citi",
-    "jobLocation": "Irving, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=7d02e8adb20c7b13"
-  },
-  {
-    "jobTitle": "Associate Data Analytics - Business Intelligence",
-    "company": "Salesforce",
-    "jobLocation": "Dallas, TX 75201",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=cc78ccc0e7b4819c"
-  },
-  {
-    "jobTitle": "Advancement Services Data Specialist",
-    "company": "Greenhill School",
-    "jobLocation": "Dallas, TX 75244",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=7f6d171122dc0706"
-=======
-    "jobTitle": "Home Lending Data Scientist Associate Sr",
-    "company": "JPMorganChase",
-    "jobLocation": "Plano, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=97bd11b5880e96ce"
-  },
-  {
-    "jobTitle": "Data Scientist – R01547941",
-    "company": "Brillio",
-    "jobLocation": "Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=12fcf0adeb26bffe"
-  },
-  {
-    "jobTitle": "Data Scientist",
-    "company": "Verizon",
-    "jobLocation": "Hybrid work in Irving, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=f4f00eea2f735312"
->>>>>>> 7abffc293fe2b40a40bd4fc779ca539a3730e61b
-  },
-  {
-    "jobTitle": "Data Scientist II",
-    "company": "HNTB Corporation",
-    "jobLocation": "Dallas, TX 75219",
-<<<<<<< HEAD
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=739be69b34033ddd"
-  },
-  {
-    "jobTitle": "Data Analyst",
-    "company": "Click n’ Close, Inc.",
-    "jobLocation": "Hybrid work in Addison, TX 75001",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=7c125c8fe5293b93"
-  },
-  {
-    "jobTitle": "Data Quality Lead Analyst- IRVING/TAMPA",
-    "company": "Citi",
-    "jobLocation": "Irving, TX",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=7784add2effb45ee"
-  },
-  {
-    "jobTitle": "Associate Analyst",
-    "company": "Vizient, Inc.",
-    "jobLocation": "Irving, TX 75062",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=7ec9d0f134b97eea"
-  },
-  {
-    "jobTitle": "Data Specialist, Workforce Transformation",
-    "company": "American Airlines",
-    "jobLocation": "Dallas, TX 75219",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=77062dd02735fdf6"
-  },
-  {
-    "jobTitle": "Data & Modeling Analyst",
-    "company": "Denton County Transportation Authority",
-    "jobLocation": "Lewisville, TX 75057",
-    "jobSalary": "n/a",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=d2e12d2b1e90e699"
-=======
-    "jobUrl": "https://www.indeed.com/viewjob?jk=739be69b34033ddd"
-  },
-  {
-    "jobTitle": "SENIOR DATA SCIENTIST",
-    "company": "Covetus",
-    "jobLocation": "Dallas, TX 75244",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=f317f2d8d81fb34a"
-  },
-  {
-    "jobTitle": "Data Scientist",
-    "company": "Selectmindsllc.",
-    "jobLocation": "Hybrid work in Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=f345ebbf1d00e7e4"
-  },
-  {
-    "jobTitle": "Data Scientist",
-    "company": "Peoplevisor LLC",
-    "jobLocation": "Irving, TX 75039",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=9e54bf71e82aa2ff"
-  },
-  {
-    "jobTitle": "Data Scientist",
-    "company": "SelectMinds",
-    "jobLocation": "Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=4a0298aaaa5bdf3e"
-  },
-  {
-    "jobTitle": "Sr. Data Scientist",
-    "company": "Compile",
-    "jobLocation": "Irving, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=3a273e5fd4400ee5"
-  },
-  {
-    "jobTitle": "Senior Data Scientist - Pricing Analytics",
-    "company": "CVS Health",
-    "jobLocation": "Irving, TX 75039",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=4dd2089946ecef03"
-  },
-  {
-    "jobTitle": "Data Scientist",
-    "company": "Gartner",
-    "jobLocation": "Hybrid work in Irving, TX 75039",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=8e248bde1723fbbe"
-  },
-  {
-    "jobTitle": "Director, Data Science",
-    "company": "Liberty Mutual",
-    "jobLocation": "Plano, TX 75024",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=28bb130a808699fb"
+    "company": "Scalable Systems",
+    "jobLocation": "Addison, TX 75001",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=789b20dee7d0ba72"
   },
   {
     "jobTitle": "Data Scientist",
@@ -377,16 +12,87 @@
     "jobUrl": "https://www.indeed.com/viewjob?jk=fc93d4af354c1d0f"
   },
   {
-    "jobTitle": "Data Scientist II, General Internal Medicine",
-    "company": "UT Southwestern",
-    "jobLocation": "Dallas, TX 75390",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=6b69c165225e9886"
+    "jobTitle": "Data Scientist",
+    "company": "Data Xpander",
+    "jobLocation": "Irving, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=cdaa9e9635b3200e"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Toyota",
+    "jobLocation": "Plano, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=162807d1f8394621"
+  },
+  {
+    "jobTitle": "Associate Data Scientist - Spring 2026 Master's level graduates",
+    "company": "Gartner",
+    "jobLocation": "Hybrid work in Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=a84d740959e39a01"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Select Minds LLC",
+    "jobLocation": "Hybrid work in Dallas, TX 75235",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=c2b0c16c74d00cd6"
+  },
+  {
+    "jobTitle": "Data Scientist with Big Data",
+    "company": "Sonoma Consulting Inc.",
+    "jobLocation": "Plano, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=98e1765874f056f1"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Peoplevisor LLC",
+    "jobLocation": "Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=9e54bf71e82aa2ff"
+  },
+  {
+    "jobTitle": "Principal, Data Scientist",
+    "company": "Cotality",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=7fb5abad68b0ce9a"
+  },
+  {
+    "jobTitle": "Principal, Data Scientist",
+    "company": "Cotality",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=fedcba9876543210"
+  },
+  {
+    "jobTitle": "Data Scientist, Principal",
+    "company": "o9 Solutions",
+    "jobLocation": "Dallas, TX 75234",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=4f4c6a5b9f0c0544"
+  },
+  {
+    "jobTitle": "Data Scientist, Lead",
+    "company": "o9 Solutions",
+    "jobLocation": "Dallas, TX 75234",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=22b3cf3d942bae5c"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "AdroitCo",
+    "jobLocation": "Frisco, TX 75034",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=0900acea28b992d3"
   },
   {
     "jobTitle": "Sr. Data Scientist",
-    "company": "McKesson",
-    "jobLocation": "Irving, TX 75038",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=1d0a40c38b3e8d35"
->>>>>>> 7abffc293fe2b40a40bd4fc779ca539a3730e61b
+    "company": "Ample IT Services",
+    "jobLocation": "Irving, TX 75038 \n(Cottonwood area)",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=74c7c15677c0991b"
+  },
+  {
+    "jobTitle": "AI/ML and Data Scientist",
+    "company": "RisamSoft",
+    "jobLocation": "Irving, TX 75063 \n(Freeport/Hackberry area)",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=ebf80c00df9c0209"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Cyborgwave",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=6f19577a289a0792"
   }
 ]

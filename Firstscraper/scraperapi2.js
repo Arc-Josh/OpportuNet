@@ -95,11 +95,14 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
         return;
     }
 
+    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     const salary = await page.$eval("div[id='salaryInfoAndJobContainer']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-   
-    const jobData = { jobTitle, salary, description, benefits };
+
+    const jobData = { jobTitle, qualifications, salary, description, benefits, preferences, mission_statement };
     const csv = parse([jobData]);
 
     const sanitizedTitle = jobTitle.replace(/[<>:"\/\\|?*]+/g, '');
@@ -125,13 +128,15 @@ async function sendJobsToBackend() {
         const payload = {
             job_name: job.jobTitle || 'Unknown',
             location: job.jobLocation || 'Unknown',
-            salary: 75000.0, //
-            position: 'Full-time',
-            hr_contact_number: '000-000-0000',
-            qualifications: 'Bachelor’s degree',
-            preferences: '1+ years experience',
+            salary: job.salary || 'Not specified',
+            description: job.description || 'No description provided',
+            company_name: job.company || 'Unknown',
+            application_link: job.jobUrl || 'N/A',
+            hr_contact_number: '000-000-0000' || 'N/A',
+            qualifications: job.qualifications || 'Not specified',
+            preferences: job.preferences || 'Not specified',
             benefits: job.benefits || 'Not specified',
-            mission_statement: 'Join our mission to connect top talent with tech careers.'
+            mission_statement: job.mission_statement || 'Not specified',
         };
 
         try {
@@ -177,7 +182,6 @@ async function sendJobsToBackend() {
     
     await browser.close();
 })();
-
 
 // Call this after saving the JSON file
 

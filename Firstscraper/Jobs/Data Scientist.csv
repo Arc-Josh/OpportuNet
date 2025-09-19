@@ -1,74 +1,17 @@
-"jobTitle","salary","description","benefits"
-<<<<<<< HEAD
-"Data Scientist","n/a","Peoplevisor is seeking an experienced Data Scientist who will support our product, sales, leadership and marketing teams with insights gained from analyzing company data. The ideal candidate is adept at using large data sets to find opportunities for product and process optimization and using models to test the effectiveness of different courses of action. They must have strong experience using a variety of data mining/data analysis methods, using a variety of data tools, building and implementing models, using/creating algorithms and creating/running simulations. They must have a proven ability to drive business results with their data-based insights.
+"jobTitle","qualifications","salary","description","benefits","preferences","mission_statement"
+"Data Scientist","n/a","n/a","Posted: 3 days ago
 
+Description: We are hiring a data scientist to analyze complex datasets, develop machine learning models, and derive actionable insights. The ideal candidate should have expertise in statistical analysis, programming languages like R or Python, and experience with machine learning frameworks such as TensorFlow or PyTorch.
 
+Analyze large datasets to extract valuable insights and trends, using statistical techniques, machine learning algorithms, and data visualization tools.
+Develop predictive models and algorithms to solve complex business problems and optimize decision-making processes.
+Design and implement data pipelines for data acquisition, preprocessing, transformation, and storage, ensuring data quality and integrity.
+Collaborate with cross-functional teams to identify analytical requirements, define project objectives, and deliver actionable recommendations.
+Stay updated with the latest advancements in data science, machine learning, and big data technologies, applying new methodologies to enhance analysis.
+Communicate findings and insights effectively to non-technical stakeholders through reports, presentations, and data visualizations.
+Conduct exploratory data analysis to identify patterns, correlations, and anomalies in data, driving data-driven decision-making within the organization.
+Apply data mining techniques to discover hidden patterns and relationships in data, uncovering valuable insights for business improvement.
+Optimize model performance through iterative experimentation, feature engineering, and hyperparameter tuning, ensuring robustness and scalability.
+Collaborate with IT teams to deploy and integrate machine learning models into production systems, monitoring performance and making necessary improvements.
 
-
-
-
-
-KEY EXPECTATIONS
-
-
-
-
-Work with stakeholders throughout the organization to identify opportunities for leveraging company data to drive business solutions.
-Mine and analyze data from company databases to drive optimization and improvement of product development, marketing techniques and business strategies.
-Assess the effectiveness and accuracy of new data sources and data gathering techniques.
-Develop custom data models and algorithms to apply to data sets.
-Use predictive modeling to increase and optimize customer experiences, revenue generation, ad targeting and other business outcomes.
-Develop company A/B testing framework and test model quality.
-Coordinate with different functional teams to implement models and monitor outcomes.
-Develop processes and tools to monitor and analyze model performance and data accuracy.
-
-
-DESIRED SKILLS AND EXPERIENCE
-
-
-
-
-Strong problem-solving skills with an emphasis on product development.
-Experience using statistical computer languages (R, Python, SLQ, etc.) to manipulate data and draw insights from large data sets.
-Experience working with and creating data architectures.
-Knowledge of a variety of machine learning techniques (clustering, decision tree learning, artificial neural networks, etc.) and their real-world advantages/drawbacks.
-Knowledge of advanced statistical techniques and concepts (regression, properties of distributions, statistical tests and proper usage, etc.) and experience with applications.
-Excellent written and verbal communication skills for coordinating across teams.
-A drive to learn and master new technologies and techniques.
-5-7 years of experience manipulating data sets and building statistical models.
-Master’s or PHD in Statistics, Mathematics, Computer Science or another quantitative field, and is familiar with the following software/tools:
-
-
-Coding knowledge and experience with several languages: C, C++, Java, JavaScript, etc.
-Knowledge and experience in statistical and data mining techniques: GLM/Regression, Random Forest, Boosting, Trees, text mining, social network analysis, etc.
-Experience querying databases and using statistical computer languages: R, Python, SLQ, etc.
-Experience using web services: Redshift, S3, Spark, DigitalOcean, etc.
-Experience creating and using advanced machine learning algorithms and statistics: regression, simulation, scenario analysis, modeling, clustering, decision trees, neural networks, etc.
-Experience analyzing data from 3rd party providers: Google Analytics, Site Catalyst, Coremetrics, Adwords, Crimson Hexagon, Facebook Insights, etc.
-Experience with distributed data/computing tools: Map/Reduce, Hadoop, Hive, Spark, Gurobi, MySQL, etc.
-Experience visualizing/presenting data for stakeholders using: Periscope, Business Objects, D3, ggplot, etc.
-
-
-Employer’s Rights:
-
-
-Peoplevisor, LLC. has the right to revise this job description at any time. This job description is not a contract for employment. This job description does not list all the duties of the job. You may be asked by your supervisors or managers to perform other duties. You will be evaluated in part based upon your performance of the tasks listed in this job description.
-
-
-Equal Opportunity Statement:
-
-
-All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, age, disability, or status as a Vietnam or disabled veteran.
-
-
-Applications for employment in the US must have work authorization that does not now or in the future require sponsorship of a visa for employment authorization in the United States and with Peoplevisor, LLC.","n/a"
-=======
-"Data Scientist","n/a","Build, implement and maintain predictive models through their full lifecycle.
-Identify patterns & trends in data, and provides insights to enhance business decision making.
-Identify challenges and opportunities from client strategy discussions and taking ownership of solution.
-Set up and monitor monthly model recalibration process.
-Generate complex ad-hoc analyses combining disparate concepts or creating new approaches.
-Design and create new analytic procedures & automation.
-
-Please forward your resume to contact@cyberinfotek.com","n/a"
->>>>>>> 7abffc293fe2b40a40bd4fc779ca539a3730e61b
+Send your application at hr@cyborgwave.com","n/a","n/a","n/a"
