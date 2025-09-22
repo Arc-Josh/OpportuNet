@@ -1,12 +1,16 @@
-import google.generativeai as genai
+import os
+from dotenv import load_dotenv
+from google import genai
 import json
 
-api_key=""
-
+load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
 
 def chatbot(dialogue:str):
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-2.5-flash')
-    
-    response = model.generate_content(dialogue)
+    client = genai.Client()
+    response = client.models.generate_content(
+        model = 'gemini-2.5-flash',
+        contents=dialogue,
+    )
     return response.text
+
