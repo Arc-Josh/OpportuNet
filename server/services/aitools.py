@@ -1,7 +1,8 @@
 import google.generativeai as genai
 import json
 
-api_key="AIzaSyBor6BlxGPBjuW06EUNO_aHLJts81EAuXk"
+api_key=""
+
 
 def chatbot(dialogue:str):
     genai.configure(api_key=api_key)
