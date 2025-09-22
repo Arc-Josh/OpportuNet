@@ -1,21 +1,51 @@
 [
   {
     "jobTitle": "Data Scientist",
+    "company": "LTIMindtree",
+    "jobLocation": "Irving, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=b5b7bfd8c050ec3f"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Beckett Collectibles",
+    "jobLocation": "Remote in Plano, TX 75074",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=fb3ee106f632130d"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Toyota",
+    "jobLocation": "Plano, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=162807d1f8394621"
+  },
+  {
+    "jobTitle": "Associate Data Scientist - Spring 2026 Master's level graduates",
+    "company": "Gartner",
+    "jobLocation": "Hybrid work in Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=a84d740959e39a01"
+  },
+  {
+    "jobTitle": "Associate Data Scientist - Spring 2026 Master's level graduates",
+    "company": "Gartner",
+    "jobLocation": "Hybrid work in Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=789abcdef0123456"
+  },
+  {
+    "jobTitle": "Cybersecurity Data Scientist",
+    "company": "Verizon",
+    "jobLocation": "Hybrid work in Irving, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=d2389cdcd43ee3cd"
+  },
+  {
+    "jobTitle": "Senior Machine Learning Scientist - Applied Research (USA Remote)",
+    "company": "Turnitin, LLC",
+    "jobLocation": "Remote in Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=fa7309553094efc6"
+  },
+  {
+    "jobTitle": "Data Scientist",
     "company": "Scalable Systems",
     "jobLocation": "Addison, TX 75001",
     "jobUrl": "https://www.indeed.com/viewjob?jk=789b20dee7d0ba72"
-  },
-  {
-    "jobTitle": "Staff AI Engineer",
-    "company": "Doma Technology LLC",
-    "jobLocation": "Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=d6286aac449a0a05"
-  },
-  {
-    "jobTitle": "Generative AI Specialist - Humanities (English and Romanian)",
-    "company": "Innodata Inc",
-    "jobLocation": "Remote in Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=e1b52197d9a85e0a"
   },
   {
     "jobTitle": "Data Scientist",
@@ -24,75 +54,45 @@
     "jobUrl": "https://www.indeed.com/viewjob?jk=c2b0c16c74d00cd6"
   },
   {
-    "jobTitle": "Agentic AI Engineer",
-    "company": "Onpoint Healthcare Partners Inc",
-    "jobLocation": "Irving, TX 75062 \n(Las Colinas Urban Center area)",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=e929bd8b4c58bfcb"
+    "jobTitle": "Data Science Subject Matter Experts",
+    "company": "Zion Zest LLC",
+    "jobLocation": "Dallas, TX 75244",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=34f39dba2736a427"
   },
   {
-    "jobTitle": "Decision Science Analyst",
-    "company": "Kobie Marketing",
+    "jobTitle": "Data Scientist with Big Data",
+    "company": "Sonoma Consulting Inc.",
+    "jobLocation": "Plano, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=98e1765874f056f1"
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "Peoplevisor LLC",
+    "jobLocation": "Irving, TX 75039",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=9e54bf71e82aa2ff"
+  },
+  {
+    "jobTitle": "Senior Machine Learning Scientist (USA Remote)",
+    "company": "Turnitin, LLC",
     "jobLocation": "Remote in Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=71b38a52461f949c"
+    "jobUrl": "https://www.indeed.com/viewjob?jk=78cca8f380fd5ea5"
   },
   {
-    "jobTitle": "GEN AI Architect",
-    "company": "Fusion Plus Solutions Inc",
-    "jobLocation": "Plano, TX 75023 \n(Thunderbird area)",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=50b4b8d94f1eca4e"
+    "jobTitle": "Data Science Engineer",
+    "company": "Goodnight Midstream",
+    "jobLocation": "Hybrid work in Dallas, TX 75206",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=a9de40a688b5e9f7"
   },
   {
-    "jobTitle": "Sr. Staff Data Scientist, Machine Learning",
-    "company": "Varo Bank",
-    "jobLocation": "Hybrid work in Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=fcbae146e73f48b6"
+    "jobTitle": "Sr Data Scientist GenAI",
+    "company": "Select Minds LLC",
+    "jobLocation": "Dallas, TX 75235 \n(Dallas Love Field area)",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=0adc95909d448a8e"
   },
   {
-    "jobTitle": "AI Engineer - Senior",
-    "company": "United Softw",
-    "jobLocation": "Irving, TX 75062 \n(McArthur area)",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=e7ec0591ec8fc95e"
-  },
-  {
-    "jobTitle": "Data Scientist/Machine Learning Engineer",
-    "company": "Ad hoc Research",
-    "jobLocation": "Plano, TX 75074",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=74e623cedcbf0dc3"
-  },
-  {
-    "jobTitle": "Data Scientist/Machine Learning Engineer",
-    "company": "Ad hoc Research",
-    "jobLocation": "Plano, TX 75026",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=f95ae52b9dda0851"
-  },
-  {
-    "jobTitle": "Senior Data Scientist- GenAI",
-    "company": "Tiger Analytics",
-    "jobLocation": "Remote in Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=656c7055300381d3"
-  },
-  {
-    "jobTitle": "Senior Data Scientist- GenAI",
-    "company": "Tiger Analytics",
-    "jobLocation": "Remote in Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=a1b2c3d4e5f67890"
-  },
-  {
-    "jobTitle": "Machine Learning Engineer",
-    "company": "Tiger Analytics",
-    "jobLocation": "Remote in Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=e8b61f5ad64f8bbf"
-  },
-  {
-    "jobTitle": "GEN AI Engineer",
-    "company": "i-Tech Enterprise",
-    "jobLocation": "Dallas, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=c5d3a08f789ba13d"
-  },
-  {
-    "jobTitle": "AI Engineer",
-    "company": "Wellfit Technologies",
-    "jobLocation": "Hybrid work in Irving, TX",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=5445a91de7d17680"
+    "jobTitle": "AI/ML Engineer",
+    "company": "Stemuli",
+    "jobLocation": "Dallas, TX 75201 \n(Downtown area)",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=e0c89a10578c2071"
   }
 ]
