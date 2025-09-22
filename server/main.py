@@ -3,6 +3,7 @@ from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, status, F
 from models.user import UserCreate, UserLogin, UserResponse, ChatbotRequest, JobCreate, JobResponse
 from services.u_services import create_account, login, get_faq_answer, create_job_entry, get_all_jobs
 from services.resume_services import tailor_resume, extract_text_stub, basic_resume_analysis
+from services.aitools import chatbot
 import boto3
 from security import authorization
 from io import BytesIO
@@ -127,7 +128,7 @@ async def edit_resume():
 @app.post("/chatbot")
 async def chatbot_endpoint(request: ChatbotRequest, token: str = Depends(authorization.oauth2_scheme)):
     email = authorization.get_user(token)
-    answer = get_faq_answer(request.question)
+    answer = chatbot(request.question)
     return {"email": email, "answer": answer}
 
 @app.get("/dashboard")
