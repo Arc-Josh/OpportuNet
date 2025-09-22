@@ -1,12 +1,11 @@
-from google import genai
+import google.generativeai as genai
 import json
 
 api_key="AIzaSyBor6BlxGPBjuW06EUNO_aHLJts81EAuXk"
 
 def chatbot(dialogue:str):
-    client = genai.Client(api_key=api_key)
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=dialogue
-    )
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    
+    response = model.generate_content(dialogue)
     return response.text
