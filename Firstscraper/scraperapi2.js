@@ -1,3 +1,4 @@
+//random comment to test git push
 const fs = require('fs');
 const path = require('path');
 const { parse } = require('json2csv');
@@ -41,6 +42,12 @@ async function crawlPage(browser, url) {
         const jobTitle = await job.$eval('h2', el => el.innerText.trim());
         const company = await job.$eval('[data-testid="company-name"]', el => el.innerText.trim());
         const jobLocation = await job.$eval('[data-testid="text-location"]', el => el.innerText.trim());
+        const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim());
+        const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim());
+        const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim());
+        const salary = await page.$eval("div[id='salaryInfoAndJobContainer']", el => el?.innerText.trim());
+        const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim());
+        const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim());
 
         const jobAnchor = await job.$('a');
         const href = await page.evaluate(anchor => anchor?.getAttribute('href') || '', jobAnchor);
@@ -52,7 +59,7 @@ async function crawlPage(browser, url) {
         if (jobKey) {
             jobUrl = `https://www.indeed.com/viewjob?jk=${jobKey}`;
             console.log(`Found job listing at: ${jobUrl}`);
-            jobs.push({ jobTitle, company, jobLocation, jobUrl });
+            jobs.push({ jobTitle, company, jobLocation, jobUrl, preferences, mission_statement, qualifications, salary, description, benefits });
 
             const proxyJobUrl = getScrapeOpsUrl(jobUrl);
             await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
