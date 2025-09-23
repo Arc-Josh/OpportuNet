@@ -12,35 +12,50 @@ const Dashboard = () => {
   const [filters, setFilters] = useState({
     salary: '',
     location: '',
-    position: '' // Changed from 'experience' to match your JobCreate model
+    position: ''
   });
 
   const fetchJobs = async (filters) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const token = getToken();
       if (!token) throw new Error('No authentication token found');
-      
-      // Convert filters to match your backend expectations
+
       const params = new URLSearchParams();
       if (filters.salary) params.append('salary', filters.salary.replace('k', '000'));
       if (filters.location) params.append('location', filters.location);
       if (filters.position) params.append('position', filters.position);
-      
+
       const response = await fetch(`http://localhost:8000/jobs?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch jobs: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      setJobs(data);
+
+      // Normalize data to match JobCard fields
+      const normalizedJobs = data.map(job => ({
+        jobTitle: job.jobTitle || job.job_name || "Untitled Job",
+        company: job.company || "Unknown Company",
+        jobLocation: job.jobLocation || job.location || "N/A",
+        jobUrl: job.jobUrl || null,
+        salary: job.salary || "Not Specified",
+        description: job.description || "",
+        benefits: job.benefits || "",
+        qualifications: job.qualifications || "",
+        preferences: job.preferences || "",
+        mission_statement: job.mission_statement || "",
+        hr_contact_number: job.hr_contact_number || ""
+      }));
+
+      setJobs(normalizedJobs);
       setCurrentJobIndex(0);
     } catch (err) {
       setError(err.message);
@@ -73,7 +88,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <Filters currentFilters={filters} onFilterChange={setFilters} />
-      
+
       <div className="job-view">
         {jobs.length > 0 ? (
           <>
