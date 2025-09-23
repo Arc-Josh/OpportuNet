@@ -1,4 +1,3 @@
-//random comment to test git push
 const fs = require('fs');
 const path = require('path');
 const { parse } = require('json2csv');
@@ -67,8 +66,7 @@ async function crawlPage(browser, url) {
                 benefits: details.benefits,
                 qualifications: details.qualifications,
                 description: details.description,
-                preferences: details.preferences,
-                mission_statement: details.mission_statement
+                preferences: details.preferences
             });
         }
     }
@@ -148,7 +146,6 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
             salary: 'n/a', 
             description: 'n/a', 
             benefits: 'n/a', 
-            mission_statement: 'n/a' 
         };
     }
 
@@ -157,8 +154,6 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || '').catch(() => '');
     const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || '').catch(() => '');
     const preferencesDiv = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || '').catch(() => '');
-    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || '').catch(() => '');
-
    
     const lines = description.split('\n').map(l => l.trim()).filter(Boolean);
     const condensedDescription = lines.slice(0, 5).join(' ') + (lines.length > 5 ? '...' : '');
@@ -175,11 +170,8 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
         salary: salary || 'n/a',
         description: condensedDescription,
         benefits: benefits || 'Not specified',
-        mission_statement: mission_statement || 'Not specified'
     };
 }
-
-
 
 
 
@@ -202,11 +194,9 @@ async function sendJobsToBackend() {
             description: job.description || 'No description provided',
             company_name: job.company || 'Unknown',
             application_link: job.jobUrl || 'N/A',
-            hr_contact_number: '000-000-0000' || 'N/A',
             qualifications: job.qualifications || 'Not specified',
             preferences: job.preferences || 'Not specified',
             benefits: job.benefits || 'Not specified',
-            mission_statement: job.mission_statement || 'Not specified',
         };
 
         try {
@@ -219,7 +209,7 @@ async function sendJobsToBackend() {
     }
 }
 
-(async () => {
+    async function mainScraper() {
     const browser = await puppeteer.launch({ headless: true });
     const keyword = 'Data Scientist';
     const location = 'Dallas, TX';
@@ -251,7 +241,14 @@ async function sendJobsToBackend() {
     await sendJobsToBackend();
     
     await browser.close();
-})();
+};
 
-// Call this after saving the JSON file
+
+const scrapeintervalmin = 30;
+async function runScraper() {
+    await mainScraper();
+    console.log(`Waiting for ${scrapeintervalmin} minutes before next scrape...`);
+}
+setTimeout(runScraper, scrapeintervalmin * 60 * 1000);
+mainScraper();
 
