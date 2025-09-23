@@ -106,19 +106,35 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     if (!success) {
         console.log(`Failed to load job details for: ${jobTitle}. Skipping.`);
         await page.close();
-        return;
+        return { jobTitle, qualifications: 'n/a', salary: 'n/a', preferences: 'n/a', mission_statement: 'n/a', description: 'n/a', benefits: 'n/a' };
     }
 
-    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+ 
+    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || '').catch(() => '');
+    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || '').catch(() => '');
+    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || '').catch(() => '');
+    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || '').catch(() => '');
+    const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || '').catch(() => '');
+    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || '').catch(() => '');
+
+    const condensedDescription = description.length > 500 ? description.substring(0, 500) + '...' : description;
+
+   
+    const finalQualifications = qualifications || condensedDescription;
+    const finalPreferences = preferences || condensedDescription;
 
     await page.close();
-    return  { jobTitle, qualifications, salary, preferences, mission_statement, description, benefits };
+    return { 
+        jobTitle, 
+        qualifications: finalQualifications, 
+        salary: salary || 'n/a', 
+        preferences: finalPreferences, 
+        mission_statement: mission_statement || condensedDescription, 
+        description: condensedDescription, 
+        benefits: benefits || condensedDescription 
+    };
 }
+
 
 
 
