@@ -4,6 +4,8 @@ const path = require('path');
 const { parse } = require('json2csv');
 const puppeteer = require('puppeteer');
 const querystring = require('querystring');
+const cheerio = require('cheerio');
+
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
@@ -97,25 +99,65 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
         return;
     }
 
-    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    //const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    //const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    
+    const descriptionHtml = await page.$eval("div[id='jobDescriptionText']", el => el.innerHTML).catch(() => '');
 
-    const jobData = { jobTitle, qualifications, salary, preferences, mission_statement };
+  
+    const cheerio = require('cheerio');
+    const $ = cheerio.load(descriptionHtml);
+
+    
+    function extractSection(keyword) {
+    
+        let header = $(`*:contains(${keyword})`).filter(function () {
+            return $(this).text().trim().toLowerCase().includes(keyword.toLowerCase());
+        }).first();
+
+        if (header.length === 0) return "Not specified";
+
+     
+        let content = [];
+        let next = header.next();
+        while (next.length && !/^(h2|h3|strong|b)$/i.test(next[0].name)) {
+            content.push(next.text().trim());
+            next = next.next();
+        }
+        return content.join(" ").trim() || "Not specified";
+    }
+
+   
+    const qualifications = extractSection("Qualifications");
+    const benefits = extractSection("Benefits");
+    const preferences = extractSection("Preferences");
+    const mission_statement = extractSection("Mission");
+
+ 
+    const salary = await page.$eval("div[id='salaryInfoAndJobContainer']", el => el?.innerText.trim() || 'Not specified').catch(() => 'Not specified');
+
+   
+    const description = $.text().trim() || 'No description provided';
+
+    const jobData = { 
+        jobTitle, 
+        qualifications, 
+        salary, 
+        description, 
+        benefits, 
+        preferences, 
+        mission_statement 
+    };
+
+    const { parse } = require('json2csv');
     const csv = parse([jobData]);
 
     const sanitizedTitle = jobTitle.replace(/[<>:"\/\\|?*]+/g, '');
-
     const filePath = path.join(jobsDir, `${sanitizedTitle}.csv`);
     fs.writeFileSync(filePath, csv);
 
     console.log(`Saved job details to ${filePath}`);
-
     await page.close();
 }
+
 const axios = require('axios');
 
 async function sendJobsToBackend() {
