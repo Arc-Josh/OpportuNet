@@ -56,10 +56,15 @@ async function crawlPage(browser, url) {
         if (jobKey) {
             jobUrl = `https://www.indeed.com/viewjob?jk=${jobKey}`;
             console.log(`Found job listing at: ${jobUrl}`);
-            jobs.push({ jobTitle, company, jobLocation, jobUrl });
-
             const proxyJobUrl = getScrapeOpsUrl(jobUrl);
-            await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
+           const details = await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
+           jobs.push({
+            jobTitle,
+            company,
+            jobLocation,
+            jobUrl,
+            ...details
+           });
         }
     }
 
@@ -72,7 +77,7 @@ async function retryPageGoto(page, url, retries = 3) {
         try {
             console.log(`Attempt ${attempt} to navigate to: ${url}`);
             await page.goto(url, { timeout: 10000 });
-            return true;  // Return true if successful
+            return true;  
         } catch (error) {
             if (error.name === 'TimeoutError') {
                 console.error(`Timeout error during navigation (Attempt ${attempt}): ${error.message}`);
@@ -82,7 +87,7 @@ async function retryPageGoto(page, url, retries = 3) {
 
             if (attempt === retries) {
                 console.log(`Failed to navigate to ${url} after ${retries} attempts. Skipping...`);
-                return false;  // Return false after final failure
+                return false;  
             }
         }
     }
@@ -96,7 +101,14 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     if (!success) {
         console.log(`Failed to load job details for: ${jobTitle}. Skipping.`);
         await page.close();
-        return;
+        return{
+            jobTitle, qualifications: 'n/a',
+            salary: 'n/a',
+            description: 'n/a', 
+            benefits: 'n/a',
+            preferences: 'n/a',
+            mission_statement: 'n/a'
+        };
     }
 
     
@@ -156,6 +168,7 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
 
     console.log(`Saved job details to ${filePath}`);
     await page.close();
+    return { jobTitle, qualifications, salary, description, benefits, preferences, mission_statement };
 }
 
 const axios = require('axios');
@@ -227,5 +240,5 @@ async function sendJobsToBackend() {
     await browser.close();
 })();
 
-// Call this after saving the JSON file
+
 
