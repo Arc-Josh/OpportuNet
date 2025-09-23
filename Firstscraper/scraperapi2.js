@@ -54,7 +54,7 @@ async function crawlPage(browser, url) {
         let jobUrl = '';
         if (jobKey) {
             jobUrl = `https://www.indeed.com/viewjob?jk=${jobKey}`;
-                console.log(`Found job listing at: ${jobUrl}`);
+            console.log(`Found job listing at: ${jobUrl}`);
             const proxyJobUrl = getScrapeOpsUrl(jobUrl);
             const details = await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
 
@@ -63,8 +63,13 @@ async function crawlPage(browser, url) {
                 company,
                 jobLocation,
                 jobUrl,
-                ...details
-                    });
+                salary: details.salary,
+                benefits: details.benefits,
+                qualifications: details.qualifications,
+                description: details.description,
+                preferences: details.preferences,
+                mission_statement: details.mission_statement
+            });
         }
     }
 
@@ -108,20 +113,11 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    //const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    //const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-
-    const jobData = { jobTitle, qualifications, salary, preferences, mission_statement };
-    const csv = parse([jobData]);
-
-    const sanitizedTitle = jobTitle.replace(/[<>:"\/\\|?*]+/g, '');
-
-    const filePath = path.join(jobsDir, `${sanitizedTitle}.csv`);
-    fs.writeFileSync(filePath, csv);
-
-    console.log(`Saved job details to ${filePath}`);
+    const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
 
     await page.close();
+    return  { jobTitle, qualifications, salary, preferences, mission_statement, description, benefits };
 }
 
 
