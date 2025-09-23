@@ -6,6 +6,7 @@ const puppeteer = require('puppeteer');
 const querystring = require('querystring');
 
 
+
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 const jobsDir = './jobs';
@@ -44,7 +45,6 @@ async function crawlPage(browser, url) {
         const company = await job.$eval('[data-testid="company-name"]', el => el.innerText.trim());
         const jobLocation = await job.$eval('[data-testid="text-location"]', el => el.innerText.trim());
 
-
         const jobAnchor = await job.$('a');
         const href = await page.evaluate(anchor => anchor?.getAttribute('href') || '', jobAnchor);
 
@@ -54,9 +54,7 @@ async function crawlPage(browser, url) {
         let jobUrl = '';
         if (jobKey) {
             jobUrl = `https://www.indeed.com/viewjob?jk=${jobKey}`;
-            console.log(`Found job listing at: ${jobUrl}`);
-            jobs.push({ jobTitle, company, jobLocation, jobUrl });
-
+                console.log(`Found job listing at: ${jobUrl}`);
             const proxyJobUrl = getScrapeOpsUrl(jobUrl);
             const details = await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
 
@@ -103,27 +101,26 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     if (!success) {
         console.log(`Failed to load job details for: ${jobTitle}. Skipping.`);
         await page.close();
-        return;
+        
+        return{
+            qualifications: 'n/a',
+            salary: 'n/a',
+            preferences: 'n/a',
+            mission_statement: 'n/a',
+            description: 'n/a',
+            benefits: 'n/a'
+        }
     }
 
-    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const requirements = await page.$eval("div[id='requirements']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    //const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    //const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-
-    const jobData = { jobTitle, qualifications, salary, preferences, mission_statement };
-    const csv = parse([jobData]);
-
-    const sanitizedTitle = jobTitle.replace(/[<>:"\/\\|?*]+/g, '');
-
-    const filePath = path.join(jobsDir, `${sanitizedTitle}.csv`);
-    fs.writeFileSync(filePath, csv);
-
-    console.log(`Saved job details to ${filePath}`);
-
+    const salary = await page.$eval("span.css-1oc7tea.eu4oa1w0", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
     await page.close();
+    return { jobTitle, qualifications, salary, requirements, mission_statement, description, benefits };
+    
 }
 const axios = require('axios');
 
