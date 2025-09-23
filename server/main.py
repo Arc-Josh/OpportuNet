@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form
 from models.user import UserCreate, UserLogin, UserResponse, ChatbotRequest, JobCreate, JobResponse
 from services.u_services import create_account, login, get_faq_answer, create_job_entry, get_all_jobs
 from services.resume_services import extract_text_stub
-from services.aitools import chatbot
+from ai.chatbot import chatbot
 import boto3
 from security import authorization
 import os
