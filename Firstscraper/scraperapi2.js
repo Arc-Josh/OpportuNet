@@ -106,22 +106,28 @@ function extractQualificationsAndResponsibilities(description) {
     const lines = description.split('\n').map(l => l.trim()).filter(Boolean);
     let qualifications = [];
     let responsibilities = [];
-    let currentSection = 'others';
+    let currentSection = null;
 
     for (const line of lines) {
         const lower = line.toLowerCase();
 
-        if (lower.includes('qualification') || lower.includes('requirement') || lower.includes('skill')) {
+        // Switch section based on headings
+        if (lower.includes('qualification') || lower.includes('requirement') || lower.includes('must-have') || lower.includes('nice-to-have')) {
             currentSection = 'qualifications';
-        } else if (lower.includes('responsibility') || lower.includes('what you’ll do') || lower.includes('duties')) {
+            continue; // skip heading line
+        } 
+        if (lower.includes('responsibility') || lower.includes('role') || lower.includes('duties') || lower.includes('what you’ll do')) {
             currentSection = 'responsibilities';
+            continue; // skip heading line
+        }
+        // Stop collecting if section is not relevant
+        if (lower.includes('benefit') || lower.includes('salary') || lower.includes('location')) {
+            currentSection = null;
+            continue;
         }
 
-        if (currentSection === 'qualifications') {
-            qualifications.push(line);
-        } else if (currentSection === 'responsibilities') {
-            responsibilities.push(line);
-        }
+        if (currentSection === 'qualifications') qualifications.push(line);
+        if (currentSection === 'responsibilities') responsibilities.push(line);
     }
 
     return {
@@ -151,7 +157,7 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
         };
     }
 
-    // Scrape fields from the page
+    // Scrape fields from page
     const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || '').catch(() => '');
     const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || '').catch(() => '');
     const qualificationsField = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || '').catch(() => '');
@@ -159,10 +165,11 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || '').catch(() => '');
     const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || '').catch(() => '');
 
-    // Condense description
-    const condensedDescription = description.length > 500 ? description.substring(0, 500) + '...' : description;
+    // Condense description to first 5 lines
+    const lines = description.split('\n').map(l => l.trim()).filter(Boolean);
+    const condensedDescription = lines.slice(0, 5).join(' ') + (lines.length > 5 ? '...' : '');
 
-    // Extract meaningful qualifications & responsibilities from description
+    // Extract meaningful qualifications & responsibilities
     const parsed = extractQualificationsAndResponsibilities(description);
 
     await page.close();
@@ -178,6 +185,7 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
         benefits: benefits || 'Not specified' 
     };
 }
+
 
 
 
