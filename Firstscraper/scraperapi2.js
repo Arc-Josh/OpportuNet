@@ -137,7 +137,7 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     console.log(`Saved job details to ${filePath}`);
 
     await page.close();
-    return { jobTitle, qualifications, salary, requirements, mission_statement, description, benefits };
+    return { jobTitle, qualifications, salary, preferences, mission_statement, description, benefits };
     
 }
 
