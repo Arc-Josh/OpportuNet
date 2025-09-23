@@ -1,83 +1,145 @@
-/* File: client/src/styles/resumeBuilderStyles.css */
-.resume-builder-container {
-    width: 80%;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #fff;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  
-  .resume-builder-container h1 {
-    text-align: center;
-    margin-bottom: 1rem;
-    color: #046307;
-  }
-  
-  .input-section {
-    margin-bottom: 1rem;
-  }
-  
-  .input-section label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-  }
-  
-  textarea {
-    width: 100%;
-    height: 100px;
-    resize: none;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  button {
-    display: inline-block;
-    margin: 1rem 0;
-    background-color: #046307;
-    color: #fff;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #05550b;
-  }
-  
-  .analysis-section {
-    margin-top: 1.5rem;
-    background-color: #f9f9f9;
-    padding: 1rem;
-    border-radius: 4px;
-  }
-  
-  .analysis-section h2 {
-    margin-bottom: 0.5rem;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 0.5rem;
-  }
-  
-  table th, table td {
-    border: 1px solid #ccc;
-    padding: 0.5rem;
-    text-align: center;
-  }
-  
-  pre {
-    background-color: #fff;
-    padding: 0.75rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    white-space: pre-wrap;
-    line-height: 1.4;
-  }
-  
+.resume-analyzer-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #006400; /* Green background */
+  min-height: 100vh;
+  padding: 40px;
+}
+
+.resume-card {
+  background: white;
+  width: 90%; 
+  max-width: 1200px;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 12px 25px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background: black;
+  color: white;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.upload-btn:hover {
+  background: #333;
+}
+
+.filename {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.job-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-size: 1rem;
+}
+
+.analyze-btn {
+  width: 100%;
+  padding: 14px;
+  background: #228b22;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.analyze-btn:hover {
+  background: #006400;
+}
+.analyze-btn:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 12px;
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
+
+.results-box {
+  margin-top: 25px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+}
+
+.match-circle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.match-circle {
+  width: 120px;
+  height: 120px;
+  transform: rotate(-90deg);
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3;
+}
+
+.circle-progress {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s ease;
+}
+
+.circle-text {
+  fill: black;
+  font-size: 8px;
+  font-weight: bold;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+.match-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #006400;
+  margin-top: 10px;
+}
+
+.analysis-section {
+  margin-bottom: 20px;
+}
+.analysis-section h4 {
+  margin-bottom: 8px;
+}
+.analysis-section ul {
+  padding-left: 20px;
+}

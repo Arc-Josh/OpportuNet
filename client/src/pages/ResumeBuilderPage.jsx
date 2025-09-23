@@ -1,119 +1,155 @@
-// File: client/src/pages/ResumeBuilderPage.jsx
 import React, { useState } from "react";
 import "../styles/resumeBuilderStyles.css";
 
 const ResumeBuilderPage = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [jobText, setJobText] = useState("");
+  const [file, setFile] = useState(null);
+  const [jobDescription, setJobDescription] = useState("");
   const [analysis, setAnalysis] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file && !file.name.toLowerCase().match(/\.(docx?|pdf)$/)) {
-      alert("Invalid file type. Only .doc, .docx, and .pdf allowed.");
-      e.target.value = null;
-      return;
-    }
-    setSelectedFile(file);
+    setFile(e.target.files[0]);
+    setError("");
   };
 
-  const handleJobChange = (e) => setJobText(e.target.value);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const handleAnalyze = async () => {
-    if (!selectedFile) {
-      alert("Please select a resume file.");
+    if (!file) {
+      setError("⚠️ Please upload a resume file.");
       return;
     }
+
+    setLoading(true);
+    setError("");
+    setAnalysis(null);
+
     const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("job_text", jobText);
+    formData.append("file", file);
+    formData.append("job_description", jobDescription || "");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/upload-resume", {
+      const response = await fetch("http://127.0.0.1:8000/analyze-resume", {
         method: "POST",
         body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to analyze resume");
+      }
+
       const data = await response.json();
-      setAnalysis(data.analysis || {});
-    } catch (error) {
-      console.error("Error processing resume analysis:", error);
-      setAnalysis({ error: "Error processing your request." });
+      setAnalysis(data);
+    } catch (err) {
+      setError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const renderKeywordTable = (tableData) => {
-    if (!tableData || tableData.length === 0)
-      return <p>No keyword data available.</p>;
-    return (
-      <table>
-        <thead>
-          <tr>
-            <th>Keyword</th>
-            <th>Job Description Count</th>
-            <th>Resume Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tableData.map((row, index) => (
-            <tr key={index}>
-              <td>{row.keyword}</td>
-              <td>{row.job_count}</td>
-              <td>{row.resume_count}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
+  // ✅ Color logic for score
+  const getScoreColor = (score) => {
+    if (score <= 25) return "red";
+    if (score <= 50) return "orange";
+    if (score <= 75) return "lightgreen";
+    return "green";
   };
 
   return (
-    <div className="resume-builder-container">
-      <h1>Resume Analyzer</h1>
-      <div className="input-section">
-        <label>Upload Resume (.doc/.docx/.pdf)</label>
-        <input type="file" accept=".doc,.docx,.pdf" onChange={handleFileChange} />
+    <div className="resume-analyzer-container">
+      <div className="resume-card">
+        <h2 className="title">Resume Analyzer</h2>
+        <p>Upload your resume and paste a job description:</p>
+
+        <form onSubmit={handleSubmit}>
+          {/* Upload button */}
+          <label className="upload-btn">
+            ⬆ Upload Resume
+            <input type="file" hidden onChange={handleFileChange} />
+          </label>
+
+          {file && <p className="filename">📄 {file.name}</p>}
+
+          {/* Job description textarea */}
+          <textarea
+            className="job-textarea"
+            placeholder="Paste the job description here..."
+            value={jobDescription}
+            onChange={(e) => setJobDescription(e.target.value)}
+          ></textarea>
+
+          {/* Analyze button */}
+          <button type="submit" className="analyze-btn" disabled={loading}>
+            {loading ? "Analyzing..." : "Analyze"}
+          </button>
+        </form>
+
+        {/* Error message */}
+        {error && <p className="error">❌ {error}</p>}
+
+        {/* Analysis result */}
+        {analysis && analysis.analysis && (
+          <div className="results-box">
+            <div className="match-circle-container">
+              <svg className="match-circle" viewBox="0 0 36 36">
+                <path
+                  className="circle-bg"
+                  d="M18 2.0845
+                     a 15.9155 15.9155 0 0 1 0 31.831
+                     a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className="circle-progress"
+                  stroke={getScoreColor(analysis.analysis.match_score)}
+                  strokeDasharray={`${analysis.analysis.match_score}, 100`}
+                  d="M18 2.0845
+                     a 15.9155 15.9155 0 0 1 0 31.831
+                     a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <text x="18" y="20.35" className="circle-text">
+                  {analysis.analysis.match_score}%
+                </text>
+              </svg>
+              <p className="match-title">Match Score</p>
+            </div>
+
+            {/* Top Matching Skills */}
+            <div className="analysis-section">
+              <h4>✅ Top Matching Skills</h4>
+              {analysis.analysis.top_matching_skills?.length > 0 ? (
+                <ul>
+                  {analysis.analysis.top_matching_skills.map((skill, i) => (
+                    <li key={i}>{skill}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No strong matches found.</p>
+              )}
+            </div>
+
+            {/* Missing Skills */}
+            <div className="analysis-section">
+              <h4>❌ Missing Skills</h4>
+              <ul>
+                {analysis.analysis.missing_skills?.map((skill, i) => (
+                  <li key={i}>{skill}</li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Recommendations */}
+            <div className="analysis-section">
+              <h4>📌 Recommendations</h4>
+              <ul>
+                {analysis.analysis.recommendations?.map((rec, i) => (
+                  <li key={i}>{rec}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
-      <div className="input-section">
-        <label>Job Description</label>
-        <textarea
-          placeholder="Paste the job description here..."
-          value={jobText}
-          onChange={handleJobChange}
-        />
-      </div>
-      <button onClick={handleAnalyze}>Analyze Resume</button>
-      {analysis && (
-        <div className="analysis-section">
-          <h2>Resume Analysis</h2>
-          <div>
-            <strong>Keyword Gap:</strong>
-            {renderKeywordTable(analysis.keyword_gap_table)}
-          </div>
-          <div>
-            <strong>Spelling/Grammar:</strong>{" "}
-            {analysis.spelling_grammar ? analysis.spelling_grammar.join(" | ") : "N/A"}
-          </div>
-          <div>
-            <strong>Match Score:</strong> {analysis.match_score || "N/A"}
-          </div>
-          <div>
-            <strong>Content Suggestions:</strong>{" "}
-            {analysis.content_suggestions ? analysis.content_suggestions.join(" | ") : "N/A"}
-          </div>
-          <div>
-            <strong>Sections Found:</strong>{" "}
-            {analysis.sections_found ? analysis.sections_found.join(", ") : "None"}
-          </div>
-          <div>
-            <strong>Sections Missing:</strong>{" "}
-            {analysis.sections_missing ? analysis.sections_missing.join(", ") : "None"}
-          </div>
-          <div>
-            <strong>Redundancy/Clarity:</strong>{" "}
-            {analysis.redundancy_clarity ? analysis.redundancy_clarity.join(" | ") : "N/A"}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
