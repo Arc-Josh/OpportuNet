@@ -101,27 +101,46 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     if (!success) {
         console.log(`Failed to load job details for: ${jobTitle}. Skipping.`);
         await page.close();
-        
-        return{
-            qualifications: 'n/a',
-            salary: 'n/a',
-            preferences: 'n/a',
-            mission_statement: 'n/a',
-            description: 'n/a',
-            benefits: 'n/a'
-        }
+        return;
     }
 
-    const requirements = await page.$eval("div[id='requirements']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const salary = await page.$eval("span.css-1oc7tea.eu4oa1w0", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+  
     const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || '').catch(() => '');
+    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || '').catch(() => '');
+    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || '').catch(() => '');
+    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || '').catch(() => '');
+    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || '').catch(() => '');
+
+   
+    const condensedDescription = description.length > 500 
+        ? description.substring(0, 500) + "..." 
+        : description;
+
+   
+    const jobData = {
+        jobTitle,
+        qualifications: qualifications || condensedDescription,
+        salary: salary || 'Not specified',
+        preferences: preferences || condensedDescription,
+        mission_statement: mission_statement || condensedDescription,
+        benefits: benefits || condensedDescription,
+        description: condensedDescription
+    };
+
+
+    const csv = parse([jobData]);
+    const sanitizedTitle = jobTitle.replace(/[<>:"\/\\|?*]+/g, '');
+    const filePath = path.join(jobsDir, `${sanitizedTitle}.csv`);
+    fs.writeFileSync(filePath, csv);
+
+    console.log(`Saved job details to ${filePath}`);
+
     await page.close();
     return { jobTitle, qualifications, salary, requirements, mission_statement, description, benefits };
     
 }
+
 const axios = require('axios');
 
 async function sendJobsToBackend() {
