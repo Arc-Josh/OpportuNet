@@ -104,71 +104,26 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
         return;
     }
 
-    // 1️⃣ Fetch all raw fields from the page
-    const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
-    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || '').catch(() => '');
-    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || '').catch(() => '');
-    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || '').catch(() => '');
-    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || '').catch(() => '');
-    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || '').catch(() => '');
+    const preferences = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const mission_statement = await page.$eval("div[id='missionStatement']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const qualifications = await page.$eval("div[id='jobQualifications']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    //const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
+    //const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || 'n/a').catch(() => 'n/a');
 
-    // 2️⃣ Parse description into sections
-    const parsed = parseJobDescription(description);
-
-    // 3️⃣ Build job data using parsed sections as fallback
-    const jobData = {
-        jobTitle,
-        qualifications: qualifications || parsed.qualifications || 'Not specified',
-        responsibilities: parsed.responsibilities || 'Not specified',
-        salary: salary || 'Not specified',
-        preferences: preferences || parsed.others || 'Not specified',
-        mission_statement: mission_statement || parsed.others || 'Not specified',
-        benefits: benefits || parsed.others || 'Not specified',
-        description: parsed.others
-    };
-
-    // 4️⃣ Save as CSV
+    const jobData = { jobTitle, qualifications, salary, preferences, mission_statement };
     const csv = parse([jobData]);
+
     const sanitizedTitle = jobTitle.replace(/[<>:"\/\\|?*]+/g, '');
+
     const filePath = path.join(jobsDir, `${sanitizedTitle}.csv`);
     fs.writeFileSync(filePath, csv);
 
     console.log(`Saved job details to ${filePath}`);
+
     await page.close();
 }
 
-// 5️⃣ Add the parse function somewhere above scrapeJobDetails
-function parseJobDescription(description) {
-    const lines = description.split('\n').map(line => line.trim()).filter(Boolean);
-    let qualifications = [];
-    let responsibilities = [];
-    let others = [];
-    let currentSection = 'others';
-
-    for (const line of lines) {
-        const lower = line.toLowerCase();
-
-        if (lower.includes('qualification') || lower.includes('requirement') || lower.includes('skill')) {
-            currentSection = 'qualifications';
-        } else if (lower.includes('responsibility') || lower.includes('what you’ll do') || lower.includes('duties')) {
-            currentSection = 'responsibilities';
-        }
-
-        if (currentSection === 'qualifications') {
-            qualifications.push(line);
-        } else if (currentSection === 'responsibilities') {
-            responsibilities.push(line);
-        } else {
-            others.push(line);
-        }
-    }
-
-    return {
-        qualifications: qualifications.join('; '),
-        responsibilities: responsibilities.join('; '),
-        others: others.join(' ')
-    };
-}
 
 
 const axios = require('axios');
