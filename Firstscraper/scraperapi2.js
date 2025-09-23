@@ -58,7 +58,15 @@ async function crawlPage(browser, url) {
             jobs.push({ jobTitle, company, jobLocation, jobUrl });
 
             const proxyJobUrl = getScrapeOpsUrl(jobUrl);
-            await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
+            const details = await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
+
+            jobs.push({
+                jobTitle,
+                company,
+                jobLocation,
+                jobUrl,
+                ...details
+                    });
         }
     }
 
