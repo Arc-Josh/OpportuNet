@@ -18,19 +18,44 @@ COMMON_MISSPELLINGS = {
     # add more as needed...
 }
 
+from io import BytesIO
+from PyPDF2 import PdfReader
+import logging
+
+logger = logging.getLogger("uvicorn.error")
+
 def extract_text_stub(file_name: str, file_data: bytes) -> str:
     """
     Extracts text from a resume file.
-    If a DOCX file is uploaded and python-docx is available, the text is extracted.
-    Otherwise, it falls back to a stub extraction.
+    Supports DOCX and PDF.
+    Returns a fallback message if unsupported or failed.
     """
-    if docx and file_name.lower().endswith(".docx"):
-        document = docx.Document(BytesIO(file_data))
-        full_text = "\n".join([para.text for para in document.paragraphs])
-        return full_text
-    else:
-        # For .doc, .pdf, or if python-docx is not installed, return a stub
-        return f"Extracted text from {file_name} (stub extraction)."
+    try:
+        if file_name.lower().endswith(".docx") and docx:
+            # DOCX extraction
+            logger.info(f"Extracting DOCX resume: {file_name}")
+            document = docx.Document(BytesIO(file_data))
+            full_text = "\n".join([para.text for para in document.paragraphs])
+            return full_text if full_text.strip() else "No text extracted from DOCX."
+
+        elif file_name.lower().endswith(".pdf"):
+            # PDF extraction
+            logger.info(f"Extracting PDF resume: {file_name}")
+            reader = PdfReader(BytesIO(file_data))
+            text = ""
+            for page in reader.pages:
+                page_text = page.extract_text() or ""
+                text += page_text + "\n"
+            return text.strip() if text.strip() else "No text extracted from PDF."
+
+        else:
+            logger.warning(f"Unsupported file type for resume: {file_name}")
+            return f"Unsupported file format: {file_name}"
+
+    except Exception as e:
+        logger.error(f"Error extracting text from {file_name}: {e}")
+        return f"Error extracting text from {file_name}: {e}"
+
 
 def auto_identify_keywords(text: str, top_n: int = 10) -> list:
     """

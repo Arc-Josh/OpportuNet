@@ -152,12 +152,29 @@ async def analyze_resume(
                     print("JSON parse error:", e)
 
         if not parsed:
+            from services.resume_services import basic_resume_analysis
+            fallback = basic_resume_analysis(resume_text, job_description)
+
+            # Extract keywords that appear in both resume and job
+            matching_keywords = [
+                kw["keyword"] for kw in fallback.get("keyword_gap_table", [])
+                if kw["resume_count"] > 0
+            ]
+
+            # Extract keywords that appear in job but not in resume
+            missing_keywords = [
+                kw["keyword"] for kw in fallback.get("keyword_gap_table", [])
+                if kw["resume_count"] == 0
+            ]
+
             parsed = {
-                "match_score": 0,
-                "top_matching_skills": [],
-                "missing_skills": [],
-                "recommendations": ["Could not analyze resume properly."]
+                "match_score": int(fallback.get("match_score", "0%").replace("%", "")),
+                "top_matching_skills": matching_keywords,
+                "missing_skills": missing_keywords,
+                "recommendations": fallback.get("content_suggestions", ["Fallback analysis only."])
             }
+
+
 
     except Exception as e:
         print("AI analysis error:", e)
