@@ -74,25 +74,23 @@ const Dashboard = () => {
     try {
       const token = getToken();
       const job = jobs[currentJobIndex];
-  
+
       const response = await fetch(`http://localhost:8000/save-job/${job.job_id}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
-      if (response.ok) {
-        alert("Job saved successfully!");
-      } else {
+
+      if (!response.ok) {
         const data = await response.json();
-        alert(data.detail || "Failed to save job");
+        console.error("Save job error:", data.detail || "Failed to save job");
       }
     } catch (error) {
       console.error("Save job error:", error);
-      alert("Error saving job");
     }
-  
+
+    // ✅ Always move to next job (no alerts)
     goToNextJob();
   };
 
