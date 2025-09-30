@@ -1,0 +1,128 @@
+/* Container */
+.saved-jobs-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+/* Page title */
+.saved-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+/* Saved jobs list - vertical only */
+.saved-jobs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Individual job card */
+.saved-card {
+  background: #ffffff;
+  padding: 1.2rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.saved-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Header with logo + job info */
+.saved-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Logo placeholder */
+.logo-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #495057;
+}
+
+/* Job headings */
+.saved-card h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #2b2d42;
+}
+
+.saved-card p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+/* Meta info row */
+.meta {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Job actions row */
+.job-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+/* Apply button */
+.apply-link {
+  background-color: #4caf50;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.apply-link:hover {
+  background-color: #45a049;
+  transform: translateY(-1px);
+}
+
+/* Remove button */
+.remove-btn {
+  padding: 0.5rem 1rem;
+  background-color: #fa5252;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.remove-btn:hover {
+  background-color: #e03131;
+  transform: translateY(-1px);
+}
+
+/* Empty state + loading */
+.no-jobs,
+.loading {
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+  margin-top: 2rem;
+}

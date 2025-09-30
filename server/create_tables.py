@@ -15,6 +15,17 @@ async def create_tables():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS saved_jobs (
+                saved_id SERIAL PRIMARY KEY,
+                user_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+                job_id INT NOT NULL REFERENCES jobs(job_id) ON DELETE CASCADE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_email, job_id)
+            );
+        """)
+        
         print("Tables created or already exist.")
     except Exception as e:
         print("Error creating tables:", e)

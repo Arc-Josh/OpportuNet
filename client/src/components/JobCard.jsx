@@ -70,9 +70,9 @@ const JobCard = ({ job }) => {
         
       </div>
 
-      {job.jobUrl && (
+      {job.application_link && (
         <div className="job-link">
-          <a href={job.jobUrl} target="_blank" rel="noopener noreferrer">
+          <a href={job.application_link} target="_blank" rel="noopener noreferrer">
             View Full Job Posting
           </a>
         </div>

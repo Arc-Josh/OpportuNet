@@ -42,6 +42,7 @@ const Dashboard = () => {
 
       // Normalize data to match JobCard fields
       const normalizedJobs = data.map(job => ({
+        job_id: job.job_id,
         jobTitle: job.jobTitle || job.job_name || "Untitled Job",
         company: job.company || "Unknown Company",
         jobLocation: job.jobLocation || job.location || "N/A",
@@ -69,8 +70,29 @@ const Dashboard = () => {
     fetchJobs(filters);
   }, [filters]);
 
-  const handleSave = () => {
-    console.log("Saved job:", jobs[currentJobIndex]);
+  const handleSave = async () => {
+    try {
+      const token = getToken();
+      const job = jobs[currentJobIndex];
+  
+      const response = await fetch(`http://localhost:8000/save-job/${job.job_id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        alert("Job saved successfully!");
+      } else {
+        const data = await response.json();
+        alert(data.detail || "Failed to save job");
+      }
+    } catch (error) {
+      console.error("Save job error:", error);
+      alert("Error saving job");
+    }
+  
     goToNextJob();
   };
 

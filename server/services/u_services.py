@@ -134,3 +134,54 @@ async def get_all_jobs():
         raise HTTPException(status_code=500, detail="Could not retrieve jobs")
     finally:
         await connected.close()
+
+async def save_job_for_user(user_email: str, job_id: int):
+    conn = await connect_db()
+    try:
+        query = """
+            INSERT INTO saved_jobs (user_email, job_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_email, job_id) DO NOTHING
+            RETURNING saved_id;
+        """
+        saved_id = await conn.fetchval(query, user_email, job_id)
+        return {"status": "success", "saved_id": saved_id}
+    except Exception as e:
+        print("Error saving job:", e)
+        raise HTTPException(status_code=500, detail="Failed to save job")
+    finally:
+        await conn.close()
+
+async def get_saved_jobs(user_email: str):
+    conn = await connect_db()
+    try:
+        query = """
+            SELECT j.job_id, j.job_name, j.location, j.salary, j.application_link,
+                   j.company_name, j.description, j.qualifications, j.preferences,
+                   j.benefits, j.mission_statement, j.hr_contact_number, s.created_at
+            FROM saved_jobs s
+            JOIN jobs j ON s.job_id = j.job_id
+            WHERE s.user_email = $1
+            ORDER BY s.created_at DESC;
+        """
+        rows = await conn.fetch(query, user_email)
+        return [dict(row) for row in rows]
+    except Exception as e:
+        print("Error fetching saved jobs:", e)
+        raise HTTPException(status_code=500, detail="Could not retrieve saved jobs")
+    finally:
+        await conn.close()
+
+async def remove_saved_job(user_email: str, job_id: int):
+    try:
+        connected = await connect_db()
+        query = "DELETE FROM saved_jobs WHERE user_email = $1 AND job_id = $2 RETURNING saved_id"
+        result = await connected.fetchval(query, user_email, job_id)
+        if not result:
+            raise HTTPException(status_code=404, detail="Saved job not found")
+        return {"status": "success", "message": "Job removed from saved list"}
+    except Exception as e:
+        print(f"Error removing saved job: {e}")
+        raise HTTPException(status_code=500, detail="Failed to remove saved job")
+    finally:
+        await connected.close()

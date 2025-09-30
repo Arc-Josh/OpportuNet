@@ -9,6 +9,8 @@ import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
+from database.db import connect_db 
+from services.u_services import remove_saved_job
 
 # ---------------------------
 # AWS S3 Config
@@ -83,14 +85,12 @@ async def analyze_resume(
 ):
     user_email = "anonymous@example.com"  # placeholder until auth
 
-    # Validate file type
     if not file.filename.lower().endswith((".pdf", ".doc", ".docx")):
         raise HTTPException(
             status_code=400,
             detail="Invalid file type. Only .doc, .docx, and .pdf allowed.",
         )
 
-    # Extract resume text
     file_data = await file.read()
     resume_text = extract_text_stub(file.filename, file_data)
     if not resume_text:
@@ -98,7 +98,6 @@ async def analyze_resume(
             status_code=500, detail="Could not extract text from resume."
         )
 
-    # Save to DB
     from database.db import connect_db
     conn = await connect_db()
     try:
@@ -114,7 +113,6 @@ async def analyze_resume(
     finally:
         await conn.close()
 
-    # --- AI Analysis with Gemini ---
     try:
         prompt = f"""
         You are an ATS-style resume analyzer.
@@ -138,7 +136,6 @@ async def analyze_resume(
 
         raw_analysis = chatbot(prompt)
 
-        # Parse JSON safely
         parsed = None
         try:
             parsed = json.loads(raw_analysis)
@@ -155,13 +152,11 @@ async def analyze_resume(
             from services.resume_services import basic_resume_analysis
             fallback = basic_resume_analysis(resume_text, job_description)
 
-            # Extract keywords that appear in both resume and job
             matching_keywords = [
                 kw["keyword"] for kw in fallback.get("keyword_gap_table", [])
                 if kw["resume_count"] > 0
             ]
 
-            # Extract keywords that appear in job but not in resume
             missing_keywords = [
                 kw["keyword"] for kw in fallback.get("keyword_gap_table", [])
                 if kw["resume_count"] == 0
@@ -173,8 +168,6 @@ async def analyze_resume(
                 "missing_skills": missing_keywords,
                 "recommendations": fallback.get("content_suggestions", ["Fallback analysis only."])
             }
-
-
 
     except Exception as e:
         print("AI analysis error:", e)
@@ -224,3 +217,53 @@ async def create_job(job: JobCreate):
 @app.get("/jobs", response_model=list[JobResponse])
 async def list_jobs():
     return await get_all_jobs()
+
+
+# ---------------------------
+# Saved Jobs
+# ---------------------------
+
+@app.post("/save-job/{job_id}")
+async def save_job(job_id: int, token: str = Depends(authorization.oauth2_scheme)):
+    email = authorization.get_user(token)
+    conn = await connect_db()
+    try:
+        query = """
+            INSERT INTO saved_jobs (user_email, job_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_email, job_id) DO NOTHING
+        """
+        await conn.execute(query, email, job_id)
+        return {"status": "success", "message": f"Job {job_id} saved"}
+    except Exception as e:
+        print(f"Save job error: {e}")  # 👈 Print the actual error
+        raise HTTPException(status_code=500, detail=f"Failed to save job: {str(e)}")
+    finally:
+        await conn.close()
+
+
+@app.get("/saved-jobs")
+async def list_saved_jobs(token: str = Depends(authorization.oauth2_scheme)):
+    email = authorization.get_user(token)
+    conn = await connect_db()
+    try:
+        query = """
+            SELECT j.*
+            FROM saved_jobs sj
+            JOIN jobs j ON sj.job_id = j.job_id
+            WHERE sj.user_email = $1
+            ORDER BY sj.created_at DESC
+        """
+        rows = await conn.fetch(query, email)
+        return [dict(row) for row in rows]
+    except Exception as e:
+        print("Fetch saved jobs error:", e)
+        raise HTTPException(status_code=500, detail="Could not retrieve saved jobs")
+    finally:
+        await conn.close()
+
+
+@app.delete("/saved-jobs/{job_id}")
+async def delete_saved_job(job_id: int, token: str = Depends(authorization.oauth2_scheme)):
+    email = authorization.get_user(token)
+    return await remove_saved_job(email, job_id)

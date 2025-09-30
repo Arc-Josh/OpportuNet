@@ -8,6 +8,7 @@ import ChatbotPage from './pages/ChatbotPage';
 import Navbar from './components/Navbar';
 import './styles/globalStyles.css';
 import ResumeBuilderPage from "./pages/ResumeBuilderPage.jsx";
+import SavedJobsPage from "./pages/SavedJobsPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/chatbot" element={<ChatbotPage />} />  
         <Route path="/resumebuilder" element={<ResumeBuilderPage />} />
+        <Route path="/saved-jobs" element={<SavedJobsPage />} />
         
       </Routes>
     </Router>
