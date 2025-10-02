@@ -14,6 +14,8 @@ const Navbar = () => {
         <div className="nav-links">
           <Link to="/dashboard" className="nav-link">Browse Jobs</Link>
           <Link to="/saved-jobs" className="nav-link">Saved Jobs</Link>
+          <Link to="/scholarships" className="nav-link">Browse Scholarships</Link>
+          <Link to="/saved-scholarships" className="nav-link">Saved Scholarships</Link>
           <Link to="/resumebuilder" className="nav-link">Resume Analyzer</Link>
           <Link to="/chatbot" className="nav-link">Chatbot</Link>
           <Link to="/login" className="nav-link login-link">Login</Link>

@@ -7,7 +7,6 @@
   --background-light: #f4fdf5;
 }
 
-
 .navbar {
   background: linear-gradient(90deg, #ffffff, #f4fdf5);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
@@ -25,7 +24,6 @@
   justify-content: space-between;
   align-items: center;
 }
-
 
 .logo {
   text-decoration: none;
@@ -45,16 +43,17 @@
 
 .nav-links {
   display: flex;
-  gap: 1.8rem;
+  gap: 1.2rem; /* reduced from 1.8rem */
   align-items: center;
+  flex-wrap: nowrap; /* force single line */
 }
 
 .nav-link {
   color: var(--text-dark);
   text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
-  padding: 0.5rem 0;
+  font-size: 0.95rem; /* slightly smaller */
+  padding: 0.4rem 0;
   position: relative;
   transition: color 0.3s ease;
 }
@@ -87,12 +86,13 @@
 .signup-link {
   background-color: var(--primary-green);
   color: white !important;
-  padding: 0.5rem 1.4rem;
+  padding: 0.45rem 1.2rem;
   border-radius: 25px;
   font-weight: 600;
   box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
   transition: all 0.3s ease;
   position: relative;
+  font-size: 0.9rem; /* match nav-link */
 }
 
 .login-link:hover,
@@ -101,8 +101,10 @@
   transform: translateY(-2px);
 }
 
-.signup-link::after {
-  display: none; 
+@media (max-width: 1024px) {
+  .nav-links {
+    gap: 1rem;
+  }
 }
 
 @media (max-width: 768px) {

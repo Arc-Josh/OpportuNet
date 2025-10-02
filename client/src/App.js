@@ -9,6 +9,8 @@ import Navbar from './components/Navbar';
 import './styles/globalStyles.css';
 import ResumeBuilderPage from "./pages/ResumeBuilderPage.jsx";
 import SavedJobsPage from "./pages/SavedJobsPage";
+import ScholarshipPage from "./pages/ScholarshipPage.jsx";
+import SavedScholarshipsPage from "./pages/SavedScholarshipsPage.jsx";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
         <Route path="/chatbot" element={<ChatbotPage />} />  
         <Route path="/resumebuilder" element={<ResumeBuilderPage />} />
         <Route path="/saved-jobs" element={<SavedJobsPage />} />
+        <Route path="/scholarships" element={<ScholarshipPage />} />
+        <Route path="/saved-scholarships" element={<SavedScholarshipsPage />} />
         
       </Routes>
     </Router>

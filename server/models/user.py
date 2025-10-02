@@ -36,3 +36,16 @@ class JobCreate(BaseModel):
 class JobResponse(JobCreate):
     job_id: int
     created_at: datetime
+
+class ScholarshipCreate(BaseModel):
+    name: str
+    provider: Optional[str] = None
+    amount: Optional[str] = None
+    deadline: Optional[str] = None
+    description: Optional[str] = None
+    application_link: str
+    eligibility: Optional[str] = None
+
+class ScholarshipResponse(ScholarshipCreate):
+    scholarship_id: int
+    created_at: datetime

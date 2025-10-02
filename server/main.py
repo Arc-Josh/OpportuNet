@@ -11,6 +11,12 @@ from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
 from database.db import connect_db 
 from services.u_services import remove_saved_job
+from models.user import ScholarshipCreate, ScholarshipResponse
+from services.u_services import (
+    create_scholarship_entry, get_all_scholarships,
+    save_scholarship_for_user, get_saved_scholarships,
+    remove_saved_scholarship
+)
 
 # ---------------------------
 # AWS S3 Config
@@ -267,3 +273,31 @@ async def list_saved_jobs(token: str = Depends(authorization.oauth2_scheme)):
 async def delete_saved_job(job_id: int, token: str = Depends(authorization.oauth2_scheme)):
     email = authorization.get_user(token)
     return await remove_saved_job(email, job_id)
+
+
+# ---------------------------
+# Scholarships
+# ---------------------------
+
+@app.post("/scholarships-create", response_model=ScholarshipResponse)
+async def create_scholarship(scholarship: ScholarshipCreate):
+    return await create_scholarship_entry(scholarship)
+
+@app.get("/scholarships", response_model=list[ScholarshipResponse])
+async def list_scholarships():
+    return await get_all_scholarships()
+
+@app.post("/save-scholarship/{scholarship_id}")
+async def save_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
+    user_email = authorization.get_user(token)
+    return await save_scholarship_for_user(user_email, scholarship_id)
+
+@app.get("/saved-scholarships")
+async def list_saved_scholarships(token: str = Depends(authorization.oauth2_scheme)):
+    user_email = authorization.get_user(token)
+    return await get_saved_scholarships(user_email)
+
+@app.delete("/saved-scholarships/{scholarship_id}")
+async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
+    user_email = authorization.get_user(token)
+    return await remove_saved_scholarship(user_email, scholarship_id)

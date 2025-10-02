@@ -1,6 +1,7 @@
 from database.db import connect_db
 from security.authorization import create_access_token, hash_pwd, verify_pwd, get_user
 from models.user import UserCreate, UserLogin, UserResponse, JobCreate, JobResponse
+from models.user import ScholarshipCreate, ScholarshipResponse
 from fastapi import HTTPException
 import os
 import json
@@ -185,3 +186,102 @@ async def remove_saved_job(user_email: str, job_id: int):
         raise HTTPException(status_code=500, detail="Failed to remove saved job")
     finally:
         await connected.close()
+
+# Create a scholarship entry
+async def create_scholarship_entry(scholarship: ScholarshipCreate):
+    conn = await connect_db()
+    try:
+        query = """
+            INSERT INTO scholarships (
+                name, provider, amount, deadline, description,
+                application_link, eligibility
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING scholarship_id, name, provider, amount, deadline,
+                      description, application_link, eligibility, created_at;
+        """
+        values = (
+            scholarship.name, scholarship.provider, scholarship.amount,
+            scholarship.deadline, scholarship.description,
+            scholarship.application_link, scholarship.eligibility
+        )
+        result = await conn.fetchrow(query, *values)
+        return ScholarshipResponse(**dict(result))
+    except Exception as e:
+        print("Error creating scholarship:", e)
+        raise HTTPException(status_code=400, detail="Scholarship creation failed")
+    finally:
+        await conn.close()
+
+
+# Get all scholarships
+async def get_all_scholarships():
+    conn = await connect_db()
+    try:
+        query = "SELECT * FROM scholarships ORDER BY created_at DESC"
+        rows = await conn.fetch(query)
+        return [ScholarshipResponse(**dict(row)) for row in rows]
+    except Exception as e:
+        print("Error fetching scholarships:", e)
+        raise HTTPException(status_code=500, detail="Could not retrieve scholarships")
+    finally:
+        await conn.close()
+
+
+# Save scholarship for a user
+async def save_scholarship_for_user(user_email: str, scholarship_id: int):
+    conn = await connect_db()
+    try:
+        query = """
+            INSERT INTO saved_scholarships (user_email, scholarship_id)
+            VALUES ($1, $2)
+            ON CONFLICT (user_email, scholarship_id) DO NOTHING
+            RETURNING saved_id;
+        """
+        saved_id = await conn.fetchval(query, user_email, scholarship_id)
+        return {"status": "success", "saved_id": saved_id}
+    except Exception as e:
+        print("Error saving scholarship:", e)
+        raise HTTPException(status_code=500, detail="Failed to save scholarship")
+    finally:
+        await conn.close()
+
+
+# Get saved scholarships
+async def get_saved_scholarships(user_email: str):
+    conn = await connect_db()
+    try:
+        query = """
+            SELECT s.scholarship_id, s.name, s.provider, s.amount, s.deadline,
+                   s.description, s.application_link, s.eligibility, ss.created_at
+            FROM saved_scholarships ss
+            JOIN scholarships s ON ss.scholarship_id = s.scholarship_id
+            WHERE ss.user_email = $1
+            ORDER BY ss.created_at DESC;
+        """
+        rows = await conn.fetch(query, user_email)
+        return [dict(row) for row in rows]
+    except Exception as e:
+        print("Error fetching saved scholarships:", e)
+        raise HTTPException(status_code=500, detail="Could not retrieve saved scholarships")
+    finally:
+        await conn.close()
+
+
+# Remove a saved scholarship
+async def remove_saved_scholarship(user_email: str, scholarship_id: int):
+    conn = await connect_db()
+    try:
+        query = """
+            DELETE FROM saved_scholarships
+            WHERE user_email = $1 AND scholarship_id = $2
+            RETURNING saved_id;
+        """
+        result = await conn.fetchval(query, user_email, scholarship_id)
+        if not result:
+            raise HTTPException(status_code=404, detail="Saved scholarship not found")
+        return {"status": "success", "message": "Scholarship removed from saved list"}
+    except Exception as e:
+        print("Error removing scholarship:", e)
+        raise HTTPException(status_code=500, detail="Failed to remove saved scholarship")
+    finally:
+        await conn.close()

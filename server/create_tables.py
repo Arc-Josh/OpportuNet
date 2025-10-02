@@ -25,6 +25,30 @@ async def create_tables():
                 UNIQUE(user_email, job_id)
             );
         """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS scholarships (
+                scholarship_id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                provider TEXT,
+                amount TEXT,
+                deadline DATE,
+                description TEXT,
+                application_link TEXT,
+                eligibility TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS saved_scholarships (
+                saved_id SERIAL PRIMARY KEY,
+                user_email TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+                scholarship_id INT NOT NULL REFERENCES scholarships(scholarship_id) ON DELETE CASCADE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_email, scholarship_id)
+            );
+        """)
         
         print("Tables created or already exist.")
     except Exception as e:
