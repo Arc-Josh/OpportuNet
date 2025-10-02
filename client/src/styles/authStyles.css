@@ -48,7 +48,6 @@
   outline: none;
 }
 
-/* Password input wrapper to align button inside field */
 .password-input-wrapper {
   position: relative;
   display: flex;
@@ -57,7 +56,7 @@
 
 .password-input-wrapper input {
   width: 100%;
-  padding-right: 85px; /* space for show/hide button */
+  padding-right: 85px; 
   box-sizing: border-box;
 }
 
@@ -78,7 +77,6 @@
   transform: translateY(-1px);
 }
 
-/* Inline error messages */
 .auth-error {
   color: #e74c3c;
   font-size: 0.85rem;

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, date
 
 class UserCreate(BaseModel):
     name:str
@@ -40,11 +40,14 @@ class JobResponse(JobCreate):
 class ScholarshipCreate(BaseModel):
     name: str
     provider: Optional[str] = None
-    amount: Optional[str] = None
-    deadline: Optional[str] = None
     description: Optional[str] = None
-    application_link: str
     eligibility: Optional[str] = None
+    field: Optional[list[str]] = []
+    deadline: Optional[date] = None
+    gpa: Optional[float] = None
+    location: Optional[str] = None
+    amount: Optional[int] = None
+    residency: Optional[str] = None
 
 class ScholarshipResponse(ScholarshipCreate):
     scholarship_id: int

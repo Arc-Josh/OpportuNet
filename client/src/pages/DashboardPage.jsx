@@ -20,7 +20,7 @@ const DashboardPage = () => {
       })
       .then(response => response.json())
       .then(data => {
-        setEmail(data.email);  // Assuming the backend returns { email: "user@example.com" }
+        setEmail(data.email); 
       })
       .catch(error => console.error('Error fetching dashboard data:', error));
     } else {

@@ -40,7 +40,7 @@ const Dashboard = () => {
 
       const data = await response.json();
 
-      // Normalize data to match JobCard fields
+  
       const normalizedJobs = data.map(job => ({
         job_id: job.job_id,
         jobTitle: job.jobTitle || job.job_name || "Untitled Job",
@@ -90,7 +90,6 @@ const Dashboard = () => {
       console.error("Save job error:", error);
     }
 
-    // ✅ Always move to next job (no alerts)
     goToNextJob();
   };
 

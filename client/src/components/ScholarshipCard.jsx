@@ -1,4 +1,3 @@
-// components/ScholarshipCard.jsx
 import React from "react";
 
 const ScholarshipCard = ({ scholarship }) => {

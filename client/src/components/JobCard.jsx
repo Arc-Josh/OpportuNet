@@ -6,7 +6,7 @@ const JobCard = ({ job }) => {
       {/* Header Section */}
       <div className="job-header">
         <div className="company-logo">
-          {/* Placeholder for logo, you can replace with job.companyLogo if available */}
+          {/* Placeholder for logo */}
           <div className="logo-placeholder">{job.company ? job.company[0] : "?"}</div>
         </div>
         <div className="company-info">

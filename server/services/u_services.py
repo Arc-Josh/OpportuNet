@@ -7,71 +7,69 @@ import os
 import json
 
 
-#any other user services, (IE database queries) will be added in this file 
-async def create_account(data = UserCreate):
+#any other user services, (IE database queries) will be added in this file
+async def create_account(data=UserCreate):
     try:
         connected = await connect_db()
         if not connected:
-            return {"status":"error","message":"failed to connect to database"}
+            return {"status": "error", "message": "failed to connect to database"}
         hashed = hash_pwd(data.password)
         hashed_password = hashed.decode('utf-8')
         try:
             async with connected.transaction():
-                await connected.execute('INSERT INTO users(full_name,email,password_hash) VALUES($1,$2,$3)',data.name,data.email,hashed_password)
-            
-            return{"status":"success","message":"Account Created!"}
-        except Exception as l:
-            return{"status":"failure","message":f"Account NOTTTT Created!{l}"}
-    except Exception as e:
-        print(f"error occured {e}")
-        raise HTTPException(
-            status_code = 400,
-            detail = "Unavailable credentials"
-        )
-    finally:
-        await connected.close()
-
-async def login(data = UserLogin):
-    try:
-        connected = await connect_db()
-        email_validated = await connected.fetchval("""SELECT email FROM users WHERE email = $1""",data.email)
-        if email_validated:
-            hashed = await connected.fetchval("""SELECT password_hash FROM users WHERE email = $1""",data.email)
-            password_validated = verify_pwd(data.password,hashed)
-            if password_validated:
-                u_data = {"email":data.email}
-                token = create_access_token(data=u_data)
-                
-                return{"status":"success","message":"Successful Login","access_token":token,"token_type":"bearer"}
-            else:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Invalid Password"
+                await connected.execute(
+                    'INSERT INTO users(full_name,email,password_hash) VALUES($1,$2,$3)',
+                    data.name, data.email, hashed_password
                 )
-                #return{"status":"failure","message":"Incorrect Password"}
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail="Email not found"
-            )
-            return{"status":"failure","message":"Email Not Found"}
-
+            return {"status": "success", "message": "Account Created!"}
+        except Exception as l:
+            return {"status": "failure", "message": f"Account NOTTTT Created!{l}"}
     except Exception as e:
-        print(f"error occured {e}")
+        print(f"error occurred {e}")
         raise HTTPException(
             status_code=400,
-            detail="Login Unsuccessful"
+            detail="Unavailable credentials"
         )
     finally:
         await connected.close()
+
+
+async def login(data=UserLogin):
+    try:
+        connected = await connect_db()
+        email_validated = await connected.fetchval(
+            """SELECT email FROM users WHERE email = $1""", data.email
+        )
+        if email_validated:
+            hashed = await connected.fetchval(
+                """SELECT password_hash FROM users WHERE email = $1""", data.email
+            )
+            password_validated = verify_pwd(data.password, hashed)
+            if password_validated:
+                u_data = {"email": data.email}
+                token = create_access_token(data=u_data)
+                return {
+                    "status": "success",
+                    "message": "Successful Login",
+                    "access_token": token,
+                    "token_type": "bearer"
+                }
+            else:
+                raise HTTPException(status_code=400, detail="Invalid Password")
+        else:
+            raise HTTPException(status_code=400, detail="Email not found")
+    except Exception as e:
+        print(f"error occurred {e}")
+        raise HTTPException(status_code=400, detail="Login Unsuccessful")
+    finally:
+        await connected.close()
+
 
 async def change_password():
     return 0
 
+
 def load_faqs():
-    """
-    Load FAQ data from an external JSON file (faqs.json).
-    """
     faq_path = os.path.join(os.path.dirname(__file__), "faqs.json")
     try:
         with open(faq_path, "r", encoding="utf-8") as f:
@@ -79,32 +77,29 @@ def load_faqs():
     except Exception as e:
         print(f"Error loading FAQs: {e}")
         return []
-    
+
+
 faqs = load_faqs()
 
+
 def get_faq_answer(question: str) -> str:
-    """
-    Return an answer by checking if any of the provided keywords exist in the question.
-    """
     lower_question = question.lower()
     for faq in faqs:
         keywords = faq.get("keywords", [])
         if any(keyword.lower() in lower_question for keyword in keywords):
             return faq.get("answer")
-    
-    return (
-        "I'm not sure how to answer that. You can ask about jobs, scholarships, or our application processes!"
-    )
+    return "I'm not sure how to answer that. You can ask about jobs, scholarships, or our application processes!"
+
+
 async def create_job_entry(job: JobCreate):
     try:
         connected = await connect_db()
-        
-        query="""
+        query = """
             INSERT INTO jobs (
                 job_name, location, salary, application_link, hr_contact_number,
                 qualifications, preferences, benefits, mission_statement,
-                company_name, description  -- <--- ADDED
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) -- <--- UPDATED
+                company_name, description
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
             RETURNING job_id, job_name, location, salary, application_link,
                       hr_contact_number, qualifications, preferences,
                       benefits, mission_statement, created_at,
@@ -114,7 +109,7 @@ async def create_job_entry(job: JobCreate):
             job.job_name, job.location, job.salary, job.application_link,
             job.hr_contact_number, job.qualifications, job.preferences,
             job.benefits, job.mission_statement,
-            job.company_name, job.description 
+            job.company_name, job.description
         )
         result = await connected.fetchrow(query, *values)
         return JobResponse(**dict(result))
@@ -123,6 +118,7 @@ async def create_job_entry(job: JobCreate):
         raise HTTPException(status_code=400, detail="Job creation failed")
     finally:
         await connected.close()
+
 
 async def get_all_jobs():
     try:
@@ -135,6 +131,7 @@ async def get_all_jobs():
         raise HTTPException(status_code=500, detail="Could not retrieve jobs")
     finally:
         await connected.close()
+
 
 async def save_job_for_user(user_email: str, job_id: int):
     conn = await connect_db()
@@ -152,6 +149,7 @@ async def save_job_for_user(user_email: str, job_id: int):
         raise HTTPException(status_code=500, detail="Failed to save job")
     finally:
         await conn.close()
+
 
 async def get_saved_jobs(user_email: str):
     conn = await connect_db()
@@ -173,6 +171,7 @@ async def get_saved_jobs(user_email: str):
     finally:
         await conn.close()
 
+
 async def remove_saved_job(user_email: str, job_id: int):
     try:
         connected = await connect_db()
@@ -187,22 +186,23 @@ async def remove_saved_job(user_email: str, job_id: int):
     finally:
         await connected.close()
 
-# Create a scholarship entry
+
 async def create_scholarship_entry(scholarship: ScholarshipCreate):
     conn = await connect_db()
     try:
         query = """
             INSERT INTO scholarships (
-                name, provider, amount, deadline, description,
-                application_link, eligibility
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-            RETURNING scholarship_id, name, provider, amount, deadline,
-                      description, application_link, eligibility, created_at;
+                name, provider, description, eligibility, field,
+                deadline, gpa, location, amount, residency
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+            RETURNING scholarship_id, name, provider, description, eligibility,
+                      field, deadline, gpa, location, amount, residency, created_at;
         """
         values = (
-            scholarship.name, scholarship.provider, scholarship.amount,
-            scholarship.deadline, scholarship.description,
-            scholarship.application_link, scholarship.eligibility
+            scholarship.name, scholarship.provider, scholarship.description,
+            scholarship.eligibility, scholarship.field,
+            scholarship.deadline, scholarship.gpa, scholarship.location,
+            scholarship.amount, scholarship.residency
         )
         result = await conn.fetchrow(query, *values)
         return ScholarshipResponse(**dict(result))
@@ -213,7 +213,6 @@ async def create_scholarship_entry(scholarship: ScholarshipCreate):
         await conn.close()
 
 
-# Get all scholarships
 async def get_all_scholarships():
     conn = await connect_db()
     try:
@@ -227,7 +226,6 @@ async def get_all_scholarships():
         await conn.close()
 
 
-# Save scholarship for a user
 async def save_scholarship_for_user(user_email: str, scholarship_id: int):
     conn = await connect_db()
     try:
@@ -246,13 +244,13 @@ async def save_scholarship_for_user(user_email: str, scholarship_id: int):
         await conn.close()
 
 
-# Get saved scholarships
 async def get_saved_scholarships(user_email: str):
     conn = await connect_db()
     try:
         query = """
-            SELECT s.scholarship_id, s.name, s.provider, s.amount, s.deadline,
-                   s.description, s.application_link, s.eligibility, ss.created_at
+            SELECT s.scholarship_id, s.name, s.provider, s.description,
+                   s.eligibility, s.field, s.deadline, s.gpa, s.location,
+                   s.amount, s.residency, ss.created_at
             FROM saved_scholarships ss
             JOIN scholarships s ON ss.scholarship_id = s.scholarship_id
             WHERE ss.user_email = $1
@@ -267,7 +265,6 @@ async def get_saved_scholarships(user_email: str):
         await conn.close()
 
 
-# Remove a saved scholarship
 async def remove_saved_scholarship(user_email: str, scholarship_id: int):
     conn = await connect_db()
     try:

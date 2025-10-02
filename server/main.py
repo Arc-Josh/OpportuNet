@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form
 from models.user import UserCreate, UserLogin, UserResponse, ChatbotRequest, JobCreate, JobResponse
+from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form, Query
 from services.u_services import create_account, login, get_faq_answer, create_job_entry, get_all_jobs
 from services.resume_services import extract_text_stub
 from ai.chatbot import chatbot
@@ -89,7 +90,7 @@ async def analyze_resume(
     file: UploadFile = File(...),
     job_description: str = Form(...)
 ):
-    user_email = "anonymous@example.com"  # placeholder until auth
+    user_email = "anonymous@example.com"
 
     if not file.filename.lower().endswith((".pdf", ".doc", ".docx")):
         raise HTTPException(
@@ -104,7 +105,6 @@ async def analyze_resume(
             status_code=500, detail="Could not extract text from resume."
         )
 
-    from database.db import connect_db
     conn = await connect_db()
     try:
         query = """
@@ -113,9 +113,6 @@ async def analyze_resume(
             RETURNING id;
         """
         resume_id = await conn.fetchval(query, user_email, file.filename, file_data)
-    except Exception as e:
-        print("Database insert error:", e)
-        raise HTTPException(status_code=500, detail="Failed to store resume in database.")
     finally:
         await conn.close()
 
@@ -130,8 +127,7 @@ async def analyze_resume(
         Job Description:
         {job_description}
 
-        Respond ONLY in valid JSON (no explanations).
-        Use this schema exactly:
+        Respond ONLY in valid JSON.
         {{
           "match_score": number (0-100),
           "top_matching_skills": ["skill1", "skill2"],
@@ -139,9 +135,7 @@ async def analyze_resume(
           "recommendations": ["short bullet", "another bullet"]
         }}
         """
-
         raw_analysis = chatbot(prompt)
-
         parsed = None
         try:
             parsed = json.loads(raw_analysis)
@@ -151,32 +145,18 @@ async def analyze_resume(
             if start != -1 and end != -1:
                 try:
                     parsed = json.loads(raw_analysis[start:end+1])
-                except Exception as e:
-                    print("JSON parse error:", e)
-
+                except Exception:
+                    pass
         if not parsed:
             from services.resume_services import basic_resume_analysis
             fallback = basic_resume_analysis(resume_text, job_description)
-
-            matching_keywords = [
-                kw["keyword"] for kw in fallback.get("keyword_gap_table", [])
-                if kw["resume_count"] > 0
-            ]
-
-            missing_keywords = [
-                kw["keyword"] for kw in fallback.get("keyword_gap_table", [])
-                if kw["resume_count"] == 0
-            ]
-
             parsed = {
                 "match_score": int(fallback.get("match_score", "0%").replace("%", "")),
-                "top_matching_skills": matching_keywords,
-                "missing_skills": missing_keywords,
+                "top_matching_skills": [kw["keyword"] for kw in fallback.get("keyword_gap_table", []) if kw["resume_count"] > 0],
+                "missing_skills": [kw["keyword"] for kw in fallback.get("keyword_gap_table", []) if kw["resume_count"] == 0],
                 "recommendations": fallback.get("content_suggestions", ["Fallback analysis only."])
             }
-
-    except Exception as e:
-        print("AI analysis error:", e)
+    except Exception:
         raise HTTPException(status_code=500, detail="Resume analysis failed.")
 
     return {
@@ -193,7 +173,7 @@ async def edit_resume():
 
 
 # ---------------------------
-# Chatbot (Gemini-powered)
+# Chatbot
 # ---------------------------
 
 @app.post("/chatbot")
@@ -225,10 +205,6 @@ async def list_jobs():
     return await get_all_jobs()
 
 
-# ---------------------------
-# Saved Jobs
-# ---------------------------
-
 @app.post("/save-job/{job_id}")
 async def save_job(job_id: int, token: str = Depends(authorization.oauth2_scheme)):
     email = authorization.get_user(token)
@@ -241,9 +217,6 @@ async def save_job(job_id: int, token: str = Depends(authorization.oauth2_scheme
         """
         await conn.execute(query, email, job_id)
         return {"status": "success", "message": f"Job {job_id} saved"}
-    except Exception as e:
-        print(f"Save job error: {e}")  # 👈 Print the actual error
-        raise HTTPException(status_code=500, detail=f"Failed to save job: {str(e)}")
     finally:
         await conn.close()
 
@@ -262,9 +235,6 @@ async def list_saved_jobs(token: str = Depends(authorization.oauth2_scheme)):
         """
         rows = await conn.fetch(query, email)
         return [dict(row) for row in rows]
-    except Exception as e:
-        print("Fetch saved jobs error:", e)
-        raise HTTPException(status_code=500, detail="Could not retrieve saved jobs")
     finally:
         await conn.close()
 
@@ -283,19 +253,44 @@ async def delete_saved_job(job_id: int, token: str = Depends(authorization.oauth
 async def create_scholarship(scholarship: ScholarshipCreate):
     return await create_scholarship_entry(scholarship)
 
+
 @app.get("/scholarships", response_model=list[ScholarshipResponse])
-async def list_scholarships():
-    return await get_all_scholarships()
+async def list_scholarships(
+    field: list[str] = Query(None),
+    deadline: str = Query(None),
+    gpa: float = Query(None),
+    location: str = Query(None),
+    amount: int = Query(None),
+    residency: str = Query(None),
+):
+    all_scholarships = await get_all_scholarships()
+    results = all_scholarships
+    if field:
+        results = [s for s in results if any(f in (s.field or []) for f in field)]
+    if deadline:
+        results = [s for s in results if str(s.deadline) <= deadline]
+    if gpa:
+        results = [s for s in results if s.gpa and s.gpa >= gpa]
+    if location:
+        results = [s for s in results if s.location and location.lower() in s.location.lower()]
+    if amount:
+        results = [s for s in results if s.amount and s.amount >= amount]
+    if residency:
+        results = [s for s in results if s.residency and residency.lower() in s.residency.lower()]
+    return results
+
 
 @app.post("/save-scholarship/{scholarship_id}")
 async def save_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await save_scholarship_for_user(user_email, scholarship_id)
 
+
 @app.get("/saved-scholarships")
 async def list_saved_scholarships(token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await get_saved_scholarships(user_email)
+
 
 @app.delete("/saved-scholarships/{scholarship_id}")
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):

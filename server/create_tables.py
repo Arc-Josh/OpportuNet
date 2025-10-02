@@ -31,11 +31,14 @@ async def create_tables():
                 scholarship_id SERIAL PRIMARY KEY,
                 name TEXT NOT NULL,
                 provider TEXT,
-                amount TEXT,
-                deadline DATE,
                 description TEXT,
-                application_link TEXT,
                 eligibility TEXT,
+                field TEXT[],            
+                deadline DATE,
+                gpa NUMERIC,
+                location TEXT,
+                amount INT,
+                residency TEXT,   
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)

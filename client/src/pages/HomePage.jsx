@@ -18,7 +18,6 @@ const HomePage = () => {
           </div>
         </div>
 
-        {/* NEW Illustration instead of phone */}
         <div className="hero-image">
           <img 
             src="https://cdn-icons-png.flaticon.com/512/3135/3135673.png" 

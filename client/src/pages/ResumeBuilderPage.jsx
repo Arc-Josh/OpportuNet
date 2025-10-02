@@ -48,7 +48,6 @@ const ResumeBuilderPage = () => {
     }
   };
 
-  // ✅ Color logic for score
   const getScoreColor = (score) => {
     if (score <= 25) return "red";
     if (score <= 50) return "orange";

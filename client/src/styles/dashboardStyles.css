@@ -142,7 +142,6 @@
   flex: 0 0 70px;
 }
 
-/* Company / job text */
 .company-info {
   display: flex;
   flex-direction: column;
@@ -167,7 +166,6 @@
   color: #4a4e69;
 }
 
-/* meta row beneath job/company */
 .meta {
   display: flex;
   gap: 15px;
@@ -295,7 +293,6 @@
     color: #fff;
   }
   
-  /* Reject button (red circle) */
   .reject-btn {
     background: #e63946;
     box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
@@ -307,7 +304,6 @@
     box-shadow: 0 6px 18px rgba(193, 18, 31, 0.5);
   }
   
-  /* Save/Apply button (green circle) */
   .apply-btn {
     background: #4CAF50;
     box-shadow: 0 4px 12px rgba(42, 157, 143, 0.4);
@@ -319,7 +315,6 @@
     box-shadow: 0 6px 18px rgba(33, 134, 122, 0.5);
   }
   
-  /* Optional subtle bounce when clicked */
   .action-buttons button:active {
     transform: scale(0.95);
   }

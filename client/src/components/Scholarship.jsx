@@ -1,7 +1,7 @@
 // components/Scholarship.jsx
 import React, { useState, useEffect } from "react";
 import ScholarshipCard from "./ScholarshipCard";
-import Filters from "./Filters"; // you can reuse the same Filters component
+import ScholarshipFilters from "../components/ScholarshipFilters";
 import "../styles/dashboardStyles.css";
 import { getToken } from "../storage/token";
 
@@ -11,9 +11,12 @@ const Scholarship = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    amount: "",
+    fieldOfStudy: [], 
     deadline: "",
-    provider: "",
+    gpa: "",
+    location: "",
+    fundingAmount: "",
+    residency: "",
   });
 
   const fetchScholarships = async (filters) => {
@@ -25,16 +28,22 @@ const Scholarship = () => {
       if (!token) throw new Error("No authentication token found");
 
       const params = new URLSearchParams();
-      if (filters.amount) params.append("amount", filters.amount);
+      if (filters.fieldOfStudy.length > 0)
+        params.append("fieldOfStudy", filters.fieldOfStudy.join(","));
       if (filters.deadline) params.append("deadline", filters.deadline);
-      if (filters.provider) params.append("provider", filters.provider);
+      if (filters.gpa) params.append("gpa", filters.gpa);
+      if (filters.location) params.append("location", filters.location);
+      if (filters.fundingAmount)
+        params.append("fundingAmount", filters.fundingAmount);
+      if (filters.residency) params.append("residency", filters.residency);
 
       const response = await fetch(
         `http://localhost:8000/scholarships?${params.toString()}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      if (!response.ok) throw new Error(`Failed to fetch scholarships: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`Failed to fetch scholarships: ${response.status}`);
 
       const data = await response.json();
       setScholarships(data);
@@ -90,7 +99,7 @@ const Scholarship = () => {
 
   return (
     <div className="dashboard-container">
-      <Filters currentFilters={filters} onFilterChange={setFilters} />
+      <ScholarshipFilters currentFilters={filters} onFilterChange={setFilters} />
 
       <div className="job-view">
         {scholarships.length > 0 ? (
