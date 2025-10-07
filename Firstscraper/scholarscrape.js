@@ -1,3 +1,4 @@
+/*
 const fs = require('fs');
 const path = require('path');
 const { parse } = require('json2csv');
@@ -9,6 +10,7 @@ const querystring = require('querystring');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 const jobsDir = './jobs';
+    
 
 function cleanJobsFolder() {
     if (fs.existsSync(jobsDir)) {
@@ -244,11 +246,15 @@ async function sendJobsToBackend() {
 };
 
 
-const scrapeintervalmin = 30;
+const scrapeintervalmin = 10080; // 1 week in minutes
 async function runScraper() {
     await mainScraper();
     console.log(`Waiting for ${scrapeintervalmin} minutes before next scrape...`);
 }
-setTimeout(runScraper, scrapeintervalmin * 60 * 1000);
-mainScraper();
 
+(async () => {
+    await runScraper(); // Run immediately
+    setInterval(runScraper, scrapeintervalmin * 60 * 1000); // Then every 30 mins
+})();
+
+*/
