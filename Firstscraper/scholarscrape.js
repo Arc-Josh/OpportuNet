@@ -1,28 +1,25 @@
-/*
 const fs = require('fs');
 const path = require('path');
-const { parse } = require('json2csv');
 const puppeteer = require('puppeteer');
 const querystring = require('querystring');
-
-
+const axios = require('axios');
 
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
-const jobsDir = './jobs';
-    
+const scholarshipsDir = './scholarships';
 
-function cleanJobsFolder() {
-    if (fs.existsSync(jobsDir)) {
-        const files = fs.readdirSync(jobsDir);
-
+// === CLEAN OLD DATA ===
+function cleanScholarshipsFolder() {
+    if (fs.existsSync(scholarshipsDir)) {
+        const files = fs.readdirSync(scholarshipsDir);
         for (const file of files) {
-            const filePath = path.join(jobsDir, file);
+            const filePath = path.join(scholarshipsDir, file);
             fs.rmSync(filePath, { recursive: true, force: true });
         }
     }
 }
 
+// === OPTIONAL PROXY HELPER ===
 function getScrapeOpsUrl(url, location = "us") {
     const payload = {
         api_key: config.api_key,
@@ -30,231 +27,127 @@ function getScrapeOpsUrl(url, location = "us") {
         country: location,
         residential: true
     };
-
     return "https://proxy.scrapeops.io/v1/?" + querystring.stringify(payload);
 }
 
-async function crawlPage(browser, url) {
+// === SCRAPE INDIVIDUAL SCHOLARSHIP ===
+async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     const page = await browser.newPage();
-    await page.goto(url);
+    console.log(`Navigating to scholarship: ${scholarshipUrl}`);
+    await page.goto(scholarshipUrl, { waitUntil: 'networkidle2', timeout: 60000 });
 
-    const jobListings = await page.$$('[data-testid="slider_item"]');
-    const jobs = [];
+    const data = await page.evaluate(() => {
+        const getText = (selector) => document.querySelector(selector)?.innerText.trim() || 'Not specified';
 
-    for (const job of jobListings) {
-        const jobTitle = await job.$eval('h2', el => el.innerText.trim());
-        const company = await job.$eval('[data-testid="company-name"]', el => el.innerText.trim());
-        const jobLocation = await job.$eval('[data-testid="text-location"]', el => el.innerText.trim());
+        const scholarship_title = getText('h1.scholarship-header-title');
+        const amount = getText('.scholarship-header-award-amount');
+        const deadline = getText('.scholarship-header-deadline');
+        const description = getText('.scholarship-description');
 
-        const jobAnchor = await job.$('a');
-        const href = await page.evaluate(anchor => anchor?.getAttribute('href') || '', jobAnchor);
+        const detailElements = document.querySelectorAll('.scholarship-details li');
+        const details = Array.from(detailElements).map(li => li.innerText.trim()).join('; ') || 'Not specified';
 
-        const urlObj = new URL(href, 'https://www.indeed.com');
-        const jobKey = urlObj.searchParams.get('jk');
-        
-        let jobUrl = '';
-        if (jobKey) {
-            jobUrl = `https://www.indeed.com/viewjob?jk=${jobKey}`;
-            console.log(`Found job listing at: ${jobUrl}`);
-            const proxyJobUrl = getScrapeOpsUrl(jobUrl);
-            const details = await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
+        const eligibility = getText('.scholarship-eligibility');
 
-            jobs.push({
-                jobTitle,
-                company,
-                jobLocation,
-                jobUrl,
-                salary: details.salary,
-                benefits: details.benefits,
-                qualifications: details.qualifications,
-                description: details.description,
-                preferences: details.preferences
-            });
-        }
-    }
-
-    await page.close();
-    return jobs;
-}
-
-async function retryPageGoto(page, url, retries = 3) {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-        try {
-            console.log(`Attempt ${attempt} to navigate to: ${url}`);
-            await page.goto(url, { timeout: 10000 });
-            return true;  // Return true if successful
-        } catch (error) {
-            if (error.name === 'TimeoutError') {
-                console.error(`Timeout error during navigation (Attempt ${attempt}): ${error.message}`);
-            } else {
-                console.error(`Error navigating to ${url} (Attempt ${attempt}): ${error.message}`);
-            }
-
-            if (attempt === retries) {
-                console.log(`Failed to navigate to ${url} after ${retries} attempts. Skipping...`);
-                return false;  // Return false after final failure
-            }
-        }
-    }
-}
-
-function extractQualificationsAndPreferences(description) {
-    const lines = description.split('\n').map(l => l.trim()).filter(Boolean);
-
-    let qualifications = [];
-    let preferences = [];
-    let currentSection = null;
-
-    for (const line of lines) {
-        const lower = line.toLowerCase();
-
-       
-        if (lower.includes('qualification') || lower.includes('requirement') || lower.includes('must-have')) {
-            currentSection = 'qualifications';
-            continue;
-        }
-        
-        if (lower.includes('nice-to-have') || lower.includes('preferred') || lower.includes('desirable')) {
-            currentSection = 'preferences';
-            continue;
-        }
-       
-        if (lower.includes('benefit') || lower.includes('salary') || lower.includes('location') || lower.includes('responsibility')) {
-            currentSection = null;
-            continue;
-        }
-
-        if (currentSection === 'qualifications') qualifications.push(line);
-        if (currentSection === 'preferences') preferences.push(line);
-    }
-
-    return {
-        qualifications: qualifications.join('; ') || 'Not specified',
-        preferences: preferences.join('; ') || 'Not specified'
-    };
-}
-
-
-async function scrapeJobDetails(browser, jobUrl, jobTitle) {
-    const page = await browser.newPage();
-    const success = await retryPageGoto(page, jobUrl);
-
-    if (!success) {
-        await page.close();
-        return { 
-            jobTitle, 
-            qualifications: 'n/a', 
-            preferences: 'n/a', 
-            salary: 'n/a', 
-            description: 'n/a', 
-            benefits: 'n/a', 
+        return {
+            scholarship_title,
+            amount,
+            deadline,
+            description,
+            details,
+            eligibility,
+            url: window.location.href
         };
-    }
-
-   
-    const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || '').catch(() => '');
-    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || '').catch(() => '');
-    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || '').catch(() => '');
-    const preferencesDiv = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || '').catch(() => '');
-   
-    const lines = description.split('\n').map(l => l.trim()).filter(Boolean);
-    const condensedDescription = lines.slice(0, 5).join(' ') + (lines.length > 5 ? '...' : '');
-
-   
-    const parsed = extractQualificationsAndPreferences(description);
+    });
 
     await page.close();
-
-    return { 
-        jobTitle,
-        qualifications: parsed.qualifications,
-        preferences: preferencesDiv || parsed.preferences,
-        salary: salary || 'n/a',
-        description: condensedDescription,
-        benefits: benefits || 'Not specified',
-    };
+    return data;
 }
 
+// === SCRAPE LIST OF SCHOLARSHIPS ===
+async function crawlScholarshipList(browser, url) {
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
+    // Get all scholarship page links
+    const scholarshipLinks = await page.evaluate(() => {
+        const anchors = Array.from(document.querySelectorAll('.scholarship-listing a[href*="/scholarships/"]'));
+        return [...new Set(anchors.map(a => a.href))];
+    });
 
+    console.log(`Found ${scholarshipLinks.length} scholarships on this page.`);
 
-const axios = require('axios');
+    const scholarships = [];
+    for (const link of scholarshipLinks) {
+        try {
+            const details = await scrapeScholarshipDetails(browser, link);
+            scholarships.push(details);
+        } catch (err) {
+            console.error(`Failed to scrape ${link}: ${err.message}`);
+        }
+    }
 
-async function sendJobsToBackend() {
-    const jobsData = JSON.parse(fs.readFileSync('indeed_jobs.json', 'utf-8'));
-    const backendUrl = config.backend_url || 'http://localhost:8000/jobs-create';
+    await page.close();
+    return scholarships;
+}
 
-    const headers = {
-        'Content-Type': 'application/json',
-    };
+// === SEND RESULTS TO BACKEND ===
+async function sendScholarshipsToBackend() {
+    const data = JSON.parse(fs.readFileSync('scholarships.json', 'utf-8'));
+    const backendUrl = config.backend_url || 'http://localhost:8000/scholarships-create';
 
-    for (const job of jobsData) {
+    for (const item of data) {
         const payload = {
-            job_name: job.jobTitle || 'Unknown',
-            location: job.jobLocation || 'Unknown',
-            salary: job.salary || 'Not specified',
-            description: job.description || 'No description provided',
-            company_name: job.company || 'Unknown',
-            application_link: job.jobUrl || 'N/A',
-            qualifications: job.qualifications || 'Not specified',
-            preferences: job.preferences || 'Not specified',
-            benefits: job.benefits || 'Not specified',
+            scholarship_title: item.scholarship_title || 'Unknown',
+            amount: item.amount || 'Not specified',
+            description: item.description || 'No description provided',
+            deadline: item.deadline || 'Not specified',
+            details: item.details || 'Not specified',
+            eligibility: item.eligibility || 'Not specified',
+            url: item.url || 'N/A'
         };
 
         try {
-            console.log("Sending job:", payload);
-            const response = await axios.post(backendUrl, payload, { headers });
-            console.log(` Successfully sent job to backend: ${payload.job_name}`);
+            console.log("Sending scholarship:", payload.scholarship_title);
+            await axios.post(backendUrl, payload, { headers: { 'Content-Type': 'application/json' } });
+            console.log(`Sent to backend: ${payload.scholarship_title}`);
         } catch (error) {
-            console.error(` Failed to send job: ${payload.job_name}`, error.response?.data || error.message);
+            console.error(`❌ Failed to send scholarship: ${payload.scholarship_title}`, error.response?.data || error.message);
         }
     }
 }
 
-    async function mainScraper() {
+// === MAIN SCRAPER ===
+async function mainScraper() {
     const browser = await puppeteer.launch({ headless: true });
-    const keyword = 'Data Scientist';
-    const location = 'Dallas, TX';
-    const totalPages = 1;
+    const baseListUrl = "https://www.scholarships.com/financial-aid/college-scholarships/scholarships-by-major/computer-science-scholarships/";
     const results = [];
 
-    console.log(`Crawl starting...`);
+    console.log("Scholarship scraping started...");
+    cleanScholarshipsFolder();
 
-    cleanJobsFolder();
+    // Crawl first page (you can extend this for pagination later)
+    const proxyUrl = getScrapeOpsUrl(baseListUrl);
+    const pageResults = await crawlScholarshipList(browser, proxyUrl);
+    results.push(...pageResults);
 
-    const pagePromises = [];
-    
-    for (let pageNum = 0; pageNum < totalPages; pageNum++) {
-        const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(keyword)}&l=${encodeURIComponent(location)}&start=${pageNum * 10}`;
-        const proxyUrl = getScrapeOpsUrl(url);
-        
-        console.log(`Navigating to page ${pageNum + 1}: ${url}`);
+    fs.writeFileSync('scholarships.json', JSON.stringify(results, null, 2));
+    console.log('Saved results to scholarships.json');
 
-        pagePromises.push(crawlPage(browser, proxyUrl));
-    }
+    await sendScholarshipsToBackend();
 
-    const allResults = await Promise.all(pagePromises);
-
-    allResults.forEach(jobList => results.push(...jobList));
-
-    fs.writeFileSync('indeed_jobs.json', JSON.stringify(results, null, 2));
-    console.log('Crawling complete.');
-    console.log('Saving results to indeed_jobs.json');
-    await sendJobsToBackend();
-    
     await browser.close();
-};
+    console.log("Scraping completed successfully.");
+}
 
-
-const scrapeintervalmin = 10080; // 1 week in minutes
+// === RUN ON INTERVAL ===
+const scrapeIntervalMin = 10080; // 1 week
 async function runScraper() {
     await mainScraper();
-    console.log(`Waiting for ${scrapeintervalmin} minutes before next scrape...`);
+    console.log(`Waiting for ${scrapeIntervalMin} minutes before next scrape...`);
 }
 
 (async () => {
     await runScraper(); // Run immediately
-    setInterval(runScraper, scrapeintervalmin * 60 * 1000); // Then every 30 mins
+    setInterval(runScraper, scrapeIntervalMin * 60 * 1000);
 })();
-
-*/
