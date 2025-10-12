@@ -7,8 +7,7 @@ const axios = require('axios');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 const scholarshipsDir = './scholarships';
-
-// === CLEAN OLD DATA ===
+/*
 function cleanScholarshipsFolder() {
     if (fs.existsSync(scholarshipsDir)) {
         const files = fs.readdirSync(scholarshipsDir);
@@ -18,8 +17,8 @@ function cleanScholarshipsFolder() {
         }
     }
 }
-
-// === OPTIONAL PROXY HELPER ===
+*/
+/*
 function getScrapeOpsUrl(url, location = "us") {
     const payload = {
         api_key: config.api_key,
@@ -29,8 +28,8 @@ function getScrapeOpsUrl(url, location = "us") {
     };
     return "https://proxy.scrapeops.io/v1/?" + querystring.stringify(payload);
 }
+*/
 
-// === SCRAPE INDIVIDUAL SCHOLARSHIP ===
 async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     const page = await browser.newPage();
     console.log(`Navigating to scholarship: ${scholarshipUrl}`);
@@ -64,12 +63,12 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     return data;
 }
 
-// === SCRAPE LIST OF SCHOLARSHIPS ===
+
 async function crawlScholarshipList(browser, url) {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
-    // Get all scholarship page links
+    
     const scholarshipLinks = await page.evaluate(() => {
         const anchors = Array.from(document.querySelectorAll('.scholarship-listing a[href*="/scholarships/"]'));
         return [...new Set(anchors.map(a => a.href))];
@@ -91,7 +90,6 @@ async function crawlScholarshipList(browser, url) {
     return scholarships;
 }
 
-// === SEND RESULTS TO BACKEND ===
 async function sendScholarshipsToBackend() {
     const data = JSON.parse(fs.readFileSync('scholarships.json', 'utf-8'));
     const backendUrl = config.backend_url || 'http://localhost:8000/scholarships-create';
@@ -112,12 +110,12 @@ async function sendScholarshipsToBackend() {
             await axios.post(backendUrl, payload, { headers: { 'Content-Type': 'application/json' } });
             console.log(`Sent to backend: ${payload.scholarship_title}`);
         } catch (error) {
-            console.error(`❌ Failed to send scholarship: ${payload.scholarship_title}`, error.response?.data || error.message);
+            console.error(`Failed to send scholarship: ${payload.scholarship_title}`, error.response?.data || error.message);
         }
     }
 }
 
-// === MAIN SCRAPER ===
+
 async function mainScraper() {
     const browser = await puppeteer.launch({ headless: true });
     const baseListUrl = "https://www.scholarships.com/financial-aid/college-scholarships/scholarships-by-major/computer-science-scholarships/";
@@ -126,7 +124,7 @@ async function mainScraper() {
     console.log("Scholarship scraping started...");
     cleanScholarshipsFolder();
 
-    // Crawl first page (you can extend this for pagination later)
+   
     const proxyUrl = getScrapeOpsUrl(baseListUrl);
     const pageResults = await crawlScholarshipList(browser, proxyUrl);
     results.push(...pageResults);
@@ -140,14 +138,15 @@ async function mainScraper() {
     console.log("Scraping completed successfully.");
 }
 
-// === RUN ON INTERVAL ===
-const scrapeIntervalMin = 10080; // 1 week
+/*
+const scrapeIntervalMin = 10080; 
 async function runScraper() {
     await mainScraper();
     console.log(`Waiting for ${scrapeIntervalMin} minutes before next scrape...`);
 }
 
 (async () => {
-    await runScraper(); // Run immediately
+    await runScraper(); 
     setInterval(runScraper, scrapeIntervalMin * 60 * 1000);
 })();
+*/
