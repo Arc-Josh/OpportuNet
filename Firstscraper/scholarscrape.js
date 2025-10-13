@@ -62,7 +62,7 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     await page.close();
     return data;
 }
-
+/*test*/
 
 async function crawlScholarshipList(browser, url) {
     const page = await browser.newPage();
