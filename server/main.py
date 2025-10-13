@@ -10,6 +10,7 @@ import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
+<<<<<<< HEAD
 from database.db import connect_db 
 from services.u_services import remove_saved_job
 from models.user import ScholarshipCreate, ScholarshipResponse
@@ -18,6 +19,8 @@ from services.u_services import (
     save_scholarship_for_user, get_saved_scholarships,
     remove_saved_scholarship
 )
+=======
+>>>>>>> 02240c7476d22e8dabbc82280dac0ac0dcb2a6ac
 
 # ---------------------------
 # AWS S3 Config
@@ -53,15 +56,25 @@ app.add_middleware(
 @app.post("/signup")
 async def signup(user: UserCreate):
     new_user = await create_account(user)
+<<<<<<< HEAD
     if user.enabled:
+=======
+    if user.enabled == True:
+>>>>>>> 02240c7476d22e8dabbc82280dac0ac0dcb2a6ac
         try:
             await services.email_services.send_test_email(user.email)
             return new_user
         except Exception as e:
+<<<<<<< HEAD
             print("Email services error:", e)
     return new_user
 
 
+=======
+            print("email services error:",e)
+    else:
+        return new_user
+>>>>>>> 02240c7476d22e8dabbc82280dac0ac0dcb2a6ac
 @app.post("/login")
 async def u_login(user: UserLogin):
     user = await login(user)
