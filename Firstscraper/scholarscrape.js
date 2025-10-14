@@ -36,7 +36,7 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     await page.setViewport({ width: 1280, height: 800 });
     console.log(`Navigating to scholarship: ${scholarshipUrl}`);
     await page.goto(scholarshipUrl, { waitUntil: 'networkidle2', timeout: 60000 });
-    await new Promise(res => setTimeout(res, 3000));
+    await new Promise(res => setTimeout(res, 3000)); // Wait 3 seconds for dynamic content
 
     // Log the actual HTML for debugging
     const html = await page.content();
@@ -57,12 +57,24 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
             const amtH5 = amountSpan.parentElement.querySelector('h5');
             if (amtH5) amount = amtH5.innerText.trim();
         }
+        // Try to find amount in h5 elements if span fails
+        if (amount === 'Not specified') {
+            const h5s = Array.from(document.querySelectorAll('h5'));
+            const amtH5 = h5s.find(el => el.innerText.trim().startsWith('$'));
+            if (amtH5) amount = amtH5.innerText.trim();
+        }
 
         // Deadline
         let deadline = 'Not specified';
         const deadlineSpan = Array.from(document.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('deadline:'));
         if (deadlineSpan) {
             const deadlineH5 = deadlineSpan.parentElement.querySelector('h5');
+            if (deadlineH5) deadline = deadlineH5.innerText.trim();
+        }
+        // Try to find deadline in h5 elements if span fails
+        if (deadline === 'Not specified') {
+            const h5s = Array.from(document.querySelectorAll('h5'));
+            const deadlineH5 = h5s.find(el => /\d{4}/.test(el.innerText));
             if (deadlineH5) deadline = deadlineH5.innerText.trim();
         }
 
