@@ -32,101 +32,86 @@ function getScrapeOpsUrl(url, location = "us") {
 
 async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    await page.setViewport({ width: 1280, height: 800 });
     console.log(`Navigating to scholarship: ${scholarshipUrl}`);
     await page.goto(scholarshipUrl, { waitUntil: 'networkidle2', timeout: 60000 });
+    await new Promise(res => setTimeout(res, 3000));
+
+    // Log the actual HTML for debugging
+    const html = await page.content();
+    console.log('PAGE HTML:', html);
 
     const data = await page.evaluate(() => {
         // Title
-        const scholarship_title = document.querySelector('h1')?.innerText.trim() || 'Not specified';
+        let scholarship_title = 'Not specified';
+        const h1s = Array.from(document.querySelectorAll('h1'));
+        if (h1s.length) {
+            scholarship_title = h1s[0].innerText.trim();
+        }
 
-        // Amount (look for the first h5/h6 or element after "Amount:")
+        // Amount
         let amount = 'Not specified';
-        const amountLabel = Array.from(document.querySelectorAll('span, div, p')).find(el => el.textContent.trim().toLowerCase().includes('amount:'));
-        if (amountLabel) {
-            const next = amountLabel.nextElementSibling;
-            if (next && next.tagName.match(/^H/i)) {
-                amount = next.innerText.trim();
-            } else {
-                // fallback: look for the first ##### $xxxx
-                const amtHeader = Array.from(document.querySelectorAll('h5, h6')).find(el => el.innerText.trim().startsWith('$'));
-                if (amtHeader) amount = amtHeader.innerText.trim();
-            }
+        const amountSpan = Array.from(document.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('amount:'));
+        if (amountSpan) {
+            const amtH5 = amountSpan.parentElement.querySelector('h5');
+            if (amtH5) amount = amtH5.innerText.trim();
         }
 
-        // Deadline (look for the first h5/h6 or element after "Deadline:")
+        // Deadline
         let deadline = 'Not specified';
-        const deadlineLabel = Array.from(document.querySelectorAll('span, div, p')).find(el => el.textContent.trim().toLowerCase().includes('deadline:'));
-        if (deadlineLabel) {
-            const next = deadlineLabel.nextElementSibling;
-            if (next && next.tagName.match(/^H/i)) {
-                deadline = next.innerText.trim();
-            } else {
-                // fallback: look for the first h5/h6 with a date
-                const dateHeader = Array.from(document.querySelectorAll('h5, h6')).find(el => /\d{4}/.test(el.innerText));
-                if (dateHeader) deadline = dateHeader.innerText.trim();
-            }
+        const deadlineSpan = Array.from(document.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('deadline:'));
+        if (deadlineSpan) {
+            const deadlineH5 = deadlineSpan.parentElement.querySelector('h5');
+            if (deadlineH5) deadline = deadlineH5.innerText.trim();
         }
 
-        // Description (look for ## Scholarship Description)
+        // Awards Available
+        let awards_available = 'Not specified';
+        const awardsSpan = Array.from(document.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('awards available:'));
+        if (awardsSpan) {
+            const awardsH5 = awardsSpan.parentElement.querySelector('h5');
+            if (awardsH5) awards_available = awardsH5.innerText.trim();
+        }
+
+        // Description
         let description = 'Not specified';
-        const descHeader = Array.from(document.querySelectorAll('h2, h3')).find(el => el.innerText.trim().toLowerCase().includes('scholarship description'));
+        const descHeader = Array.from(document.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('scholarship description'));
         if (descHeader) {
-            let descElem = descHeader.nextElementSibling;
-            if (descElem && descElem.tagName === 'P') {
-                description = descElem.innerText.trim();
-            } else {
-                // fallback: get all paragraphs after header
-                let descText = '';
-                while (descElem && descElem.tagName === 'P') {
-                    descText += descElem.innerText.trim() + ' ';
-                    descElem = descElem.nextElementSibling;
-                }
-                if (descText) description = descText.trim();
+            const descP = descHeader.nextElementSibling;
+            if (descP && descP.tagName === 'DIV') {
+                const p = descP.querySelector('p');
+                if (p) description = p.innerText.trim();
+            } else if (descP && descP.tagName === 'P') {
+                description = descP.innerText.trim();
             }
         }
 
-        // Details (look for ## Scholarship Details)
+        // Details
         let details = 'Not specified';
-        const detailsHeader = Array.from(document.querySelectorAll('h2, h3')).find(el => el.innerText.trim().toLowerCase().includes('scholarship details'));
+        const detailsHeader = Array.from(document.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('scholarship details'));
         if (detailsHeader) {
             let detailsElem = detailsHeader.nextElementSibling;
-            let detailsArr = [];
-            while (detailsElem && (detailsElem.tagName === 'UL' || detailsElem.tagName === 'LI' || detailsElem.tagName === 'P')) {
-                if (detailsElem.tagName === 'UL') {
-                    detailsArr.push(...Array.from(detailsElem.querySelectorAll('li')).map(li => li.innerText.trim()));
-                } else if (detailsElem.tagName === 'LI') {
-                    detailsArr.push(detailsElem.innerText.trim());
-                } else if (detailsElem.tagName === 'P') {
-                    detailsArr.push(detailsElem.innerText.trim());
-                }
-                detailsElem = detailsElem.nextElementSibling;
+            if (detailsElem && detailsElem.tagName === 'UL') {
+                details = Array.from(detailsElem.querySelectorAll('li')).map(li => li.innerText.trim()).join('; ');
             }
-            if (detailsArr.length) details = detailsArr.join('; ');
         }
 
-        // Eligibility (look for ## Eligibility Criteria)
+        // Eligibility
         let eligibility = 'Not specified';
-        const eligibilityHeader = Array.from(document.querySelectorAll('h2, h3')).find(el => el.innerText.trim().toLowerCase().includes('eligibility criteria'));
+        const eligibilityHeader = Array.from(document.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('eligibility criteria'));
         if (eligibilityHeader) {
             let eligElem = eligibilityHeader.nextElementSibling;
-            let eligArr = [];
-            while (eligElem && (eligElem.tagName === 'UL' || eligElem.tagName === 'LI' || eligElem.tagName === 'P')) {
-                if (eligElem.tagName === 'UL') {
-                    eligArr.push(...Array.from(eligElem.querySelectorAll('li')).map(li => li.innerText.trim()));
-                } else if (eligElem.tagName === 'LI') {
-                    eligArr.push(eligElem.innerText.trim());
-                } else if (eligElem.tagName === 'P') {
-                    eligArr.push(eligElem.innerText.trim());
-                }
-                eligElem = eligElem.nextElementSibling;
+            if (eligElem && eligElem.tagName === 'UL') {
+                eligibility = Array.from(eligElem.querySelectorAll('li')).map(li => li.innerText.trim()).join('; ');
             }
-            if (eligArr.length) eligibility = eligArr.join('; ');
         }
 
         return {
             scholarship_title,
             amount,
             deadline,
+            awards_available,
             description,
             details,
             eligibility,
