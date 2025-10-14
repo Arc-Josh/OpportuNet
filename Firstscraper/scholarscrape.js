@@ -36,17 +36,92 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     await page.goto(scholarshipUrl, { waitUntil: 'networkidle2', timeout: 60000 });
 
     const data = await page.evaluate(() => {
-        const getText = (selector) => document.querySelector(selector)?.innerText.trim() || 'Not specified';
+        // Title
+        const scholarship_title = document.querySelector('h1')?.innerText.trim() || 'Not specified';
 
-        const scholarship_title = getText('h1.scholarship-header-title');
-        const amount = getText('.scholarship-header-award-amount');
-        const deadline = getText('.scholarship-header-deadline');
-        const description = getText('.scholarship-description');
+        // Amount (look for the first h5/h6 or element after "Amount:")
+        let amount = 'Not specified';
+        const amountLabel = Array.from(document.querySelectorAll('span, div, p')).find(el => el.textContent.trim().toLowerCase().includes('amount:'));
+        if (amountLabel) {
+            const next = amountLabel.nextElementSibling;
+            if (next && next.tagName.match(/^H/i)) {
+                amount = next.innerText.trim();
+            } else {
+                // fallback: look for the first ##### $xxxx
+                const amtHeader = Array.from(document.querySelectorAll('h5, h6')).find(el => el.innerText.trim().startsWith('$'));
+                if (amtHeader) amount = amtHeader.innerText.trim();
+            }
+        }
 
-        const detailElements = document.querySelectorAll('.scholarship-details li');
-        const details = Array.from(detailElements).map(li => li.innerText.trim()).join('; ') || 'Not specified';
+        // Deadline (look for the first h5/h6 or element after "Deadline:")
+        let deadline = 'Not specified';
+        const deadlineLabel = Array.from(document.querySelectorAll('span, div, p')).find(el => el.textContent.trim().toLowerCase().includes('deadline:'));
+        if (deadlineLabel) {
+            const next = deadlineLabel.nextElementSibling;
+            if (next && next.tagName.match(/^H/i)) {
+                deadline = next.innerText.trim();
+            } else {
+                // fallback: look for the first h5/h6 with a date
+                const dateHeader = Array.from(document.querySelectorAll('h5, h6')).find(el => /\d{4}/.test(el.innerText));
+                if (dateHeader) deadline = dateHeader.innerText.trim();
+            }
+        }
 
-        const eligibility = getText('.scholarship-eligibility');
+        // Description (look for ## Scholarship Description)
+        let description = 'Not specified';
+        const descHeader = Array.from(document.querySelectorAll('h2, h3')).find(el => el.innerText.trim().toLowerCase().includes('scholarship description'));
+        if (descHeader) {
+            let descElem = descHeader.nextElementSibling;
+            if (descElem && descElem.tagName === 'P') {
+                description = descElem.innerText.trim();
+            } else {
+                // fallback: get all paragraphs after header
+                let descText = '';
+                while (descElem && descElem.tagName === 'P') {
+                    descText += descElem.innerText.trim() + ' ';
+                    descElem = descElem.nextElementSibling;
+                }
+                if (descText) description = descText.trim();
+            }
+        }
+
+        // Details (look for ## Scholarship Details)
+        let details = 'Not specified';
+        const detailsHeader = Array.from(document.querySelectorAll('h2, h3')).find(el => el.innerText.trim().toLowerCase().includes('scholarship details'));
+        if (detailsHeader) {
+            let detailsElem = detailsHeader.nextElementSibling;
+            let detailsArr = [];
+            while (detailsElem && (detailsElem.tagName === 'UL' || detailsElem.tagName === 'LI' || detailsElem.tagName === 'P')) {
+                if (detailsElem.tagName === 'UL') {
+                    detailsArr.push(...Array.from(detailsElem.querySelectorAll('li')).map(li => li.innerText.trim()));
+                } else if (detailsElem.tagName === 'LI') {
+                    detailsArr.push(detailsElem.innerText.trim());
+                } else if (detailsElem.tagName === 'P') {
+                    detailsArr.push(detailsElem.innerText.trim());
+                }
+                detailsElem = detailsElem.nextElementSibling;
+            }
+            if (detailsArr.length) details = detailsArr.join('; ');
+        }
+
+        // Eligibility (look for ## Eligibility Criteria)
+        let eligibility = 'Not specified';
+        const eligibilityHeader = Array.from(document.querySelectorAll('h2, h3')).find(el => el.innerText.trim().toLowerCase().includes('eligibility criteria'));
+        if (eligibilityHeader) {
+            let eligElem = eligibilityHeader.nextElementSibling;
+            let eligArr = [];
+            while (eligElem && (eligElem.tagName === 'UL' || eligElem.tagName === 'LI' || eligElem.tagName === 'P')) {
+                if (eligElem.tagName === 'UL') {
+                    eligArr.push(...Array.from(eligElem.querySelectorAll('li')).map(li => li.innerText.trim()));
+                } else if (eligElem.tagName === 'LI') {
+                    eligArr.push(eligElem.innerText.trim());
+                } else if (eligElem.tagName === 'P') {
+                    eligArr.push(eligElem.innerText.trim());
+                }
+                eligElem = eligElem.nextElementSibling;
+            }
+            if (eligArr.length) eligibility = eligArr.join('; ');
+        }
 
         return {
             scholarship_title,
@@ -59,6 +134,7 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
         };
     });
 
+    console.log('Scraped data:', data);
     await page.close();
     return data;
 }
@@ -68,11 +144,18 @@ async function crawlScholarshipList(browser, url) {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
-    
+    // Wait for scholarship links to appear
+    await page.waitForSelector('a[href^="/scholarships/"]', { timeout: 15000 }).catch(() => {});
+
+    // When collecting links, use the real scholarships.com URLs for detail pages
     const scholarshipLinks = await page.evaluate(() => {
-        const anchors = Array.from(document.querySelectorAll('.scholarship-listing a[href*="/scholarships/"]'));
-        return [...new Set(anchors.map(a => a.href))];
+        return Array.from(document.querySelectorAll('a[href^="/scholarships/"]'))
+            .map(a => `https://www.scholarships.com${a.getAttribute('href')}`);
     });
+
+    if (!scholarshipLinks || scholarshipLinks.length === 0) {
+        console.warn('No scholarship links found on this page.');
+    }
 
     console.log(`Found ${scholarshipLinks.length} scholarships on this page.`);
 
