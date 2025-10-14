@@ -29,16 +29,13 @@ async def create_tables():
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS scholarships (
                 scholarship_id SERIAL PRIMARY KEY,
-                name TEXT NOT NULL,
-                provider TEXT,
+                scholarship_title TEXT NOT NULL,
+                amount TEXT,
+                deadline TEXT,
                 description TEXT,
+                details TEXT,
                 eligibility TEXT,
-                field TEXT[],            
-                deadline DATE,
-                gpa NUMERIC,
-                location TEXT,
-                amount INT,
-                residency TEXT,   
+                url TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)

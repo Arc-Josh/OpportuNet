@@ -38,16 +38,13 @@ class JobResponse(JobCreate):
     created_at: datetime
 
 class ScholarshipCreate(BaseModel):
-    name: str
-    provider: Optional[str] = None
+    scholarship_title: str
+    amount: Optional[str] = None
+    deadline: Optional[str] = None
     description: Optional[str] = None
+    details: Optional[str] = None
     eligibility: Optional[str] = None
-    field: Optional[list[str]] = []
-    deadline: Optional[date] = None
-    gpa: Optional[float] = None
-    location: Optional[str] = None
-    amount: Optional[int] = None
-    residency: Optional[str] = None
+    url: Optional[str] = None
 
 class ScholarshipResponse(ScholarshipCreate):
     scholarship_id: int
