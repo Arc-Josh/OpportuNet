@@ -7,7 +7,7 @@ const axios = require('axios');
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 const scholarshipsDir = './scholarships';
-/*
+
 function cleanScholarshipsFolder() {
     if (fs.existsSync(scholarshipsDir)) {
         const files = fs.readdirSync(scholarshipsDir);
@@ -18,7 +18,7 @@ function cleanScholarshipsFolder() {
     }
 }
 */
-/*
+
 function getScrapeOpsUrl(url, location = "us") {
     const payload = {
         api_key: config.api_key,
@@ -28,7 +28,7 @@ function getScrapeOpsUrl(url, location = "us") {
     };
     return "https://proxy.scrapeops.io/v1/?" + querystring.stringify(payload);
 }
-*/
+
 
 async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     const page = await browser.newPage();
@@ -138,7 +138,7 @@ async function mainScraper() {
     console.log("Scraping completed successfully.");
 }
 
-/*
+
 const scrapeIntervalMin = 10080; 
 async function runScraper() {
     await mainScraper();
@@ -149,4 +149,3 @@ async function runScraper() {
     await runScraper(); 
     setInterval(runScraper, scrapeIntervalMin * 60 * 1000);
 })();
-*/
