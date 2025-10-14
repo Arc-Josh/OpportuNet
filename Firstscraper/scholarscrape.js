@@ -17,7 +17,7 @@ function cleanScholarshipsFolder() {
         }
     }
 }
-*/
+
 
 function getScrapeOpsUrl(url, location = "us") {
     const payload = {
