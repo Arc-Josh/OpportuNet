@@ -36,59 +36,48 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     await page.setViewport({ width: 1280, height: 800 });
     console.log(`Navigating to scholarship: ${scholarshipUrl}`);
     await page.goto(scholarshipUrl, { waitUntil: 'networkidle2', timeout: 60000 });
-    await new Promise(res => setTimeout(res, 3000)); // Wait 3 seconds for dynamic content
 
+    await new Promise(res => setTimeout(res, 3000)); // Wait 3 seconds for dynamic content
+    // Remove unwanted elements before scraping
+    await page.evaluate(() => {
+        document.querySelectorAll('.modal, footer, #chatbot-container, .adsbygoogle, #nav-spacer, [role="log"], #fb-root, iframe').forEach(el => el.remove());
+    });
     // Log the actual HTML for debugging
     const html = await page.content();
     console.log('PAGE HTML:', html);
 
     const data = await page.evaluate(() => {
+        const main = document.querySelector('#top-display');
+        if (!main) return {};
         // Title
-        let scholarship_title = 'Not specified';
-        const h1s = Array.from(document.querySelectorAll('h1'));
-        if (h1s.length) {
-            scholarship_title = h1s[0].innerText.trim();
-        }
-
+        let scholarship_title = main.querySelector('h1')?.innerText.trim() || 'Not specified';
         // Amount
         let amount = 'Not specified';
-        const amountSpan = Array.from(document.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('amount:'));
+        const amountSpan = Array.from(main.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('amount:'));
         if (amountSpan) {
             const amtH5 = amountSpan.parentElement.querySelector('h5');
             if (amtH5) amount = amtH5.innerText.trim();
         }
-        // Try to find amount in h5 elements if span fails
         if (amount === 'Not specified') {
-            const h5s = Array.from(document.querySelectorAll('h5'));
-            const amtH5 = h5s.find(el => el.innerText.trim().startsWith('$'));
+            const h5s = Array.from(main.querySelectorAll('h5'));
+            const amtH5 = h5s.find(el => el.innerText.trim().startsWith('$') || el.previousElementSibling?.textContent.toLowerCase().includes('amount:'));
             if (amtH5) amount = amtH5.innerText.trim();
         }
-
         // Deadline
         let deadline = 'Not specified';
-        const deadlineSpan = Array.from(document.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('deadline:'));
+        const deadlineSpan = Array.from(main.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('deadline:'));
         if (deadlineSpan) {
             const deadlineH5 = deadlineSpan.parentElement.querySelector('h5');
             if (deadlineH5) deadline = deadlineH5.innerText.trim();
         }
-        // Try to find deadline in h5 elements if span fails
         if (deadline === 'Not specified') {
-            const h5s = Array.from(document.querySelectorAll('h5'));
-            const deadlineH5 = h5s.find(el => /\d{4}/.test(el.innerText));
+            const h5s = Array.from(main.querySelectorAll('h5'));
+            const deadlineH5 = h5s.find(el => /\d{4}/.test(el.innerText) || el.previousElementSibling?.textContent.toLowerCase().includes('deadline:'));
             if (deadlineH5) deadline = deadlineH5.innerText.trim();
         }
-
-        // Awards Available
-        let awards_available = 'Not specified';
-        const awardsSpan = Array.from(document.querySelectorAll('span')).find(el => el.textContent.trim().toLowerCase().includes('awards available:'));
-        if (awardsSpan) {
-            const awardsH5 = awardsSpan.parentElement.querySelector('h5');
-            if (awardsH5) awards_available = awardsH5.innerText.trim();
-        }
-
         // Description
         let description = 'Not specified';
-        const descHeader = Array.from(document.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('scholarship description'));
+        const descHeader = Array.from(main.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('scholarship description'));
         if (descHeader) {
             const descP = descHeader.nextElementSibling;
             if (descP && descP.tagName === 'DIV') {
@@ -98,32 +87,28 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
                 description = descP.innerText.trim();
             }
         }
-
         // Details
         let details = 'Not specified';
-        const detailsHeader = Array.from(document.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('scholarship details'));
+        const detailsHeader = Array.from(main.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('scholarship details'));
         if (detailsHeader) {
             let detailsElem = detailsHeader.nextElementSibling;
             if (detailsElem && detailsElem.tagName === 'UL') {
                 details = Array.from(detailsElem.querySelectorAll('li')).map(li => li.innerText.trim()).join('; ');
             }
         }
-
         // Eligibility
         let eligibility = 'Not specified';
-        const eligibilityHeader = Array.from(document.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('eligibility criteria'));
+        const eligibilityHeader = Array.from(main.querySelectorAll('h2')).find(el => el.innerText.trim().toLowerCase().includes('eligibility criteria'));
         if (eligibilityHeader) {
             let eligElem = eligibilityHeader.nextElementSibling;
             if (eligElem && eligElem.tagName === 'UL') {
                 eligibility = Array.from(eligElem.querySelectorAll('li')).map(li => li.innerText.trim()).join('; ');
             }
         }
-
         return {
             scholarship_title,
             amount,
             deadline,
-            awards_available,
             description,
             details,
             eligibility,
