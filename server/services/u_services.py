@@ -17,44 +17,9 @@ async def create_account(data=UserCreate):
         hashed_password = hashed.decode('utf-8')
         try:
             async with connected.transaction():
-<<<<<<< HEAD
                 await connected.execute(
                     'INSERT INTO users(full_name,email,password_hash) VALUES($1,$2,$3)',
-                    data.name, data.email, hashed_password
-=======
-                await connected.execute('INSERT INTO users(full_name,email,password_hash,enabled_notifications) VALUES($1,$2,$3,$4::boolean)',data.name,data.email,hashed_password,data.enabled)
-            
-            return{"status":"success","message":"Account Created!"}
-        except Exception as l:
-            print(f"database error: {l}")
-            return{"status":"failure","message":f"Account NOTTTT Created!{l}"}
-    except Exception as e:
-        print(f"error occured {e}")
-        raise HTTPException(
-            status_code = 400,
-            detail = "Unavailable credentials"
-        )
-    finally:
-        await connected.close()
-
-async def login(data = UserLogin):
-    try:
-        connected = await connect_db()
-        email_validated = await connected.fetchval("""SELECT email FROM users WHERE email = $1""",data.email)
-        if email_validated:
-            hashed = await connected.fetchval("""SELECT password_hash FROM users WHERE email = $1""",data.email)
-            password_validated = verify_pwd(data.password,hashed)
-            if password_validated:
-                u_data = {"email":data.email}
-                token = create_access_token(data=u_data)
-                
-                return{"status":"success","message":"Successful Login","access_token":token,"token_type":"bearer"}
-            else:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Invalid Password"
->>>>>>> 02240c7476d22e8dabbc82280dac0ac0dcb2a6ac
-                )
+                    data.name, data.email, hashed_password)
             return {"status": "success", "message": "Account Created!"}
         except Exception as l:
             return {"status": "failure", "message": f"Account NOTTTT Created!{l}"}
