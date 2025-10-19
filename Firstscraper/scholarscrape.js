@@ -37,12 +37,12 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
     console.log(`Navigating to scholarship: ${scholarshipUrl}`);
     await page.goto(scholarshipUrl, { waitUntil: 'networkidle2', timeout: 60000 });
 
-    await new Promise(res => setTimeout(res, 3000)); // Wait 3 seconds for dynamic content
-    // Remove unwanted elements before scraping
+    await new Promise(res => setTimeout(res, 3000)); 
+
     await page.evaluate(() => {
         document.querySelectorAll('.modal, footer, #chatbot-container, .adsbygoogle, #nav-spacer, [role="log"], #fb-root, iframe').forEach(el => el.remove());
     });
-    // Log the actual HTML for debugging
+ 
     const html = await page.content();
     console.log('PAGE HTML:', html);
 
@@ -126,10 +126,10 @@ async function crawlScholarshipList(browser, url) {
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
-    // Wait for scholarship links to appear
+ 
     await page.waitForSelector('a[href^="/scholarships/"]', { timeout: 15000 }).catch(() => {});
 
-    // When collecting links, use the real scholarships.com URLs for detail pages
+
     const scholarshipLinks = await page.evaluate(() => {
         return Array.from(document.querySelectorAll('a[href^="/scholarships/"]'))
             .map(a => `https://www.scholarships.com${a.getAttribute('href')}`);
@@ -153,7 +153,7 @@ async function crawlScholarshipList(browser, url) {
                 console.log(`Backend response status: ${resp.status}`);
                 return { success: true, response: resp };
             } catch (err) {
-                // Extract useful info from axios error
+ 
                 let errMsg = err.message;
                 let respData = null;
                 let status = null;
@@ -165,7 +165,7 @@ async function crawlScholarshipList(browser, url) {
                 console.warn(`POST attempt ${attempt} failed for ${payload.scholarship_title}: ${errMsg}`);
                 if (attempt < retries) await new Promise(r => setTimeout(r, delayMs));
                 else {
-                    // record failed payload with error for later inspection
+
                     failedPosts.push({ payload, error: errMsg });
                     try {
                         fs.writeFileSync('failed_scholarships.json', JSON.stringify(failedPosts, null, 2));
@@ -181,33 +181,29 @@ async function crawlScholarshipList(browser, url) {
     for (const link of scholarshipLinks) {
         try {
             const details = await scrapeScholarshipDetails(browser, link);
-            // Skip empty results
             if (!details || Object.keys(details).length === 0) {
                 console.warn(`No details found for ${link}, skipping.`);
                 continue;
             }
 
+            // Always set url to the actual scholarship page link
+            details.url = link;
             scholarships.push(details);
 
-            // Prepare payload for backend
-            // Build payload to satisfy both the API model and the DB insertion function
             const payload = {
-                // API-facing fields (ScholarshipCreate)
                 scholarship_title: details.scholarship_title || 'Unknown',
                 amount: details.amount || 'Not specified',
                 deadline: details.deadline || 'Not specified',
                 description: details.description || 'No description provided',
                 details: details.details || 'Not specified',
                 eligibility: details.eligibility || 'Not specified',
-                url: details.url || link,
-                // DB-facing fields expected by create_scholarship_entry
+                url: link,
                 name: details.scholarship_title || 'Unknown',
                 provider: details.provider || 'Scholarships.com',
                 field: details.field || null,
                 gpa: details.gpa || null,
                 location: details.location || null,
                 residency: details.residency || null,
-                // amount is already present above
             };
 
             const res = await postWithRetry(payload, 3, 2000);

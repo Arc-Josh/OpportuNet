@@ -15,7 +15,15 @@ const ScholarshipCard = ({ scholarship }) => {
           </div>
         </div>
         <div className="company-info">
-          <h2>{title}</h2>
+          {scholarship.url ? (
+            <h2>
+              <a href={scholarship.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline", color: "#1976d2" }}>
+                {title}
+              </a>
+            </h2>
+          ) : (
+            <h2>{title}</h2>
+          )}
           {provider && <h3>{provider}</h3>}
           <div className="meta">
             {scholarship.deadline && <span>Deadline: {scholarship.deadline}</span>}
@@ -47,14 +55,6 @@ const ScholarshipCard = ({ scholarship }) => {
             <h4>Eligibility:</h4>
             <p>{scholarship.eligibility}</p>
           </>
-        )}
-
-        {scholarship.url && (
-          <div className="apply-section">
-            <a href={scholarship.url} target="_blank" rel="noopener noreferrer" className="apply-button">
-              View Scholarship
-            </a>
-          </div>
         )}
       </div>
     </div>

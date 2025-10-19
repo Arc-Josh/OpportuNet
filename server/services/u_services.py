@@ -195,21 +195,18 @@ async def remove_saved_job(user_email: str, job_id: int):
 async def create_scholarship_entry(scholarship: ScholarshipCreate):
     conn = await connect_db()
     try:
-        # Only use canonical scholarship fields from the scraper
         allowed_cols = ['scholarship_title', 'amount', 'deadline', 'description', 'details', 'eligibility', 'url']
 
-        # Parse deadline into a datetime.date if present to avoid asyncpg toordinal errors
         def _parse_deadline(deadline_str):
             if not deadline_str or not isinstance(deadline_str, str):
                 return None
-            # try dateutil if available
             if dateutil_parser:
                 try:
                     dt = dateutil_parser.parse(deadline_str)
                     return dt.date() if isinstance(dt, datetime) else dt
                 except Exception:
                     pass
-            # common formats
+
             fmts = ["%B %d, %Y", "%b %d, %Y", "%m/%d/%Y", "%Y-%m-%d", "%B %d %Y"]
             for fmt in fmts:
                 try:
@@ -218,28 +215,28 @@ async def create_scholarship_entry(scholarship: ScholarshipCreate):
                     continue
             return None
 
-        # Discover which allowed columns exist in the DB
+
         cols = await conn.fetch("SELECT column_name FROM information_schema.columns WHERE table_name = 'scholarships'")
         existing = {r['column_name'] for r in cols}
         insert_cols = [c for c in allowed_cols if c in existing]
 
-        # If the DB still uses legacy 'name' column as NOT NULL, include it and map from scholarship_title
+
         if 'name' in existing and 'scholarship_title' not in existing:
-            # ensure 'name' is present in insert columns (and earlier than others for readability)
+    
             if 'name' not in insert_cols:
                 insert_cols.insert(0, 'name')
 
         if not insert_cols:
             raise HTTPException(status_code=500, detail='No compatible scholarship columns found in scholarships table')
 
-        # Prepare values from the ScholarshipCreate model (map name<-scholarship_title if name is used)
+
         values = []
         for c in insert_cols:
             if c == 'deadline':
                 parsed = _parse_deadline(scholarship.deadline)
                 values.append(parsed)
             elif c == 'name':
-                # map legacy name to the scraper's scholarship_title
+    
                 values.append(scholarship.scholarship_title)
             else:
                 values.append(getattr(scholarship, c, None))
@@ -253,8 +250,8 @@ async def create_scholarship_entry(scholarship: ScholarshipCreate):
             raise HTTPException(status_code=400, detail='Insert returned no result')
 
         row = dict(result)
-        # Normalize returned row to ScholarshipResponse fields
-        # Convert deadline back to string (Pydantic expects str, not date)
+  
+ 
         deadline_val = row.get('deadline')
         if isinstance(deadline_val, date):
             deadline_val = deadline_val.isoformat()
@@ -287,13 +284,13 @@ async def get_all_scholarships():
         scholarships = []
         for row in rows:
             row_dict = dict(row)
-            # Normalize legacy schema to canonical fields
+      
             if 'name' in row_dict and 'scholarship_title' not in row_dict:
                 row_dict['scholarship_title'] = row_dict.get('name')
-            # Convert deadline date to string
+          
             if 'deadline' in row_dict and isinstance(row_dict['deadline'], date):
                 row_dict['deadline'] = row_dict['deadline'].isoformat()
-            # Map details fallback
+ 
             if 'details' not in row_dict and 'field' in row_dict:
                 row_dict['details'] = row_dict.get('field')
             scholarships.append(ScholarshipResponse(**row_dict))
@@ -326,11 +323,11 @@ async def save_scholarship_for_user(user_email: str, scholarship_id: int):
 async def get_saved_scholarships(user_email: str):
     conn = await connect_db()
     try:
-        # Discover available columns in scholarships table
+   
         cols_query = await conn.fetch("SELECT column_name FROM information_schema.columns WHERE table_name = 'scholarships'")
         available_cols = {r['column_name'] for r in cols_query}
         
-        # Build SELECT dynamically based on available columns
+    
         select_parts = ['s.scholarship_id']
         if 'scholarship_title' in available_cols:
             select_parts.append('s.scholarship_title')
@@ -361,7 +358,7 @@ async def get_saved_scholarships(user_email: str):
             ORDER BY ss.created_at DESC;
         """
         rows = await conn.fetch(query, user_email)
-        # Normalize date fields to strings
+    
         result = []
         for row in rows:
             row_dict = dict(row)

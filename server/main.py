@@ -296,3 +296,15 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
+
+
+@app.get("/scholarship-urls")
+async def scholarship_urls():
+    scholarships = await get_all_scholarships()
+    return [
+        {
+            "scholarship_title": s.scholarship_title,
+            "url": getattr(s, "url", None)
+        }
+        for s in scholarships
+    ]
