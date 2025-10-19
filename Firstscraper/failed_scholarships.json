@@ -1,0 +1,20 @@
+[
+  {
+    "payload": {
+      "scholarship_title": "Regeneron Science Talent Search Scholarship",
+      "amount": "$250,000",
+      "deadline": "November 06, 2025",
+      "description": "Each year, nearly 1,900 students enter the Regeneron STS, submitting original research in critically important scientific fields of study. Unique among high school competitions, the Regeneron STS focuses on identifying, inspiring, and engaging the most promising scientists among the nation’s high school seniors. All Regeneron STS entrants must follow the official rules of entry, which outline eligibility requirements, ethics statements, and rules for scientific research.",
+      "details": "Focus: Identifying and inspiring future leaders in the field of science; Total Annual Awards: $3.1 million; First Place Prize: $250,000, the largest academic prize available to a U.S. high school student",
+      "eligibility": "Applicants must be in their final year of high school.; They should be completing the necessary high school courses for college applications.; Applicants must not have graduated from high school before the Regeneron STS application deadline.; Previous participation in any prior STS is not allowed.",
+      "url": "https://www.scholarships.com/scholarships/regeneron-science-talent-search-scholarship",
+      "name": "Regeneron Science Talent Search Scholarship",
+      "provider": "Scholarships.com",
+      "field": null,
+      "gpa": null,
+      "location": null,
+      "residency": null
+    },
+    "error": "Status 400 - {\"detail\":\"Scholarship creation failed\"}"
+  }
+]

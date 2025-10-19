@@ -142,10 +142,78 @@ async function crawlScholarshipList(browser, url) {
     console.log(`Found ${scholarshipLinks.length} scholarships on this page.`);
 
     const scholarships = [];
+    const backendUrl = config.backend_url || 'http://localhost:8000/scholarships-create';
+
+    const failedPosts = [];
+    async function postWithRetry(payload, retries = 3, delayMs = 2000) {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                console.log(`Posting to ${backendUrl} (attempt ${attempt}): ${payload.scholarship_title}`);
+                const resp = await axios.post(backendUrl, payload, { headers: { 'Content-Type': 'application/json' }, timeout: 15000 });
+                console.log(`Backend response status: ${resp.status}`);
+                return { success: true, response: resp };
+            } catch (err) {
+                // Extract useful info from axios error
+                let errMsg = err.message;
+                let respData = null;
+                let status = null;
+                if (err.response) {
+                    status = err.response.status;
+                    respData = err.response.data;
+                    errMsg = `Status ${status} - ${JSON.stringify(respData)}`;
+                }
+                console.warn(`POST attempt ${attempt} failed for ${payload.scholarship_title}: ${errMsg}`);
+                if (attempt < retries) await new Promise(r => setTimeout(r, delayMs));
+                else {
+                    // record failed payload with error for later inspection
+                    failedPosts.push({ payload, error: errMsg });
+                    try {
+                        fs.writeFileSync('failed_scholarships.json', JSON.stringify(failedPosts, null, 2));
+                    } catch (writeErr) {
+                        console.error('Failed to write failed_scholarships.json:', writeErr.message);
+                    }
+                    return { success: false, error: errMsg };
+                }
+            }
+        }
+    }
+
     for (const link of scholarshipLinks) {
         try {
             const details = await scrapeScholarshipDetails(browser, link);
+            // Skip empty results
+            if (!details || Object.keys(details).length === 0) {
+                console.warn(`No details found for ${link}, skipping.`);
+                continue;
+            }
+
             scholarships.push(details);
+
+            // Prepare payload for backend
+            // Build payload to satisfy both the API model and the DB insertion function
+            const payload = {
+                // API-facing fields (ScholarshipCreate)
+                scholarship_title: details.scholarship_title || 'Unknown',
+                amount: details.amount || 'Not specified',
+                deadline: details.deadline || 'Not specified',
+                description: details.description || 'No description provided',
+                details: details.details || 'Not specified',
+                eligibility: details.eligibility || 'Not specified',
+                url: details.url || link,
+                // DB-facing fields expected by create_scholarship_entry
+                name: details.scholarship_title || 'Unknown',
+                provider: details.provider || 'Scholarships.com',
+                field: details.field || null,
+                gpa: details.gpa || null,
+                location: details.location || null,
+                residency: details.residency || null,
+                // amount is already present above
+            };
+
+            const res = await postWithRetry(payload, 3, 2000);
+            if (res.success) console.log(`Posted scholarship to backend: ${payload.scholarship_title}`);
+            else console.error(`Failed to post scholarship after retries: ${payload.scholarship_title}`, res.error?.message || res.error);
+
         } catch (err) {
             console.error(`Failed to scrape ${link}: ${err.message}`);
         }

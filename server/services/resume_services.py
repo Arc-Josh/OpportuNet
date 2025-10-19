@@ -19,7 +19,10 @@ COMMON_MISSPELLINGS = {
 }
 
 from io import BytesIO
-from PyPDF2 import PdfReader
+try:
+    from PyPDF2 import PdfReader
+except Exception:
+    PdfReader = None
 import logging
 
 logger = logging.getLogger("uvicorn.error")
@@ -41,6 +44,9 @@ def extract_text_stub(file_name: str, file_data: bytes) -> str:
         elif file_name.lower().endswith(".pdf"):
             # PDF extraction
             logger.info(f"Extracting PDF resume: {file_name}")
+            if PdfReader is None:
+                logger.error("PyPDF2 not installed - cannot extract PDF text. Install PyPDF2 to enable PDF parsing.")
+                return "PDF parsing library not installed on server."
             reader = PdfReader(BytesIO(file_data))
             text = ""
             for page in reader.pages:
