@@ -26,21 +26,23 @@
 }
 
 .logo {
-  text-decoration: none;
   display: flex;
   align-items: center;
+  text-decoration: none;
+  color: inherit; 
   font-size: 1.6rem;
   font-weight: 700;
 }
 
-.logo-text {
-  color: var(--primary-green);
+.nav-logo {
+  height: 40px;  
+  width: auto;
+  margin-right: 1px;
+  cursor: pointer; 
 }
 
-.nav-logo {
-  height: 40px;         
-  width: auto;
-  margin-right: 1px;  
+.logo-text {
+  color: var(--primary-green);
 }
 
 .nav-links {
