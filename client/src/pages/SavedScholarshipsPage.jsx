@@ -60,28 +60,35 @@ const SavedScholarshipsPage = () => {
         <div className="saved-scholarships-list">
           {savedScholarships.map((sch) => (
             <div key={sch.scholarship_id} className="saved-card">
-              {/* Logo */}
+              {/* Logo placeholder */}
               <div className="company-logo">
                 <div className="logo-placeholder">
-                  {sch.provider ? sch.provider[0] : "?"}
+                  {sch.scholarship_title ? sch.scholarship_title[0] : "?"}
                 </div>
               </div>
 
               {/* Details */}
               <div className="saved-info">
-                <h3>{sch.name}</h3>
-                <p>{sch.provider}</p>
-                <div className="meta">
-                  <span>{sch.deadline}</span>
-                  <span className="salary-badge">{sch.amount}</span>
-                </div>
+              <h3>{sch.scholarship_title}</h3>
+              <div className="meta">
+              {sch.amount && (
+                <div className="meta-item">
+                  <strong>Amount:</strong> {sch.amount}
+                  </div>
+                )}
+                {sch.deadline && (
+                <div className="meta-item">
+                    <strong>Deadline:</strong> {sch.deadline}
+                  </div>
+                )}
               </div>
+            </div>
 
               {/* Actions */}
               <div className="job-actions">
-                {sch.application_link && (
+                {sch.url && (
                   <a
-                    href={sch.application_link}
+                    href={sch.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="apply-link"

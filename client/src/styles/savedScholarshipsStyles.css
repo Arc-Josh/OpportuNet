@@ -6,7 +6,7 @@
 }
 
 /* Page title */
-.saved-scholarships-title {
+.saved-title {
   text-align: center;
   margin-bottom: 1.5rem;
   color: white;
@@ -14,7 +14,7 @@
   font-weight: 600;
 }
 
-/* Saved scholarships list - vertical layout */
+/* Saved scholarships list */
 .saved-scholarships-list {
   display: flex;
   flex-direction: column;
@@ -22,7 +22,7 @@
 }
 
 /* Individual scholarship card */
-.saved-scholarship-card {
+.saved-card {
   background: #ffffff;
   padding: 1.2rem 1.5rem;
   border-radius: 10px;
@@ -30,13 +30,13 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.saved-scholarship-card:hover {
+.saved-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-/* Header with logo + scholarship info */
-.saved-scholarship-header {
+/* Header with logo */
+.saved-header {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -58,37 +58,47 @@
 }
 
 /* Scholarship headings */
-.saved-scholarship-card h3 {
+.saved-card h3 {
   margin: 0;
   font-size: 1.3rem;
   color: #2b2d42;
 }
 
-.saved-scholarship-card p {
+.saved-card p {
   margin: 4px 0;
   color: #555;
   font-size: 0.95rem;
 }
 
 /* Meta info row */
-.scholarship-meta {
-  color: #6c757d;
-  font-size: 0.9rem;
+.meta {
+    display: flex;
+    gap: 20px;
+    margin-top: 8px;
+}
+
+.meta-item {
+  font-size: 0.95rem;
+  color: #2e7d32; /* darker green to make it pop */
+  font-weight: 600;
+  background: #e8f5e9; /* light green background */
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 /* Actions row */
-.scholarship-actions {
+.job-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 12px;
 }
 
-/* Apply and Reject buttons */
+/* Apply and Remove buttons */
 .apply-link,
 .remove-btn {
   display: inline-block;
-  min-width: 120px;  
+  min-width: 120px;
   text-align: center;
   font-size: 0.95rem;
   font-weight: 600;
@@ -98,7 +108,7 @@
   transition: background-color 0.2s, transform 0.1s;
 }
 
-/* Apply button specific */
+/* Apply button */
 .apply-link {
   background-color: #4caf50;
   color: white;
@@ -111,20 +121,20 @@
   transform: translateY(-1px);
 }
 
-/* Remove button specific */
+/* Remove button */
 .remove-btn {
-  background-color: #f44336;
+  background-color: #fa5252;
   color: white;
   border: none;
 }
 
 .remove-btn:hover {
-  background-color: #d32f2f;
+  background-color: #e03131;
   transform: translateY(-1px);
 }
 
 /* Empty + loading state */
-.no-scholarships,
+.no-jobs,
 .loading {
   text-align: center;
   color: #666;
