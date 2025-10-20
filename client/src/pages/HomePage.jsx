@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/homePageStyles.css';
 import { expireToken } from '../storage/token';
+import logo from '../assets/logo.png'; 
 
 const HomePage = () => {
   expireToken(); 
@@ -20,9 +21,9 @@ const HomePage = () => {
 
         <div className="hero-image">
           <img 
-            src="https://cdn-icons-png.flaticon.com/512/3135/3135673.png" 
-            alt="Job Search Illustration" 
-            className="hero-illustration"
+            src={logo} 
+            alt="Opportunet Logo" 
+            className="hero-logo"
           />
         </div>
       </section>

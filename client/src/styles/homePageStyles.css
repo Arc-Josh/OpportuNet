@@ -89,17 +89,9 @@ body {
   justify-content: center;
 }
 
-.mockup-phone {
-  width: 250px;
-  height: 500px;
-  border: 12px solid white;
-  border-radius: 30px;
-  background: #333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1rem;
+.hero-logo {
+  width: 600px;   
+  height: auto; 
 }
 
 .features-section {
