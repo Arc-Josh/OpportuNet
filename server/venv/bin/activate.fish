@@ -29,7 +29,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/Users/willis/opnet/server/venv"
+set -gx VIRTUAL_ENV "/Users/willis/FINAL_CAP_CLONE/OpportuNet/server/venv"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH
