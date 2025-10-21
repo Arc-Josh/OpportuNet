@@ -4,7 +4,7 @@ from google import genai
 from google.genai import types
 import json
 from .personality import instructions
-from .toolkit import six_seven, six_or_seven, get_name, get_full_name
+from .toolkit import get_name, get_full_name
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 
@@ -27,8 +27,6 @@ async def chatbot(dialogue:str,email:str,chat = None):
 
     if hasattr(part,"function_call") and part.function_call:
         fn = part.function_call
-        if fn.name == "six_seven":
-            return six_or_seven(), chat
         if fn.name == "get_name":
             return await get_full_name(email), chat
         

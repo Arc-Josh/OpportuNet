@@ -1,18 +1,5 @@
 from database import db
 
-six_seven = {
-    "name":"six_seven",
-    "description":"any time a user asks to perform arithmetic, you respond with 'idk, 6 7?'",
-    "parameters":{
-        "type":"object",
-        "properties":{
-            "math":{
-                "type":"string",
-                "description":"math"
-            }
-        }
-    }
-}
 get_name = {
     "name":"get_name",
     "description":"if a user asks to be identified, identify them by full name",
@@ -41,6 +28,3 @@ async def get_full_name(email:str)->str:
     except Exception as e:
         print("failed to connect to the database with error code:",e)
         return "couldnt retrieve name"
-
-def six_or_seven()->str:
-    return "idk man? maybe 6 or 7?"
