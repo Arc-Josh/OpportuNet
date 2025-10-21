@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/willis/opnet/server/venv"
+VIRTUAL_ENV="/Users/willis/FINAL_CAP_CLONE/OpportuNet/server/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

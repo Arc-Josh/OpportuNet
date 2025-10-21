@@ -26,7 +26,7 @@ SECRET_KEY_AWS = os.getenv("SECRET_KEY_AWS", "hidden")
 ACCESS_KEY_AWS = os.getenv("ACCESS_KEY_AWS", "hidden")
 BUCKET_AWS = os.getenv("BUCKET_AWS", "opportunet-capstone-pdf-storage")
 REGION_AWS = os.getenv("REGION_AWS", "us-east-2")
-
+chat_sesh = {}
 s3_cli = boto3.client(
     "s3",
     aws_access_key_id=ACCESS_KEY_AWS,
@@ -175,13 +175,14 @@ async def edit_resume():
 # ---------------------------
 # Chatbot
 # ---------------------------
-
 @app.post("/chatbot")
-async def chatbot_endpoint(
-    request: ChatbotRequest, token: str = Depends(authorization.oauth2_scheme)
-):
+async def chatbot_endpoint(request: ChatbotRequest, token: str = Depends(authorization.oauth2_scheme)):
+    global chat_sesh
     email = authorization.get_user(token)
-    answer = chatbot(request.question)
+    chat = chat_sesh.get(email)
+    answer, new_chat = await chatbot(request.question,email,chat)
+    print(chat_sesh)
+    chat_sesh[email] = new_chat
     return {"email": email, "answer": answer}
 
 
