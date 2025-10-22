@@ -50,12 +50,26 @@ const ScholarshipCard = ({ scholarship }) => {
           </>
         )}
 
-        {scholarship.eligibility && (
-          <>
-            <h4>Eligibility:</h4>
-            <p>{scholarship.eligibility}</p>
-          </>
-        )}
+        {scholarship.eligibility && (() => {
+          const items = (scholarship.eligibility || '')
+            .split(/\n|;/g)
+            .map(s => s.replace(/^[\s*•\-]+/, '').trim())
+            .filter(Boolean);
+          return (
+            <>
+              <h4>Eligibility:</h4>
+              {items.length > 0 ? (
+                <ul className="eligibility-list">
+                  {items.map((it, idx) => (
+                    <li key={idx}>{it}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>{scholarship.eligibility}</p>
+              )}
+            </>
+          );
+        })()}
       </div>
     </div>
   );

@@ -105,6 +105,16 @@ async function scrapeScholarshipDetails(browser, scholarshipUrl) {
                 eligibility = Array.from(eligElem.querySelectorAll('li')).map(li => li.innerText.trim()).join('; ');
             }
         }
+        // Normalize eligibility into bullet points (•) if we have a delimited list
+        if (eligibility && eligibility !== 'Not specified') {
+            const items = eligibility
+                .split(/;|\n|•/g)
+                .map(s => s.replace(/^[\s*-•]+/, '').trim())
+                .filter(Boolean);
+            if (items.length > 1) {
+                eligibility = '• ' + items.join('\n• ');
+            }
+        }
         return {
             scholarship_title,
             amount,
