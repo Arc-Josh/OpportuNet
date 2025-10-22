@@ -34,40 +34,57 @@ function getScrapeOpsUrl(url, location = "us") {
 
 async function crawlPage(browser, url) {
     const page = await browser.newPage();
-    await page.goto(url);
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    await page.setViewport({ width: 1280, height: 800 });
+    
+    console.log(`Navigating to job listing page: ${url}`);
+    await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+
+    // Wait for job listings to load
+    await page.waitForSelector('[data-testid="slider_item"]', { timeout: 15000 }).catch(() => {
+        console.warn('Job listings selector not found, continuing anyway...');
+    });
 
     const jobListings = await page.$$('[data-testid="slider_item"]');
     const jobs = [];
 
+    console.log(`Found ${jobListings.length} job listings on this page.`);
+
     for (const job of jobListings) {
-        const jobTitle = await job.$eval('h2', el => el.innerText.trim());
-        const company = await job.$eval('[data-testid="company-name"]', el => el.innerText.trim());
-        const jobLocation = await job.$eval('[data-testid="text-location"]', el => el.innerText.trim());
+        try {
+            const jobTitle = await job.$eval('h2', el => el.innerText.trim()).catch(() => 'Unknown Job');
+            const company = await job.$eval('[data-testid="company-name"]', el => el.innerText.trim()).catch(() => 'Unknown Company');
+            const jobLocation = await job.$eval('[data-testid="text-location"]', el => el.innerText.trim()).catch(() => 'Unknown Location');
 
-        const jobAnchor = await job.$('a');
-        const href = await page.evaluate(anchor => anchor?.getAttribute('href') || '', jobAnchor);
+            const jobAnchor = await job.$('a');
+            const href = await page.evaluate(anchor => anchor?.getAttribute('href') || '', jobAnchor);
 
-        const urlObj = new URL(href, 'https://www.indeed.com');
-        const jobKey = urlObj.searchParams.get('jk');
-        
-        let jobUrl = '';
-        if (jobKey) {
-            jobUrl = `https://www.indeed.com/viewjob?jk=${jobKey}`;
-            console.log(`Found job listing at: ${jobUrl}`);
-            const proxyJobUrl = getScrapeOpsUrl(jobUrl);
-            const details = await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
+            const urlObj = new URL(href, 'https://www.indeed.com');
+            const jobKey = urlObj.searchParams.get('jk');
+            
+            let jobUrl = '';
+            if (jobKey) {
+                jobUrl = `https://www.indeed.com/viewjob?jk=${jobKey}`;
+                console.log(`Found job listing: ${jobTitle} at ${jobUrl}`);
+                const proxyJobUrl = getScrapeOpsUrl(jobUrl);
+                const details = await scrapeJobDetails(browser, proxyJobUrl, jobTitle);
 
-            jobs.push({
-                jobTitle,
-                company,
-                jobLocation,
-                jobUrl,
-                salary: details.salary,
-                benefits: details.benefits,
-                qualifications: details.qualifications,
-                description: details.description,
-                preferences: details.preferences
-            });
+                jobs.push({
+                    jobTitle,
+                    company,
+                    jobLocation,
+                    jobUrl,
+                    salary: details.salary,
+                    benefits: details.benefits,
+                    qualifications: details.qualifications,
+                    description: details.description,
+                    preferences: details.preferences
+                });
+            } else {
+                console.warn(`No job key found for ${jobTitle}, skipping.`);
+            }
+        } catch (err) {
+            console.error(`Failed to process job listing: ${err.message}`);
         }
     }
 
@@ -79,7 +96,7 @@ async function retryPageGoto(page, url, retries = 3) {
     for (let attempt = 1; attempt <= retries; attempt++) {
         try {
             console.log(`Attempt ${attempt} to navigate to: ${url}`);
-            await page.goto(url, { timeout: 10000 });
+            await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
             return true;  // Return true if successful
         } catch (error) {
             if (error.name === 'TimeoutError') {
@@ -96,80 +113,98 @@ async function retryPageGoto(page, url, retries = 3) {
     }
 }
 
-function extractQualificationsAndPreferences(description) {
-    const lines = description.split('\n').map(l => l.trim()).filter(Boolean);
-
-    let qualifications = [];
-    let preferences = [];
-    let currentSection = null;
-
-    for (const line of lines) {
-        const lower = line.toLowerCase();
-
-       
-        if (lower.includes('qualification') || lower.includes('requirement') || lower.includes('must-have')) {
-            currentSection = 'qualifications';
-            continue;
-        }
-        
-        if (lower.includes('nice-to-have') || lower.includes('preferred') || lower.includes('desirable')) {
-            currentSection = 'preferences';
-            continue;
-        }
-       
-        if (lower.includes('benefit') || lower.includes('salary') || lower.includes('location') || lower.includes('responsibility')) {
-            currentSection = null;
-            continue;
-        }
-
-        if (currentSection === 'qualifications') qualifications.push(line);
-        if (currentSection === 'preferences') preferences.push(line);
-    }
-
-    return {
-        qualifications: qualifications.join('; ') || 'Not specified',
-        preferences: preferences.join('; ') || 'Not specified'
-    };
-}
 
 
 async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+    await page.setViewport({ width: 1280, height: 800 });
+    
     const success = await retryPageGoto(page, jobUrl);
 
     if (!success) {
         await page.close();
         return { 
             jobTitle, 
-            qualifications: 'n/a', 
-            preferences: 'n/a', 
-            salary: 'n/a', 
-            description: 'n/a', 
-            benefits: 'n/a', 
+            qualifications: 'Not specified', 
+            preferences: 'Not specified', 
+            salary: 'Not specified', 
+            description: 'No description provided', 
+            benefits: 'Not specified', 
         };
     }
 
-   
-    const description = await page.$eval("div[id='jobDescriptionText']", el => el?.innerText.trim() || '').catch(() => '');
-    const salary = await page.$eval("div[id='salaryInfoAndJobType']", el => el?.innerText.trim() || '').catch(() => '');
-    const benefits = await page.$eval("div[id='benefits']", el => el?.innerText.trim() || '').catch(() => '');
-    const preferencesDiv = await page.$eval("div[id='preferences']", el => el?.innerText.trim() || '').catch(() => '');
-   
-    const lines = description.split('\n').map(l => l.trim()).filter(Boolean);
-    const condensedDescription = lines.slice(0, 5).join(' ') + (lines.length > 5 ? '...' : '');
+    // Wait a moment for page to settle
+    await new Promise(res => setTimeout(res, 2000));
 
-   
-    const parsed = extractQualificationsAndPreferences(description);
+    // Remove ads and popups
+    await page.evaluate(() => {
+        document.querySelectorAll('.modal, footer, .adsbygoogle, iframe, [role="dialog"]').forEach(el => el.remove());
+    });
 
+    // Extract job details using page.evaluate for better control
+    const jobData = await page.evaluate(() => {
+        const result = {
+            description: 'No description provided',
+            salary: 'Not specified',
+            benefits: 'Not specified',
+            qualifications: 'Not specified',
+            preferences: 'Not specified'
+        };
+
+        // Get the main job description container
+        const jobDescContainer = document.querySelector("div[id='jobDescriptionText']");
+        
+        if (jobDescContainer) {
+            // Get the full text content
+            const fullText = jobDescContainer.innerText.trim();
+            
+            // Just store the entire description as-is without trying to split it
+            result.description = fullText || 'No description provided';
+        }
+
+        // Extract salary information
+        const salaryDiv = document.querySelector("div[id='salaryInfoAndJobType']");
+        if (salaryDiv) {
+            result.salary = salaryDiv.innerText.trim();
+        }
+
+        // Extract benefits - try multiple selectors
+        const benefitsDiv = document.querySelector("div[id='benefits']") || 
+                           document.querySelector("[class*='benefit']") ||
+                           document.querySelector("[data-testid*='benefit']");
+        if (benefitsDiv) {
+            const benefitsText = benefitsDiv.innerText.trim();
+            if (benefitsText && benefitsText.length > 0) {
+                result.benefits = benefitsText;
+            }
+        }
+
+        // For qualifications and preferences, only extract if they exist as separate elements
+        // Don't try to parse them from the description
+        const qualDiv = document.querySelector("div[id='qualifications']");
+        if (qualDiv) {
+            result.qualifications = qualDiv.innerText.trim();
+        }
+
+        const prefDiv = document.querySelector("div[id='preferences']");
+        if (prefDiv) {
+            result.preferences = prefDiv.innerText.trim();
+        }
+
+        return result;
+    });
+
+    console.log(`Scraped job details for: ${jobTitle}`);
     await page.close();
 
     return { 
         jobTitle,
-        qualifications: parsed.qualifications,
-        preferences: preferencesDiv || parsed.preferences,
-        salary: salary || 'n/a',
-        description: condensedDescription,
-        benefits: benefits || 'Not specified',
+        qualifications: jobData.qualifications,
+        preferences: jobData.preferences,
+        salary: jobData.salary,
+        description: jobData.description,
+        benefits: jobData.benefits,
     };
 }
 
@@ -178,13 +213,48 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
 
 const axios = require('axios');
 
+const failedJobs = [];
+
+async function postJobWithRetry(payload, backendUrl, retries = 3, delayMs = 2000) {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            console.log(`Posting to ${backendUrl} (attempt ${attempt}): ${payload.job_name}`);
+            const resp = await axios.post(backendUrl, payload, { 
+                headers: { 'Content-Type': 'application/json' }, 
+                timeout: 15000 
+            });
+            console.log(`Backend response status: ${resp.status} for ${payload.job_name}`);
+            return { success: true, response: resp };
+        } catch (err) {
+            let errMsg = err.message;
+            let respData = null;
+            let status = null;
+            if (err.response) {
+                status = err.response.status;
+                respData = err.response.data;
+                errMsg = `Status ${status} - ${JSON.stringify(respData)}`;
+            }
+            console.warn(`POST attempt ${attempt} failed for ${payload.job_name}: ${errMsg}`);
+            
+            if (attempt < retries) {
+                await new Promise(r => setTimeout(r, delayMs));
+            } else {
+                // Final failure - log to failed jobs
+                failedJobs.push({ payload, error: errMsg });
+                try {
+                    fs.writeFileSync('failed_jobs.json', JSON.stringify(failedJobs, null, 2));
+                } catch (writeErr) {
+                    console.error('Failed to write failed_jobs.json:', writeErr.message);
+                }
+                return { success: false, error: errMsg };
+            }
+        }
+    }
+}
+
 async function sendJobsToBackend() {
     const jobsData = JSON.parse(fs.readFileSync('indeed_jobs.json', 'utf-8'));
     const backendUrl = config.backend_url || 'http://localhost:8000/jobs-create';
-
-    const headers = {
-        'Content-Type': 'application/json',
-    };
 
     for (const job of jobsData) {
         const payload = {
@@ -199,24 +269,26 @@ async function sendJobsToBackend() {
             benefits: job.benefits || 'Not specified',
         };
 
-        try {
-            console.log("Sending job:", payload);
-            const response = await axios.post(backendUrl, payload, { headers });
-            console.log(` Successfully sent job to backend: ${payload.job_name}`);
-        } catch (error) {
-            console.error(` Failed to send job: ${payload.job_name}`, error.response?.data || error.message);
+        const res = await postJobWithRetry(payload, backendUrl, 3, 2000);
+        if (res.success) {
+            console.log(`✓ Posted job to backend: ${payload.job_name}`);
+        } else {
+            console.error(`✗ Failed to post job after retries: ${payload.job_name}`, res.error);
         }
     }
 }
 
-    async function mainScraper() {
+async function mainScraper() {
     const browser = await puppeteer.launch({ headless: true });
     const keyword = 'Data Scientist';
     const location = 'Dallas, TX';
     const totalPages = 1;
     const results = [];
 
-    console.log(`Crawl starting...`);
+    console.log(`\n========== Job Scraping Started ==========`);
+    console.log(`Keyword: ${keyword}`);
+    console.log(`Location: ${location}`);
+    console.log(`Pages to scrape: ${totalPages}`);
 
     cleanJobsFolder();
 
@@ -226,7 +298,8 @@ async function sendJobsToBackend() {
         const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(keyword)}&l=${encodeURIComponent(location)}&start=${pageNum * 10}`;
         const proxyUrl = getScrapeOpsUrl(url);
         
-        console.log(`Navigating to page ${pageNum + 1}: ${url}`);
+        console.log(`\n--- Page ${pageNum + 1} ---`);
+        console.log(`URL: ${url}`);
 
         pagePromises.push(crawlPage(browser, proxyUrl));
     }
@@ -236,12 +309,15 @@ async function sendJobsToBackend() {
     allResults.forEach(jobList => results.push(...jobList));
 
     fs.writeFileSync('indeed_jobs.json', JSON.stringify(results, null, 2));
-    console.log('Crawling complete.');
-    console.log('Saving results to indeed_jobs.json');
+    console.log(`\n✓ Crawling complete.`);
+    console.log(`✓ Saved ${results.length} jobs to indeed_jobs.json`);
+    
+    console.log(`\n========== Sending Jobs to Backend ==========`);
     await sendJobsToBackend();
     
     await browser.close();
-};
+    console.log(`\n========== Scraping Completed Successfully ==========\n`);
+}
 
 
 const scrapeintervalmin = 10080; // 1 week in minutes
