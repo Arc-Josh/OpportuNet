@@ -88,9 +88,10 @@ async def change_email():
 @app.post("/analyze-resume")
 async def analyze_resume(
     file: UploadFile = File(...),
-    job_description: str = Form(...)
+    job_description: str = Form(...),
+    token: str = Depends(authorization.oauth2_scheme)
 ):
-    user_email = "anonymous@example.com"
+    user_email = authorization.get_user(token)
 
     if not file.filename.lower().endswith((".pdf", ".doc", ".docx")):
         raise HTTPException(
@@ -113,7 +114,10 @@ async def analyze_resume(
             RETURNING id;
         """
         resume_id = await conn.fetchval(query, user_email, file.filename, file_data)
+    except Exception as e:
+        print("failed to execute insert into database:", e)
     finally:
+        print("resume successfully loaded into database")
         await conn.close()
 
     try:
@@ -135,11 +139,17 @@ async def analyze_resume(
           "recommendations": ["short bullet", "another bullet"]
         }}
         """
-        raw_analysis = chatbot(prompt)
+        try:
+            raw_analysis_response = await chatbot(prompt,user_email)
+            raw_analysis = raw_analysis_response[0]
+        except Exception as e:
+            raise HTTPException(status_code=500,detail="chatbot request failed")
+        
         parsed = None
         try:
             parsed = json.loads(raw_analysis)
-        except Exception:
+        except Exception as e:
+            print("found the problem its right here in this block: ", e)
             start = raw_analysis.find("{")
             end = raw_analysis.rfind("}")
             if start != -1 and end != -1:

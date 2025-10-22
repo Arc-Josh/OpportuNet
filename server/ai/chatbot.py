@@ -4,14 +4,14 @@ from google import genai
 from google.genai import types
 import json
 from .personality import instructions
-from .toolkit import get_name, get_full_name
+from .toolkit import get_info, get_user_info
 load_dotenv()
 api_key = os.getenv("GOOGLE_API_KEY")
 
 async def chatbot(dialogue:str,email:str,chat = None):
     client = genai.Client()
 
-    tools= types.Tool(function_declarations=[six_seven,get_name])
+    tools= types.Tool(function_declarations=[get_info])
     config = types.GenerateContentConfig(
         system_instruction = instructions,
         tools=[tools]
@@ -27,8 +27,9 @@ async def chatbot(dialogue:str,email:str,chat = None):
 
     if hasattr(part,"function_call") and part.function_call:
         fn = part.function_call
-        if fn.name == "get_name":
-            return await get_full_name(email), chat
+        if fn.name == "get_info":
+            user_data = await get_user_info(email)
+            return user_data, chat
         
     return response.text, chat
 
