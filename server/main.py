@@ -1,4 +1,7 @@
+
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form
+import psycopg2
+import os
 import re
 from models.user import UserCreate, UserLogin, UserResponse, ChatbotRequest, JobCreate, JobResponse
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form, Query
@@ -7,6 +10,7 @@ from services.resume_services import extract_text_stub
 from ai.chatbot import chatbot
 import boto3
 from security import authorization
+from security.authorization import get_user
 import os
 from models.user import UserProfileUpdate
 from services.u_services import get_user_profile, update_user_profile
@@ -48,6 +52,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgres://u3vrmarrvp2jaa:p18dc62cbbde83252691bd6a5711d1297e20291dd144ec092f549a34aaf9b64c3@ca932070ke6bv1.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/db7395k6nk841t"
+)
+conn = psycopg2.connect(DATABASE_URL)
 
 # ---------------------------
 # Auth + User Management
@@ -490,6 +499,56 @@ async def scholarship_urls():
         for s in scholarships
     ]
 
+@app.put("/profile")
+async def update_profile(
+    bio: str = Form(...),
+    full_name: str = Form(...),
+    token: str = Depends(authorization.oauth2_scheme)
+):
+    email = authorization.get_user(token)
+    from services.u_services import update_user_profile
+    updated = await update_user_profile(email, {"full_name": full_name, "bio": bio})
+    return updated
+
+
+@app.put("/profile/avatar")
+async def update_avatar(
+    avatar: UploadFile = File(...),
+    token: str = Depends(authorization.oauth2_scheme)
+):
+    email = authorization.get_user(token)
+    from services.u_services import update_profile_avatar
+    avatar_bytes = await avatar.read()
+    updated = await update_profile_avatar(email, avatar_bytes)
+    return updated
+
+@app.put("/profile/resume")
+async def upload_resume(
+    file: UploadFile = File(...),
+    email: str = Form(...)
+):
+    try:
+        pdf_data = await file.read()
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO profiles (email, resume_file, resume_name)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (email)
+                DO UPDATE SET 
+                    resume_file = EXCLUDED.resume_file,
+                    resume_name = EXCLUDED.resume_name,
+                    updated_at = NOW();
+            """, (email, psycopg2.Binary(pdf_data), file.filename))
+        conn.commit()
+        return {"message": "✅ Resume uploaded successfully"}
+    except Exception as e:
+        conn.rollback()
+        print("Error uploading resume:", e)
+        raise HTTPException(status_code=500, detail=f"Failed to upload resume: {str(e)}")
+
+
+
+
 @app.get("/profile/{user_id}")
 async def fetch_profile(user_id: int):
     return await get_user_profile(user_id)
@@ -498,10 +557,6 @@ async def fetch_profile(user_id: int):
 async def save_profile(user_id: int, data: UserProfileUpdate):
     return await update_user_profile(user_id, data)
 
-
-# ---------------------------
-# User Profile
-# ---------------------------
 
 @app.get("/profile")
 async def get_profile(token: str = Depends(authorization.oauth2_scheme)):

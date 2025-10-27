@@ -441,5 +441,29 @@ async def update_user_profile(user_email: str, data: UserProfileUpdate):
     except Exception as e:
         print("Error updating profile:", e)
         raise HTTPException(status_code=500, detail="Could not update profile")
+    
     finally:
         await conn.close()
+
+        from fastapi import HTTPException
+from datetime import datetime
+from database.db import connect_db
+
+async def save_user_resume(email: str, file_name: str, file_data: bytes):
+    conn = await connect_db()
+    try:
+        query = """
+            INSERT INTO resumes (user_email, file_name, file_data)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (user_email) DO UPDATE
+            SET file_name = EXCLUDED.file_name,
+                file_data = EXCLUDED.file_data,
+                uploaded_at = NOW()
+            RETURNING id, file_name;
+        """
+        result = await conn.fetchrow(query, email, file_name, file_data)
+        return dict(result)
+    finally:
+        await conn.close()
+
+

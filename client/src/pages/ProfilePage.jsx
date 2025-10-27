@@ -5,24 +5,23 @@ const ProfilePage = () => {
   const [bio, setBio] = useState("");
   const [avatar, setAvatar] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [resume, setResume] = useState(null);
+  const [resumeName, setResumeName] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const token = localStorage.getItem("token"); // stored on login
+  const token = localStorage.getItem("token");
 
   // Fetch profile
   const fetchProfile = async () => {
     try {
       const res = await fetch("http://localhost:8000/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to load profile");
       const data = await res.json();
       setEmail(data.email);
       setBio(data.bio || "");
       if (data.avatar) {
-        // backend sends avatar as base64 (if you implement it)
         const base64 = `data:image/jpeg;base64,${data.avatar}`;
         setAvatarPreview(base64);
       }
@@ -41,11 +40,55 @@ const ProfilePage = () => {
   // Handle avatar upload
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
-    setAvatar(file);
-    setAvatarPreview(URL.createObjectURL(file));
+    if (file) {
+      setAvatar(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
   };
 
-  // Save profile
+  // Handle resume file selection
+  const handleResumeChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setResume(file);
+    } else {
+      alert("Please upload a PDF file only.");
+    }
+  };
+
+  // Upload resume
+const handleResumeUpload = async () => {
+  if (!resume) {
+    alert("Please select a PDF file first.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", resume);       
+  formData.append("email", email);       
+
+  try {
+    const res = await fetch("http://localhost:8000/profile/resume", {
+      method: "PUT",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      alert("✅ Resume uploaded successfully!");
+      setResumeName(data.file_name || resume.name);
+    } else {
+      alert("❌ Failed to upload resume: " + data.detail);
+    }
+  } catch (err) {
+    console.error("Error uploading resume:", err);
+    alert("❌ Error uploading resume.");
+  }
+};
+
+
+  // Save bio + avatar
   const handleSave = async () => {
     const formData = new FormData();
     formData.append("bio", bio);
@@ -56,13 +99,11 @@ const ProfilePage = () => {
     try {
       const res = await fetch("http://localhost:8000/profile", {
         method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
       if (!res.ok) throw new Error("Failed to save profile");
-      await fetchProfile(); // reload profile after saving
+      await fetchProfile();
       alert("Profile updated!");
     } catch (err) {
       console.error("Error saving profile:", err);
@@ -75,8 +116,11 @@ const ProfilePage = () => {
   return (
     <div style={{ maxWidth: "600px", margin: "auto", padding: "2rem" }}>
       <h2>My Profile</h2>
-      <p><strong>Email:</strong> {email}</p>
+      <p>
+        <strong>Email:</strong> {email}
+      </p>
 
+      {/* Bio Section */}
       <div style={{ margin: "1rem 0" }}>
         <label>Bio (max 2000 chars)</label>
         <textarea
@@ -87,6 +131,7 @@ const ProfilePage = () => {
         />
       </div>
 
+      {/* Avatar Upload */}
       <div style={{ margin: "1rem 0" }}>
         <label>Avatar</label>
         <br />
@@ -94,13 +139,56 @@ const ProfilePage = () => {
           <img
             src={avatarPreview}
             alt="Avatar preview"
-            style={{ width: "100px", height: "100px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
+            style={{
+              width: "100px",
+              height: "100px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              marginBottom: "8px",
+            }}
           />
         )}
         <input type="file" accept="image/*" onChange={handleAvatarChange} />
       </div>
 
-      <button onClick={handleSave} style={{ padding: "10px 20px" }}>
+      {/* Resume Upload */}
+      <div style={{ margin: "1rem 0" }}>
+        <label>Upload Resume (PDF only)</label>
+        <br />
+        <input type="file" accept=".pdf" onChange={handleResumeChange} />
+        <button
+          onClick={handleResumeUpload}
+          style={{
+            marginLeft: "10px",
+            padding: "6px 12px",
+            backgroundColor: "#1e90ff",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer",
+          }}
+        >
+          Upload
+        </button>
+        {resumeName && (
+          <p style={{ marginTop: "10px" }}>
+            ✅ Uploaded Resume: <strong>{resumeName}</strong>
+          </p>
+        )}
+      </div>
+
+      {/* Save Changes */}
+      <button
+        onClick={handleSave}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#2e8b57",
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
         Save Changes
       </button>
     </div>
