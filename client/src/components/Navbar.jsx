@@ -21,6 +21,7 @@ const Navbar = () => {
           <Link to="/chatbot" className="nav-link">Chatbot</Link>
           <Link to="/login" className="nav-link login-link">Login</Link>
           <Link to="/signup" className="nav-link signup-link">Sign Up</Link>
+          <Link to="/profile" className="nav-link profile-link">Profile</Link>
         </div>
       </div>
     </nav>

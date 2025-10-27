@@ -7,6 +7,8 @@ from ai.chatbot import chatbot
 import boto3
 from security import authorization
 import os
+from models.user import UserProfileUpdate
+from services.u_services import get_user_profile, update_user_profile
 import json
 from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
@@ -308,3 +310,47 @@ async def scholarship_urls():
         }
         for s in scholarships
     ]
+
+@app.get("/profile/{user_id}")
+async def fetch_profile(user_id: int):
+    return await get_user_profile(user_id)
+
+@app.put("/profile/{user_id}")
+async def save_profile(user_id: int, data: UserProfileUpdate):
+    return await update_user_profile(user_id, data)
+
+
+# ---------------------------
+# User Profile
+# ---------------------------
+
+@app.get("/profile")
+async def get_profile(token: str = Depends(authorization.oauth2_scheme)):
+    email = authorization.get_user(token)
+    from services.u_services import get_user_profile
+    profile = await get_user_profile(email)
+    return profile
+
+
+@app.put("/profile")
+async def update_profile(
+    bio: str = Form(...),
+    full_name: str = Form(...),
+    token: str = Depends(authorization.oauth2_scheme)
+):
+    email = authorization.get_user(token)
+    from services.u_services import update_user_profile
+    updated = await update_user_profile(email, {"full_name": full_name, "bio": bio})
+    return updated
+
+
+@app.put("/profile/avatar")
+async def update_avatar(
+    avatar: UploadFile = File(...),
+    token: str = Depends(authorization.oauth2_scheme)
+):
+    email = authorization.get_user(token)
+    from services.u_services import update_profile_avatar
+    avatar_bytes = await avatar.read()
+    updated = await update_profile_avatar(email, avatar_bytes)
+    return updated

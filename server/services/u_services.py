@@ -2,6 +2,7 @@ from database.db import connect_db
 from security.authorization import create_access_token, hash_pwd, verify_pwd, get_user
 from models.user import UserCreate, UserLogin, UserResponse, JobCreate, JobResponse
 from models.user import ScholarshipCreate, ScholarshipResponse
+from models.user import UserProfileResponse, UserProfileUpdate
 from fastapi import HTTPException
 import os
 import json
@@ -388,5 +389,57 @@ async def remove_saved_scholarship(user_email: str, scholarship_id: int):
     except Exception as e:
         print("Error removing scholarship:", e)
         raise HTTPException(status_code=500, detail="Failed to remove saved scholarship")
+    finally:
+        await conn.close()
+
+# ---------------------------
+# Profile Services
+# ---------------------------
+
+async def get_user_profile(user_email: str):
+    conn = await connect_db()
+    try:
+        query = """
+            SELECT p.profile_id, p.user_id, u.email, p.bio, p.avatar, p.created_at, p.updated_at
+            FROM profiles p
+            JOIN users u ON p.user_id = u.id
+            WHERE u.email = $1
+        """
+        row = await conn.fetchrow(query, user_email)
+        if not row:
+            # Create an empty profile if not found
+            user_id = await conn.fetchval("SELECT id FROM users WHERE email = $1", user_email)
+            if not user_id:
+                raise HTTPException(status_code=404, detail="User not found")
+            await conn.execute("INSERT INTO profiles (user_id, bio) VALUES ($1, $2)", user_id, "")
+            return UserProfileResponse(profile_id=None, user_id=user_id, email=user_email, bio="", avatar=None)
+        return UserProfileResponse(**dict(row))
+    except Exception as e:
+        print("Error fetching profile:", e)
+        raise HTTPException(status_code=500, detail="Could not fetch profile")
+    finally:
+        await conn.close()
+
+
+async def update_user_profile(user_email: str, data: UserProfileUpdate):
+    conn = await connect_db()
+    try:
+        user_id = await conn.fetchval("SELECT id FROM users WHERE email = $1", user_email)
+        if not user_id:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        query = """
+            UPDATE profiles
+            SET bio = $1, avatar = $2, updated_at = CURRENT_TIMESTAMP
+            WHERE user_id = $3
+            RETURNING profile_id, user_id, $4 as email, bio, avatar, created_at, updated_at
+        """
+        row = await conn.fetchrow(query, data.bio, data.avatar, user_id, user_email)
+        if not row:
+            raise HTTPException(status_code=404, detail="Profile not found")
+        return UserProfileResponse(**dict(row))
+    except Exception as e:
+        print("Error updating profile:", e)
+        raise HTTPException(status_code=500, detail="Could not update profile")
     finally:
         await conn.close()

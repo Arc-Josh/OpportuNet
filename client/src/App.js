@@ -11,6 +11,7 @@ import ResumeBuilderPage from "./pages/ResumeBuilderPage.jsx";
 import SavedJobsPage from "./pages/SavedJobsPage";
 import ScholarshipPage from "./pages/ScholarshipPage.jsx";
 import SavedScholarshipsPage from "./pages/SavedScholarshipsPage.jsx";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/saved-jobs" element={<SavedJobsPage />} />
         <Route path="/scholarships" element={<ScholarshipPage />} />
         <Route path="/saved-scholarships" element={<SavedScholarshipsPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         
       </Routes>
     </Router>
