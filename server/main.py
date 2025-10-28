@@ -4,9 +4,7 @@ from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form, Que
 from services.u_services import create_account, login, get_faq_answer, create_job_entry, get_all_jobs
 from services.resume_services import extract_text_stub
 from ai.chatbot import chatbot
-import boto3
 from security import authorization
-import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
@@ -19,24 +17,8 @@ from services.u_services import (
     remove_saved_scholarship
 )
 
-# ---------------------------
-# AWS S3 Config
-# ---------------------------
-SECRET_KEY_AWS = os.getenv("SECRET_KEY_AWS", "hidden")
-ACCESS_KEY_AWS = os.getenv("ACCESS_KEY_AWS", "hidden")
-BUCKET_AWS = os.getenv("BUCKET_AWS", "opportunet-capstone-pdf-storage")
-REGION_AWS = os.getenv("REGION_AWS", "us-east-2")
 chat_sesh = {}
-s3_cli = boto3.client(
-    "s3",
-    aws_access_key_id=ACCESS_KEY_AWS,
-    aws_secret_access_key=SECRET_KEY_AWS,
-    region_name=REGION_AWS,
-)
-
 app = FastAPI()
-
-# Allow frontend calls
 origins = ["http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
@@ -45,10 +27,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ---------------------------
-# Auth + User Management
-# ---------------------------
 
 @app.post("/signup")
 async def signup(user: UserCreate):
