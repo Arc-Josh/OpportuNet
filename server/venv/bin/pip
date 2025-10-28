@@ -1,4 +1,4 @@
-#!/Users/willis/opnet/server/venv/bin/python
+#!/Users/shashwatadhikary/OpportuNet-1/server/venv/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys

@@ -53,15 +53,15 @@ app.add_middleware(
 @app.post("/signup")
 async def signup(user: UserCreate):
     new_user = await create_account(user)
-
-    if user.enabled == True:
+    if user.enabled:
         try:
             await services.email_services.send_test_email(user.email)
             return new_user
         except Exception as e:
-            print("email services error:",e)
-    else:
-        return new_user
+            print("Email services error:", e)
+    return new_user
+
+
 @app.post("/login")
 async def u_login(user: UserLogin):
     user = await login(user)
@@ -296,15 +296,3 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
-
-
-@app.get("/scholarship-urls")
-async def scholarship_urls():
-    scholarships = await get_all_scholarships()
-    return [
-        {
-            "scholarship_title": s.scholarship_title,
-            "url": getattr(s, "url", None)
-        }
-        for s in scholarships
-    ]

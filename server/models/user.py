@@ -49,3 +49,16 @@ class ScholarshipCreate(BaseModel):
 class ScholarshipResponse(ScholarshipCreate):
     scholarship_id: int
     created_at: datetime
+
+class UserProfileResponse(BaseModel):
+    profile_id: Optional[int]
+    user_id: int
+    email: str
+    bio: Optional[str] = ""
+    avatar: Optional[bytes] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+class UserProfileUpdate(BaseModel):
+    bio: Optional[str] = None
+    avatar: Optional[bytes] = None
