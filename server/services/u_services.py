@@ -446,8 +446,6 @@ async def update_user_profile(user_email: str, data: UserProfileUpdate):
         await conn.close()
 
         from fastapi import HTTPException
-from datetime import datetime
-from database.db import connect_db
 
 async def save_user_resume(email: str, file_name: str, file_data: bytes):
     conn = await connect_db()
