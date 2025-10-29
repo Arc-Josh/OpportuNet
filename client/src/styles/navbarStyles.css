@@ -1,5 +1,5 @@
 :root {
-  --primary-green: #2e7d32;
+  --primary-green: #00853E;
   --secondary-green: #4caf50;
   --accent-green: #81c784;
   --text-dark: #1a1a1a;
@@ -120,3 +120,6 @@
     padding: 1rem;
   }
 }
+
+
+

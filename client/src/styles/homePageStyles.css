@@ -1,7 +1,7 @@
 :root {
-  --primary-green: #2e7d32; /* main brand green */
-  --secondary-green: #4caf50; /* lighter green */
-  --accent-green: #81c784; /* soft accent */
+  --primary-green: #00853E;
+  --secondary-green: #4caf50;
+  --accent-green: #81c784;
   --text-dark: #1a1a1a;
   --text-light: #555;
   --background-light: #f4fdf5;
@@ -13,21 +13,20 @@ body {
   color: var(--text-dark);
 }
 
-
 .homepage {
   max-width: auto;
   background: whitesmoke;
   padding: 20px;
 }
 
+/* HERO SECTION */
 .hero-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 80px 40px;
-  background: white;
+  background: white;   
   border-radius: 16px;
-  color: whitesmoke;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
@@ -39,13 +38,13 @@ body {
   font-size: 3rem;
   margin-bottom: 1rem;
   font-weight: 700;
-  color: #2e7d32;
+  color: var(--primary-green);
 }
 
 .hero-content p {
   font-size: 1.3rem;
   margin-bottom: 2rem;
-  color: #2e7d32;
+  color: var(--primary-green);
 }
 
 .cta-buttons {
@@ -93,86 +92,145 @@ body {
   height: auto; 
 }
 
-.features-section {
-  margin: 100px 0;
+/* ALTERNATING FEATURES SECTION */
+.alt-features-section {
+  padding: 100px 40px;
+  background: url('../assets/feature.png') center/cover no-repeat;
+  color: white;
   text-align: center;
+  position: relative;
 }
 
-.features-section h2 {
+.alt-features-section h2 {
   font-size: 2.5rem;
   margin-bottom: 60px;
-  color: #2e7d32;
+  color: white;
+  text-align: center;
   font-weight: 700;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 40px;
+.feature-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 60px 0;
+  padding: 40px;
+  background: whitesmoke; 
+  border-radius: 16px;
 }
 
-.feature-card {
-  padding: 40px 30px;
-  border-radius: 14px;
-  background: #2e7d32;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+.feature-row.reverse {
+  flex-direction: row-reverse;
 }
 
-.feature-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+.feature-text {
+  flex: 1;
+  padding: 20px;
+  text-align: left;
 }
 
-.feature-icon {
-  font-size: 3rem;
-  margin-bottom: 20px;
-  color: var(--secondary-green);
-  transition: color 0.3s ease;
-}
-
-.feature-card:hover .feature-icon {
+.feature-text h3 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
   color: var(--primary-green);
 }
 
-.feature-card h3 {
-  font-size: 1.6rem;
-  margin-bottom: 15px;
-  color: var(--text-dark);
+.feature-text p {
+  font-size: 1.1rem;
+  color: var(--primary-green);
+  line-height: 1.6;
 }
 
-.feature-card p {
-  color: lightgrey;
-  line-height: 1.6;
-  font-size: 1rem;
+.feature-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.big-icon {
+  font-size: 5rem;
+  color: #00853E;
 }
 
 @media (max-width: 992px) {
-  .hero-section {
+  .feature-row,
+  .feature-row.reverse {
     flex-direction: column;
     text-align: center;
-    padding: 60px 20px;
   }
 
-  .hero-content {
-    margin-bottom: 40px;
-  }
-
-  .hero-image {
-    display: none; 
+  .feature-text {
+    text-align: center;
   }
 }
 
-@media (max-width: 600px) {
-  .hero-content h1 {
-    font-size: 2.2rem;
-  }
+/* STATS SECTION */
+.stats-section {
+  background: white;
+  padding: 80px 40px;
+  text-align: center;
+}
 
-  .hero-content p {
-    font-size: 1rem;
-  }
+.stats-section h2 {
+  font-size: 2.2rem;
+  margin-bottom: 50px;
+  color: var(--primary-green);
+}
 
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
+.stats-grid {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-card h3 {
+  font-size: 2.5rem;
+  color: var(--primary-green);
+  margin-bottom: 10px;
+}
+
+/* ABOUT SECTION */
+.about-section {
+  padding: 80px 40px;
+  background: #f9f9f9;  
+  text-align: center;
+}
+
+.about-section h2 {
+  font-size: 2.5rem;
+  color: var(--primary-green);
+  margin-bottom: 20px;
+}
+
+.about-section p {
+  max-width: 700px;
+  margin: 0 auto 30px;
+  color: var(--text-light);
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+/* CTA BANNER */
+.cta-banner {
+  background: url('../assets/cta.jpg') center/cover no-repeat;
+  position: relative;
+  padding: 120px 40px;
+  text-align: center;
+  color: white;
+}
+.cta-banner::before {
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,133,62,0.85);
+  z-index:1;
+}
+.cta-banner h2, .cta-banner p, .cta-banner .btn {
+  position: relative;
+  z-index:2;
 }
