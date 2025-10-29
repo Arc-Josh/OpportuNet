@@ -16,7 +16,6 @@ body {
 .homepage {
   max-width: auto;
   background: whitesmoke;
-  padding: 20px;
 }
 
 /* HERO SECTION */
@@ -84,18 +83,23 @@ body {
 .hero-image {
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
+  margin-right: -30px;
 }
 
 .hero-logo {
-  width: 600px;   
-  height: auto; 
+  width: 400px; /* adjust size */
+  height: 400px;
+  object-fit: cover; /* keeps proportions while filling circle */
+  border-radius: 50%; /* makes it circular */
+  border: 6px solid white; /* optional border for contrast */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3); /* optional depth */
 }
 
 /* ALTERNATING FEATURES SECTION */
 .alt-features-section {
   padding: 100px 40px;
-  background: url('../assets/feature.png') center/cover no-repeat;
+  background: url('../assets/feature.jpg') center/cover no-repeat;
   color: white;
   text-align: center;
   position: relative;

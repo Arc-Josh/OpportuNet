@@ -1,5 +1,5 @@
 :root {
-  --primary-green: #00853E;
+  --primary-green: #2e7d32;
   --secondary-green: #4caf50;
   --accent-green: #81c784;
   --text-dark: #1a1a1a;
@@ -8,21 +8,24 @@
 }
 
 .navbar {
-  background: linear-gradient(90deg, #ffffff, #f4fdf5);
+  background: white;
+  border-bottom: 4px solid var(--primary-green);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
   z-index: 100;
   padding: 0.8rem 0;
+  width: 100%;
 }
 
 .nav-container {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
 }
 
 .logo {
@@ -32,6 +35,7 @@
   color: inherit; 
   font-size: 1.6rem;
   font-weight: 700;
+  margin-right: auto;
 }
 
 .nav-logo {
@@ -47,9 +51,10 @@
 
 .nav-links {
   display: flex;
-  gap: 1.2rem; 
+  gap: 2rem; 
   align-items: center;
   flex-wrap: nowrap; 
+  margin-left: auto;
 }
 
 .nav-link {
@@ -120,6 +125,3 @@
     padding: 1rem;
   }
 }
-
-
-
