@@ -23,7 +23,7 @@ const LoginPage = () => {
           alert("Login succeeded but no token returned from server!");
           return false;
         }
-        localStorage.setItem("token", token);
+        storeToken(token);
         navigate("/dashboard");
         return true;
       } else {
