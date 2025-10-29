@@ -13,6 +13,7 @@ import services.email_services
 from database.db import connect_db 
 from services.u_services import remove_saved_job
 from models.user import ScholarshipCreate, ScholarshipResponse
+from services.ai_resume_service import analyze_resume_service
 from services.u_services import (
     create_scholarship_entry, get_all_scholarships,
     save_scholarship_for_user, get_saved_scholarships,
@@ -53,15 +54,15 @@ app.add_middleware(
 @app.post("/signup")
 async def signup(user: UserCreate):
     new_user = await create_account(user)
-
-    if user.enabled == True:
+    if user.enabled:
         try:
             await services.email_services.send_test_email(user.email)
             return new_user
         except Exception as e:
-            print("email services error:",e)
-    else:
-        return new_user
+            print("Email services error:", e)
+    return new_user
+
+
 @app.post("/login")
 async def u_login(user: UserLogin):
     user = await login(user)
@@ -91,90 +92,8 @@ async def analyze_resume(
     job_description: str = Form(...),
     token: str = Depends(authorization.oauth2_scheme)
 ):
-    user_email = authorization.get_user(token)
+    return await analyze_resume_service(file, job_description)
 
-    if not file.filename.lower().endswith((".pdf", ".doc", ".docx")):
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid file type. Only .doc, .docx, and .pdf allowed.",
-        )
-
-    file_data = await file.read()
-    resume_text = extract_text_stub(file.filename, file_data)
-    if not resume_text:
-        raise HTTPException(
-            status_code=500, detail="Could not extract text from resume."
-        )
-
-    conn = await connect_db()
-    try:
-        query = """
-            INSERT INTO resumes (user_email, file_name, file_data)
-            VALUES ($1, $2, $3)
-            RETURNING id;
-        """
-        resume_id = await conn.fetchval(query, user_email, file.filename, file_data)
-    except Exception as e:
-        print("failed to execute insert into database:", e)
-    finally:
-        print("resume successfully loaded into database")
-        await conn.close()
-
-    try:
-        prompt = f"""
-        You are an ATS-style resume analyzer.
-        Compare the resume to the job description.
-
-        Resume:
-        {resume_text[:4000]}
-
-        Job Description:
-        {job_description}
-
-        Respond ONLY in valid JSON.
-        {{
-          "match_score": number (0-100),
-          "top_matching_skills": ["skill1", "skill2"],
-          "missing_skills": ["skillA", "skillB"],
-          "recommendations": ["short bullet", "another bullet"]
-        }}
-        """
-        try:
-            raw_analysis_response = await chatbot(prompt,user_email)
-            raw_analysis = raw_analysis_response[0]
-        except Exception as e:
-            raise HTTPException(status_code=500,detail="chatbot request failed")
-        
-        parsed = None
-        try:
-            parsed = json.loads(raw_analysis)
-        except Exception as e:
-            print("found the problem its right here in this block: ", e)
-            start = raw_analysis.find("{")
-            end = raw_analysis.rfind("}")
-            if start != -1 and end != -1:
-                try:
-                    parsed = json.loads(raw_analysis[start:end+1])
-                except Exception:
-                    pass
-        if not parsed:
-            from services.resume_services import basic_resume_analysis
-            fallback = basic_resume_analysis(resume_text, job_description)
-            parsed = {
-                "match_score": int(fallback.get("match_score", "0%").replace("%", "")),
-                "top_matching_skills": [kw["keyword"] for kw in fallback.get("keyword_gap_table", []) if kw["resume_count"] > 0],
-                "missing_skills": [kw["keyword"] for kw in fallback.get("keyword_gap_table", []) if kw["resume_count"] == 0],
-                "recommendations": fallback.get("content_suggestions", ["Fallback analysis only."])
-            }
-    except Exception:
-        raise HTTPException(status_code=500, detail="Resume analysis failed.")
-
-    return {
-        "resume_id": resume_id,
-        "file_name": file.filename,
-        "analysis": parsed,
-        "job_description": job_description,
-    }
 
 
 @app.put("/edit-resume")
@@ -307,15 +226,3 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
-
-
-@app.get("/scholarship-urls")
-async def scholarship_urls():
-    scholarships = await get_all_scholarships()
-    return [
-        {
-            "scholarship_title": s.scholarship_title,
-            "url": getattr(s, "url", None)
-        }
-        for s in scholarships
-    ]

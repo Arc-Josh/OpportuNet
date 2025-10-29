@@ -1,4 +1,3 @@
-# File: server/create_tables.py
 import asyncio
 import asyncpg
 from database.db import DB_URL

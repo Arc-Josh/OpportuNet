@@ -26,7 +26,7 @@ def get_user(token: str = Depends(oauth2_scheme)):
                 status_code = status.HTTP_401_UNAUTHORIZED,
                 detail = "Token invalid or expired"
             )
-        return email
+        return {"email": email}
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
