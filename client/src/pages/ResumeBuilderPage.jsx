@@ -91,7 +91,7 @@ const ResumeBuilderPage = () => {
     else if (progress < 70)
       setProgressText("Comparing skills with job requirements...");
     else if (progress < 99)
-      setProgressText("Generating recommendations...");
+      setProgressText("Generating recruiter insights...");
     else setProgressText("Done!");
   }, [progress]);
 
@@ -185,7 +185,9 @@ const ResumeBuilderPage = () => {
                 <input type="file" accept=".pdf" hidden onChange={handleFileChange} />
               </label>
               {file && <p className="file-name">📄 {file.name}</p>}
-              <button type="submit" className="analyze-btn">Next</button>
+              <button type="submit" className="analyze-btn">
+                Next
+              </button>
             </form>
             {error && <p className="error">{error}</p>}
           </div>
@@ -234,7 +236,10 @@ const ResumeBuilderPage = () => {
                 <h2>ANALYZING...</h2>
                 <p className="fetching-text fade-text">{progressText}</p>
                 <div className="progress-container">
-                  <div className="progress-bar" style={{ width: `${progress}%` }}></div>
+                  <div
+                    className="progress-bar"
+                    style={{ width: `${progress}%` }}
+                  ></div>
                 </div>
               </div>
             ) : analysis ? (
@@ -242,58 +247,77 @@ const ResumeBuilderPage = () => {
                 {/* Match Rate */}
                 <div className="summary-card">
                   <h3>📊 Match Rate</h3>
-                  <div className="score-circle">{analysis.analysis.match_score}%</div>
+                  <div className="score-circle">
+                    {analysis.analysis.match_score}%
+                  </div>
                   <p className="score-label">Overall Match</p>
                 </div>
 
-                {/* Insights card containing Searchability + Hard Skills */}
+                {/* Insights card */}
                 <div className="insights-card">
-                  
-                  {/* Searchability */}
-                  <div className="ats-table">
-  <h4>Searchability Breakdown</h4>
-  <table>
-    <thead>
-      <tr>
-        <th>Category</th>
-        <th>Status</th>
-        <th>Details</th>
-      </tr>
-    </thead>
-    <tbody>
-      {analysis.analysis.searchability_breakdown?.map((item, i) => (
-        <tr key={i}>
-          <td>{item.category}</td>
-          <td
-            className={
-              item.status === "✅"
-                ? "positive"
-                : item.status === "❌"
-                ? "negative"
-                : "neutral"
-            }
-          >
-            {item.status}
-          </td>
-          <td>{item.details}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+                  {/* Searchability Section */}
+                  <div className="ats-info-inline">
+                    <h2>
+                      Searchability <span className="ats-badge">IMPORTANT</span>
+                    </h2>
+                    <p>
+                      Your resume’s searchability reflects how effectively an
+                      Applicant Tracking System (ATS) and recruiters can
+                      discover your profile based on relevant keywords.
+                    </p>
+                    <p className="tip-inline">
+                      <b>Tip:</b> Ensure all job-specific tools, technologies,
+                      and titles from the job description appear naturally
+                      throughout your resume.
+                    </p>
+                  </div>
 
+                  {/* Table */}
+                  <div className="ats-table">
+                    <h4>Searchability Breakdown</h4>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Category</th>
+                          <th>Status</th>
+                          <th>Details</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {analysis.analysis.searchability_breakdown?.map(
+                          (item, i) => (
+                            <tr key={i}>
+                              <td>{item.category}</td>
+                              <td
+                                className={
+                                  item.status.includes("✅")
+                                    ? "positive"
+                                    : item.status.includes("❌")
+                                    ? "negative"
+                                    : "neutral"
+                                }
+                              >
+                                {item.status}
+                              </td>
+                              <td>{item.details}</td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
 
                   {/* Hard Skills */}
                   <div className="hard-skills">
-                    <h2>Hard Skills <span className="ats-badge gray">HIGH SCORE IMPACT</span></h2>
+                    <h2>
+                      Hard Skills{" "}
+                      <span className="ats-badge gray">HIGH SCORE IMPACT</span>
+                    </h2>
                     <p>
-                      Hard skills enable you to perform job-specific duties and measurable tasks.
-                      These include tools, languages, or technologies relevant to your field.
+                      Hard skills enable you to perform job-specific duties and
+                      measurable tasks. These include tools, languages, or
+                      technologies relevant to your field.
                     </p>
-                    <p className="tip-inline">
-                      <b>Tip:</b> Match the skills in your resume to the exact spelling in the job description.
-                    </p>
-
                     <div className="skills-table">
                       <table>
                         <thead>
@@ -309,6 +333,85 @@ const ResumeBuilderPage = () => {
                               <td>{skill.name}</td>
                               <td>{skill.resume_count || "❌"}</td>
                               <td>{skill.job_count || 0}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Soft Skills */}
+                  <div className="soft-skills">
+                    <h2>
+                      Soft Skills{" "}
+                      <span className="ats-badge gray">MEDIUM SCORE IMPACT</span>
+                    </h2>
+                    <p>
+                      Soft skills describe how you interact, communicate, and
+                      adapt within teams — crucial for any professional setting.
+                    </p>
+                    <div className="skills-table">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Skill</th>
+                            <th>Resume</th>
+                            <th>Job Description</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analysis.analysis.soft_skills?.map((skill, i) => (
+                            <tr key={i}>
+                              <td>{skill.name}</td>
+                              <td>{skill.resume_count || "❌"}</td>
+                              <td>{skill.job_count || 0}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Recruiter Tips */}
+                  <div className="recruiter-tips">
+                    <h2>
+                      Recruiter Tips <span className="ats-badge">IMPORTANT</span>
+                    </h2>
+                    <p>
+                      Recruiter Tips analyze how hiring managers interpret your
+                      resume beyond skills — they assess tone, professionalism,
+                      and completeness.
+                    </p>
+                    <p className="tip-inline">
+                      <b>Tip:</b> These recommendations come directly from ATS
+                      and recruiter behavior data to help polish your resume.
+                    </p>
+
+                    <div className="recruiter-tips-table">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {analysis.analysis.recruiter_tips?.map((tip, i) => (
+                            <tr key={i}>
+                              <td>{tip.title}</td>
+                              <td
+                                className={
+                                  tip.status.includes("✅")
+                                    ? "positive"
+                                    : tip.status.includes("⚠️")
+                                    ? "neutral"
+                                    : "negative"
+                                }
+                              >
+                                {tip.status}
+                              </td>
+                              <td>{tip.detail}</td>
                             </tr>
                           ))}
                         </tbody>

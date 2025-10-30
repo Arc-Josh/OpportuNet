@@ -4,8 +4,6 @@ const { parse } = require('json2csv');
 const puppeteer = require('puppeteer');
 const querystring = require('querystring');
 
-
-
 const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 const jobsDir = './jobs';
@@ -198,7 +196,7 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     console.log(`Scraped job details for: ${jobTitle}`);
     await page.close();
 
-    return { 
+    return {
         jobTitle,
         qualifications: jobData.qualifications,
         preferences: jobData.preferences,
@@ -207,8 +205,6 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
         benefits: jobData.benefits,
     };
 }
-
-
 
 
 const axios = require('axios');
@@ -280,8 +276,8 @@ async function sendJobsToBackend() {
 
 async function mainScraper() {
     const browser = await puppeteer.launch({ headless: true });
-    const keyword = 'Data Scientist';
-    const location = 'Dallas, TX';
+    const keywords = ['Data Scientist', 'Data Analyst', 'Computer Scientist', 'Software Engineer', 'AI Manager', 'IT'];
+    const locations = ['Dallas, TX'];
     const totalPages = 1;
     const results = [];
 
@@ -295,7 +291,7 @@ async function mainScraper() {
     const pagePromises = [];
     
     for (let pageNum = 0; pageNum < totalPages; pageNum++) {
-        const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(keyword)}&l=${encodeURIComponent(location)}&start=${pageNum * 10}`;
+        const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(keywords)}&l=${encodeURIComponent(locations)}&start=${pageNum * 10}`;
         const proxyUrl = getScrapeOpsUrl(url);
         
         console.log(`\n--- Page ${pageNum + 1} ---`);
@@ -320,14 +316,13 @@ async function mainScraper() {
 }
 
 
-const scrapeintervalmin = 10080; // 1 week in minutes
+const scrapeintervalmin = 1; 
 async function runScraper() {
     await mainScraper();
     console.log(`Waiting for ${scrapeintervalmin} minutes before next scrape...`);
 }
 
 (async () => {
-    await runScraper(); // Run immediately
-    setInterval(runScraper, scrapeintervalmin * 60 * 1000); // Then every 30 mins
+    await runScraper(); 
+    setInterval(runScraper, scrapeintervalmin * 60 * 1000); 
 })();
-
