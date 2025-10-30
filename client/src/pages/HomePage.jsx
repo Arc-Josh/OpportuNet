@@ -35,7 +35,7 @@ const HomePage = () => {
         <div className="feature-row">
           <div className="feature-text">
             <h3>Curated Tech Jobs</h3>
-            <p>Only CS/IT positions from top companies, filtered for quality and relevance.</p>
+            <p>Only CS/IT positions from top companies, filtered for quality and relevance</p>
           </div>
 
           <div className="feature-image">
@@ -46,7 +46,7 @@ const HomePage = () => {
         <div className="feature-row reverse">
           <div className="feature-text">
             <h3>One-Click Apply</h3>
-            <p>Accept or reject job postings easily with our streamlined interface.</p>
+            <p>Accept or reject job and scholarship postings easily with our streamlined interface</p>
           </div>
           <div className="feature-image">
             <span className="big-icon">✅</span>
@@ -55,11 +55,11 @@ const HomePage = () => {
 
         <div className="feature-row">
           <div className="feature-text">
-            <h3>Smart Filters</h3>
-            <p>Quickly find jobs by salary range, location, and your top skills.</p>
+            <h3>Funding Your Future</h3>
+            <p>Discover scholarships that support your academic and career journey</p>
           </div>
           <div className="feature-image">
-            <span className="big-icon">🔍</span>
+            <span className="big-icon">🎓</span>
           </div>
         </div>
       </section>
@@ -69,16 +69,16 @@ const HomePage = () => {
         <h2>Soaring Higher with Opportunet</h2>
         <div className="stats-grid">
           <div className="stat-card">
-            <h3>1,200+</h3>
+            <h3>2,000+</h3>
             <p>CS/IT Jobs Posted</p>
           </div>
           <div className="stat-card">
             <h3>500+</h3>
-            <p>Partner Companies</p>
+            <p>Companies</p>
           </div>
           <div className="stat-card">
-            <h3>3,000+</h3>
-            <p>Active Users</p>
+            <h3>1,000+</h3>
+            <p>Scholarships</p>
           </div>
         </div>
       </section>
