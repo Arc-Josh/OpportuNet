@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/resumeBuilderStyles.css";
-
+import { getToken } from '../storage/token';
 const sampleJobs = {
   "Android Developer": `We are searching for a brilliant, flexible Android Developer to create novel apps that meet the needs of our target audience. To this end, the Android Developer's Responsibilities include writing and proofreading code, liaising with coworkers within and outside of their department, and monitoring customers' feedback. Over time, you will also be required to create app updates.
 
@@ -136,8 +136,10 @@ const ResumeBuilderPage = () => {
     formData.append("job_description", jobDescription);
 
     try {
+      const token = getToken();
       const response = await fetch("http://127.0.0.1:8000/analyze-resume", {
         method: "POST",
+        headers: {"Authorization": `Bearer ${token}`,},
         body: formData,
       });
       if (!response.ok) throw new Error("Failed to analyze resume");

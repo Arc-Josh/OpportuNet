@@ -4,15 +4,14 @@ from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form, Que
 from services.u_services import create_account, login, get_faq_answer, create_job_entry, get_all_jobs
 from services.resume_services import extract_text_stub
 from ai.chatbot import chatbot
-import boto3
 from security import authorization
-import os
 import json
 from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
 from database.db import connect_db 
 from services.u_services import remove_saved_job
 from models.user import ScholarshipCreate, ScholarshipResponse
+from services.ai_resume_service import analyze_resume_service
 from services.u_services import (
     create_scholarship_entry, get_all_scholarships,
     save_scholarship_for_user, get_saved_scholarships,
@@ -22,21 +21,10 @@ from services.u_services import (
 # ---------------------------
 # AWS S3 Config
 # ---------------------------
-SECRET_KEY_AWS = os.getenv("SECRET_KEY_AWS", "hidden")
-ACCESS_KEY_AWS = os.getenv("ACCESS_KEY_AWS", "hidden")
-BUCKET_AWS = os.getenv("BUCKET_AWS", "opportunet-capstone-pdf-storage")
-REGION_AWS = os.getenv("REGION_AWS", "us-east-2")
 
-s3_cli = boto3.client(
-    "s3",
-    aws_access_key_id=ACCESS_KEY_AWS,
-    aws_secret_access_key=SECRET_KEY_AWS,
-    region_name=REGION_AWS,
-)
+chat_sesh = {}
 
 app = FastAPI()
-
-# Allow frontend calls
 origins = ["http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
@@ -45,10 +33,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# ---------------------------
-# Auth + User Management
-# ---------------------------
 
 @app.post("/signup")
 async def signup(user: UserCreate):
@@ -88,83 +72,11 @@ async def change_email():
 @app.post("/analyze-resume")
 async def analyze_resume(
     file: UploadFile = File(...),
-    job_description: str = Form(...)
+    job_description: str = Form(...),
+    token: str = Depends(authorization.oauth2_scheme)
 ):
-    user_email = "anonymous@example.com"
+    return await analyze_resume_service(file, job_description)
 
-    if not file.filename.lower().endswith((".pdf", ".doc", ".docx")):
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid file type. Only .doc, .docx, and .pdf allowed.",
-        )
-
-    file_data = await file.read()
-    resume_text = extract_text_stub(file.filename, file_data)
-    if not resume_text:
-        raise HTTPException(
-            status_code=500, detail="Could not extract text from resume."
-        )
-
-    conn = await connect_db()
-    try:
-        query = """
-            INSERT INTO resumes (user_email, file_name, file_data)
-            VALUES ($1, $2, $3)
-            RETURNING id;
-        """
-        resume_id = await conn.fetchval(query, user_email, file.filename, file_data)
-    finally:
-        await conn.close()
-
-    try:
-        prompt = f"""
-        You are an ATS-style resume analyzer.
-        Compare the resume to the job description.
-
-        Resume:
-        {resume_text[:4000]}
-
-        Job Description:
-        {job_description}
-
-        Respond ONLY in valid JSON.
-        {{
-          "match_score": number (0-100),
-          "top_matching_skills": ["skill1", "skill2"],
-          "missing_skills": ["skillA", "skillB"],
-          "recommendations": ["short bullet", "another bullet"]
-        }}
-        """
-        raw_analysis = chatbot(prompt)
-        parsed = None
-        try:
-            parsed = json.loads(raw_analysis)
-        except Exception:
-            start = raw_analysis.find("{")
-            end = raw_analysis.rfind("}")
-            if start != -1 and end != -1:
-                try:
-                    parsed = json.loads(raw_analysis[start:end+1])
-                except Exception:
-                    pass
-        if not parsed:
-            from services.resume_services import basic_resume_analysis
-            fallback = basic_resume_analysis(resume_text, job_description)
-            parsed = {
-                "match_score": int(fallback.get("match_score", "0%").replace("%", "")),
-                "top_matching_skills": [kw["keyword"] for kw in fallback.get("keyword_gap_table", []) if kw["resume_count"] > 0],
-                "missing_skills": [kw["keyword"] for kw in fallback.get("keyword_gap_table", []) if kw["resume_count"] == 0],
-                "recommendations": fallback.get("content_suggestions", ["Fallback analysis only."])
-            }
-    except Exception:
-        raise HTTPException(status_code=500, detail="Resume analysis failed.")
-
-    return {
-        "resume_id": resume_id,
-        "file_name": file.filename,
-        "analysis": parsed,
-        "job_description": job_description,
-    }
 
 
 @app.put("/edit-resume")
@@ -175,13 +87,14 @@ async def edit_resume():
 # ---------------------------
 # Chatbot
 # ---------------------------
-
 @app.post("/chatbot")
-async def chatbot_endpoint(
-    request: ChatbotRequest, token: str = Depends(authorization.oauth2_scheme)
-):
+async def chatbot_endpoint(request: ChatbotRequest, token: str = Depends(authorization.oauth2_scheme)):
+    global chat_sesh
     email = authorization.get_user(token)
-    answer = chatbot(request.question)
+    chat = chat_sesh.get(email)
+    answer, new_chat = await chatbot(request.question,email,chat)
+    print(chat_sesh)
+    chat_sesh[email] = new_chat
     return {"email": email, "answer": answer}
 
 
@@ -235,6 +148,8 @@ async def list_saved_jobs(token: str = Depends(authorization.oauth2_scheme)):
         """
         rows = await conn.fetch(query, email)
         return [dict(row) for row in rows]
+    except Exception as e:
+        print("error with the query or somethin: ",e)
     finally:
         await conn.close()
 

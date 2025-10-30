@@ -46,7 +46,7 @@ const Chatbot = () => {
       </form>
       {answer && (
         <div className="chatbot-answer">
-          <p>{answer}</p>
+          <p>{JSON.stringify(answer)}</p>
         </div>
       )}
     </div>
