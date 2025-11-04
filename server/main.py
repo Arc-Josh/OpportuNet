@@ -48,7 +48,10 @@ async def signup(user: UserCreate):
 
 @app.post("/login")
 async def u_login(user: UserLogin):
+    global chat_sesh
+    chat_sesh = {}
     user = await login(user)
+    
     token = user.get("access_token")
     if token:
         return {"token": token}
