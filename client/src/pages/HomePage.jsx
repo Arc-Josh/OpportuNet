@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/homePageStyles.css';
 import { expireToken } from '../storage/token';
-import logo from '../assets/hero.jpg'; 
+import logo from '../assets/girl3.png'; 
 
 const HomePage = () => {
   expireToken(); 
