@@ -52,6 +52,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .password-input-wrapper input {
@@ -225,12 +226,10 @@
   margin: 0;
 }
 
-.password-input-wrapper {
-  gap: 10px;
-}
-
 .show-password-btn {
   background: rgb(226, 211, 2);
   border: #2e7d32;
   cursor: pointer;
+  height: 25px;
+  width: 25px;
 }
