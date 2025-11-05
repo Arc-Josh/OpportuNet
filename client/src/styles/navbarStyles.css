@@ -172,3 +172,19 @@
   background: var(--background-light);
   color: var(--primary-green);
 }
+
+.logout-btn {
+  border: none;
+  background-color: #2e7d32; 
+  color: white;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #45a049;
+}
+

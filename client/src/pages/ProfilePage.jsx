@@ -1,196 +1,218 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import "../styles/authStyles.css";
 
 const ProfilePage = () => {
-  const [email, setEmail] = useState("");
-  const [bio, setBio] = useState("");
-  const [avatar, setAvatar] = useState(null);
-  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    education: "",
+    bio: "",
+    experience: "",
+  });
+
+  const [profilePic, setProfilePic] = useState(null);
   const [resume, setResume] = useState(null);
-  const [resumeName, setResumeName] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [isEditing, setIsEditing] = useState(true);
 
-  const token = localStorage.getItem("token");
-
-  // Fetch profile
-  const fetchProfile = async () => {
-    try {
-      const res = await fetch("http://localhost:8000/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Failed to load profile");
-      const data = await res.json();
-      setEmail(data.email);
-      setBio(data.bio || "");
-      if (data.avatar) {
-        const base64 = `data:image/jpeg;base64,${data.avatar}`;
-        setAvatarPreview(base64);
-      }
-    } catch (err) {
-      console.error("Error fetching profile:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch saved profile data when component loads
   useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/profile");
+        if (response.ok) {
+          const data = await response.json();
+          setFormData({
+            fullName: data.fullName || "",
+            email: data.email || "",
+            education: data.education || "",
+            bio: data.bio || "",
+            experience: data.experience || "",
+          });
+          setProfilePic(data.profilePic || null);
+          setResume(data.resume ? `http://localhost:8000/${data.resume}` : null);
+          setIsEditing(false);
+        }
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+      }
+    };
     fetchProfile();
-    // eslint-disable-next-line
   }, []);
 
-  // Handle avatar upload
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAvatar(file);
-      setAvatarPreview(URL.createObjectURL(file));
-    }
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
-  // Handle resume file selection
-  const handleResumeChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type === "application/pdf") {
-      setResume(file);
-    } else {
-      alert("Please upload a PDF file only.");
-    }
-  };
+  // Handle file uploads
+  const handleProfilePicChange = (e) => setProfilePic(e.target.files[0]);
+  const handleResumeChange = (e) => setResume(e.target.files[0]);
 
-  // Upload resume
-const handleResumeUpload = async () => {
-  if (!resume) {
-    alert("Please select a PDF file first.");
-    return;
-  }
+  // Submit updated profile
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("Saving...");
 
-  const formData = new FormData();
-  formData.append("file", resume);       
-  formData.append("email", email);       
-
-  try {
-    const res = await fetch("http://localhost:8000/profile/resume", {
-      method: "PUT",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-
-    const data = await res.json();
-    if (res.ok) {
-      alert("✅ Resume uploaded successfully!");
-      setResumeName(data.file_name || resume.name);
-    } else {
-      alert("❌ Failed to upload resume: " + data.detail);
-    }
-  } catch (err) {
-    console.error("Error uploading resume:", err);
-    alert("❌ Error uploading resume.");
-  }
-};
-
-
-  // Save bio + avatar
-  const handleSave = async () => {
-    const formData = new FormData();
-    formData.append("bio", bio);
-    if (avatar) {
-      formData.append("avatar", avatar);
-    }
+    const formDataToSend = new FormData();
+    Object.entries(formData).forEach(([key, value]) =>
+      formDataToSend.append(key, value)
+    );
+    if (profilePic instanceof File) formDataToSend.append("profilePic", profilePic);
+    if (resume instanceof File) formDataToSend.append("resume", resume);
 
     try {
-      const res = await fetch("http://localhost:8000/profile", {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+      const response = await fetch("http://localhost:8000/update_profile", {
+        method: "POST",
+        body: formDataToSend,
       });
-      if (!res.ok) throw new Error("Failed to save profile");
-      await fetchProfile();
-      alert("Profile updated!");
+
+      if (response.ok) {
+        setMessage("✅ Profile updated successfully!");
+        setIsEditing(false);
+      } else {
+        setMessage("❌ Failed to update profile.");
+      }
     } catch (err) {
-      console.error("Error saving profile:", err);
-      alert("Failed to save changes.");
+      console.error(err);
+      setMessage("⚠️ Error connecting to server.");
     }
   };
 
-  if (loading) return <p>Loading profile...</p>;
+  // Switch to edit mode
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "auto", padding: "2rem" }}>
-      <h2>My Profile</h2>
-      <p>
-        <strong>Email:</strong> {email}
-      </p>
+    <div className="profile-page">
+      <div className="profile-container">
+        <h2 className="profile-title">My Profile</h2>
 
-      {/* Bio Section */}
-      <div style={{ margin: "1rem 0" }}>
-        <label>Bio (max 2000 chars)</label>
-        <textarea
-          value={bio}
-          onChange={(e) => setBio(e.target.value)}
-          rows="5"
-          style={{ width: "100%", padding: "8px" }}
-        />
-      </div>
+        {/* === Display Mode === */}
+        {!isEditing ? (
+          <div className="profile-view">
+            {profilePic && (
+              <img
+                src={
+                  typeof profilePic === "string"
+                    ? profilePic
+                    : URL.createObjectURL(profilePic)
+                }
+                alt="Profile"
+                className="profile-display-pic"
+              />
+            )}
 
-      {/* Avatar Upload */}
-      <div style={{ margin: "1rem 0" }}>
-        <label>Avatar</label>
-        <br />
-        {avatarPreview && (
-          <img
-            src={avatarPreview}
-            alt="Avatar preview"
-            style={{
-              width: "100px",
-              height: "100px",
-              borderRadius: "50%",
-              objectFit: "cover",
-              marginBottom: "8px",
-            }}
-          />
+            <h3>{formData.fullName || "Your Name"}</h3>
+            <p><strong>Email:</strong> {formData.email}</p>
+            <p><strong>Education:</strong> {formData.education}</p>
+            <p><strong>Bio:</strong> {formData.bio}</p>
+            <p><strong>Experience:</strong> {formData.experience}</p>
+
+            {resume && (
+              <p>
+                📄 <a href={resume} target="_blank" rel="noreferrer">View Resume</a>
+              </p>
+            )}
+
+            <button className="save-btn" onClick={handleEdit}>
+              Edit Profile
+            </button>
+          </div>
+        ) : (
+          // === Edit Mode (Form) ===
+          <form onSubmit={handleSubmit} className="profile-form">
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Full Name:</label>
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Education:</label>
+              <input
+                type="text"
+                name="education"
+                value={formData.education}
+                onChange={handleChange}
+                placeholder="e.g., B.S. Computer Science - University of North Texas"
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Bio:</label>
+              <textarea
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                rows="3"
+                placeholder="Write a short summary about yourself..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Experience:</label>
+              <textarea
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                rows="4"
+                placeholder="Describe your experience, e.g., internships, projects, or work history..."
+              />
+            </div>
+
+            <div className="upload-section">
+              <label>Profile Picture:</label>
+              <input type="file" accept="image/*" onChange={handleProfilePicChange} />
+              {profilePic && (
+                <img
+                  src={
+                    typeof profilePic === "string"
+                      ? profilePic
+                      : URL.createObjectURL(profilePic)
+                  }
+                  alt="Profile Preview"
+                  className="profile-preview"
+                />
+              )}
+            </div>
+
+            <div className="upload-section">
+              <label>Upload Resume (PDF only):</label>
+              <input type="file" accept=".pdf" onChange={handleResumeChange} />
+              {resume && !(resume instanceof File) && (
+                <p>📄 <a href={resume} target="_blank" rel="noreferrer">View Current Resume</a></p>
+              )}
+            </div>
+
+            <button type="submit" className="save-btn">
+              Save Changes
+            </button>
+
+            {message && <p className="status-message">{message}</p>}
+          </form>
         )}
-        <input type="file" accept="image/*" onChange={handleAvatarChange} />
       </div>
-
-      {/* Resume Upload */}
-      <div style={{ margin: "1rem 0" }}>
-        <label>Upload Resume (PDF only)</label>
-        <br />
-        <input type="file" accept=".pdf" onChange={handleResumeChange} />
-        <button
-          onClick={handleResumeUpload}
-          style={{
-            marginLeft: "10px",
-            padding: "6px 12px",
-            backgroundColor: "#1e90ff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Upload
-        </button>
-        {resumeName && (
-          <p style={{ marginTop: "10px" }}>
-            ✅ Uploaded Resume: <strong>{resumeName}</strong>
-          </p>
-        )}
-      </div>
-
-      {/* Save Changes */}
-      <button
-        onClick={handleSave}
-        style={{
-          padding: "10px 20px",
-          backgroundColor: "#2e8b57",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-      >
-        Save Changes
-      </button>
     </div>
   );
 };

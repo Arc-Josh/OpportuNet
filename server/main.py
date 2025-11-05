@@ -1,31 +1,40 @@
-from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form
-from models.user import UserCreate, UserLogin, UserResponse, ChatbotRequest, JobCreate, JobResponse
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form, Query
-from services.u_services import create_account, login, get_faq_answer, create_job_entry, get_all_jobs
-from services.resume_services import extract_text_stub
-from ai.chatbot import chatbot
-from security import authorization
-import json
 from fastapi.middleware.cors import CORSMiddleware
-import services.email_services
-from database.db import connect_db 
-from services.u_services import remove_saved_job
-from models.user import ScholarshipCreate, ScholarshipResponse
-from services.ai_resume_service import analyze_resume_service
-from services.u_services import (
-    create_scholarship_entry, get_all_scholarships,
-    save_scholarship_for_user, get_saved_scholarships,
-    remove_saved_scholarship
+from fastapi.staticfiles import StaticFiles
+
+# Models
+from models.user import (
+    UserCreate, UserLogin, UserResponse, ChatbotRequest,
+    JobCreate, JobResponse, ScholarshipCreate, ScholarshipResponse
 )
 
-# ---------------------------
-# AWS S3 Config
-# ---------------------------
+# Services
+from services.u_services import (
+    create_account, login, get_faq_answer, create_job_entry, get_all_jobs,
+    remove_saved_job, create_scholarship_entry, get_all_scholarships,
+    save_scholarship_for_user, get_saved_scholarships, remove_saved_scholarship
+)
+from services.ai_resume_service import analyze_resume_service
+from services.profile_service import get_profile, save_profile
+from services.resume_services import extract_text_stub
+from ai.chatbot import chatbot
+from database.db import connect_db
+from security import authorization
+import services.email_services
 
-chat_sesh = {}
-
+# ---------------------------
+# App Initialization
+# ---------------------------
 app = FastAPI()
-origins = ["http://localhost:3000"]
+
+
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000"
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -34,13 +43,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# ---------------------------
+# Auth + Account
+# ---------------------------
+chat_sesh = {}
+
 @app.post("/signup")
 async def signup(user: UserCreate):
     new_user = await create_account(user)
     if user.enabled:
         try:
             await services.email_services.send_test_email(user.email)
-            return new_user
         except Exception as e:
             print("Email services error:", e)
     return new_user
@@ -52,23 +67,12 @@ async def u_login(user: UserLogin):
     token = user.get("access_token")
     if token:
         return {"token": token}
-    raise HTTPException(status_code=400, detail="no token acquired")
-
-
-@app.put("/change-password")
-async def change_password():
-    return {"message": "Change password not implemented yet."}
-
-
-@app.put("/change-email")
-async def change_email():
-    return {"message": "Change email not implemented yet."}
+    raise HTTPException(status_code=400, detail="No token acquired")
 
 
 # ---------------------------
-# Resume Upload + AI Analyzer
+# Resume Analyzer (AI)
 # ---------------------------
-
 @app.post("/analyze-resume")
 async def analyze_resume(
     file: UploadFile = File(...),
@@ -76,12 +80,6 @@ async def analyze_resume(
     token: str = Depends(authorization.oauth2_scheme)
 ):
     return await analyze_resume_service(file, job_description)
-
-
-
-@app.put("/edit-resume")
-async def edit_resume():
-    return {"message": "Resume update not yet implemented"}
 
 
 # ---------------------------
@@ -92,8 +90,7 @@ async def chatbot_endpoint(request: ChatbotRequest, token: str = Depends(authori
     global chat_sesh
     email = authorization.get_user(token)
     chat = chat_sesh.get(email)
-    answer, new_chat = await chatbot(request.question,email,chat)
-    print(chat_sesh)
+    answer, new_chat = await chatbot(request.question, email, chat)
     chat_sesh[email] = new_chat
     return {"email": email, "answer": answer}
 
@@ -101,7 +98,6 @@ async def chatbot_endpoint(request: ChatbotRequest, token: str = Depends(authori
 # ---------------------------
 # Dashboard + Jobs
 # ---------------------------
-
 @app.get("/dashboard")
 async def dashboard(token: str = Depends(authorization.oauth2_scheme)):
     email = authorization.get_user(token)
@@ -148,8 +144,6 @@ async def list_saved_jobs(token: str = Depends(authorization.oauth2_scheme)):
         """
         rows = await conn.fetch(query, email)
         return [dict(row) for row in rows]
-    except Exception as e:
-        print("error with the query or somethin: ",e)
     finally:
         await conn.close()
 
@@ -163,7 +157,6 @@ async def delete_saved_job(job_id: int, token: str = Depends(authorization.oauth
 # ---------------------------
 # Scholarships
 # ---------------------------
-
 @app.post("/scholarships-create", response_model=ScholarshipResponse)
 async def create_scholarship(scholarship: ScholarshipCreate):
     return await create_scholarship_entry(scholarship)
@@ -211,3 +204,34 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
+
+
+# ---------------------------
+# Profile Endpoints
+# ---------------------------
+@app.get("/profile")
+async def profile_get():
+    """Fetch user profile data."""
+    return get_profile()
+
+
+@app.post("/update_profile")
+async def profile_update(
+    fullName: str = Form(...),
+    email: str = Form(...),
+    education: str = Form(""),
+    bio: str = Form(""),
+    experience: str = Form(""),
+    profilePic: UploadFile = File(None),
+    resume: UploadFile = File(None),
+):
+    """Update user profile data and files."""
+    return save_profile(
+        fullName=fullName,
+        email=email,
+        education=education,
+        bio=bio,
+        experience=experience,
+        profilePic=profilePic,
+        resume=resume,
+    )
