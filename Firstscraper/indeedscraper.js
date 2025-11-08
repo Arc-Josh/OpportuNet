@@ -255,10 +255,10 @@ async function sendJobsToBackend() {
     for (const job of jobsData) {
         const payload = {
             job_name: job.jobTitle || 'Unknown',
-            location: job.jobLocation || 'Unknown',
+            location: job.location || 'Unknown',
             salary: job.salary || 'Not specified',
             description: job.description || 'No description provided',
-            company_name: job.company || 'Unknown',
+            company_name: job.company_name || 'Unknown',
             application_link: job.jobUrl || 'N/A',
             qualifications: job.qualifications || 'Not specified',
             preferences: job.preferences || 'Not specified',
