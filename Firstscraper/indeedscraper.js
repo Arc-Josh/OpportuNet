@@ -277,44 +277,42 @@ async function sendJobsToBackend() {
 async function mainScraper() {
     const browser = await puppeteer.launch({ headless: true });
     const keywords = ['Data Scientist', 'Data Analyst', 'Computer Scientist', 'Software Engineer', 'AI Manager', 'IT'];
-    const locations = ['Dallas, TX'];
+    const locations = ['Dallas, TX'];  
     const totalPages = 1;
     const results = [];
 
     console.log(`\n========== Job Scraping Started ==========`);
-    console.log(`Keyword: ${keyword}`);
-    console.log(`Location: ${location}`);
-    console.log(`Pages to scrape: ${totalPages}`);
 
     cleanJobsFolder();
 
-    const pagePromises = [];
-    
-    for (let pageNum = 0; pageNum < totalPages; pageNum++) {
-        const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(keywords)}&l=${encodeURIComponent(locations)}&start=${pageNum * 10}`;
-        const proxyUrl = getScrapeOpsUrl(url);
-        
-        console.log(`\n--- Page ${pageNum + 1} ---`);
-        console.log(`URL: ${url}`);
+    for (const kw of keywords) {
+        for (const loc of locations) {
+            console.log(`\nSearching for "${kw}" in ${loc}`);
 
-        pagePromises.push(crawlPage(browser, proxyUrl));
+            for (let pageNum = 0; pageNum < totalPages; pageNum++) {
+                const url = `https://www.indeed.com/jobs?q=${encodeURIComponent(kw)}&l=${encodeURIComponent(loc)}&start=${pageNum * 10}`;
+                
+                const proxyUrl = getScrapeOpsUrl(url);
+
+                console.log(`Page ${pageNum + 1}: ${url}`);
+
+                const pageResults = await crawlPage(browser, proxyUrl);
+                results.push(...pageResults);
+            }
+        }
     }
 
-    const allResults = await Promise.all(pagePromises);
-
-    allResults.forEach(jobList => results.push(...jobList));
-
+    // ✅ Save results
     fs.writeFileSync('indeed_jobs.json', JSON.stringify(results, null, 2));
-    console.log(`\n✓ Crawling complete.`);
-    console.log(`✓ Saved ${results.length} jobs to indeed_jobs.json`);
-    
+    console.log(`\n✓ Saved ${results.length} jobs to indeed_jobs.json`);
+
+    // ✅ Send results to backend
     console.log(`\n========== Sending Jobs to Backend ==========`);
     await sendJobsToBackend();
-    
+
     await browser.close();
     console.log(`\n========== Scraping Completed Successfully ==========\n`);
 }
-
 
 const scrapeintervalmin = 1; 
 async function runScraper() {

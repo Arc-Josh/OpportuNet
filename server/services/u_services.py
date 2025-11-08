@@ -6,6 +6,8 @@ from models.user import UserProfileResponse, UserProfileUpdate
 from fastapi import HTTPException
 import os
 import json
+from typing import Optional, List
+import re
 from datetime import datetime, date
 
 try:
@@ -465,3 +467,111 @@ async def save_user_resume(email: str, file_name: str, file_data: bytes):
         await conn.close()
 
 
+def _normalize_sort(sort: Optional[str]) -> str:
+    if not sort:
+        return "new"
+    s = sort.lower().strip()
+    return s if s in {"new", "salary_high", "salary_low"} else "new"
+
+async def get_jobs_filtered(
+    search: Optional[str] = None,
+    company: Optional[str] = None,
+    position: Optional[str] = None,
+    location: Optional[str] = None,
+    location_type: Optional[str] = None, 
+    min_salary: Optional[int] = None,
+    max_salary: Optional[int] = None,
+    sort: Optional[str] = "new",
+    page: int = 1,
+    page_size: int = 25,
+) -> List[JobResponse]:
+    conn = await connect_db()
+    try:
+        where = []
+        args = []
+        i = 1
+
+        # keyword search across job_name, company_name, description
+        if search:
+            where.append(f"(job_name ILIKE ${i} OR company_name ILIKE ${i} OR description ILIKE ${i})")
+            args.append(f"%{search}%"); i += 1
+
+        if company:
+            where.append(f"(company_name ILIKE ${i})")
+            args.append(f"%{company}%"); i += 1
+
+        if location:
+            where.append(f"(location ILIKE ${i})")
+            args.append(f"%{location}%"); i += 1
+
+        # position filter (no schema change) -> infer from job_name
+        # ex: Frontend/Backend/Fullstack/Intern or any text passed
+        if position:
+            where.append(f"(job_name ILIKE ${i})")
+            args.append(f"%{position}%"); i += 1
+
+        # location_type filter -> match in location/description text
+        # allowed: Remote / Hybrid / On-site
+        if location_type:
+            lt = location_type.lower()
+            if lt in ("remote", "hybrid", "on-site", "onsite"):
+                like_val = "on-site" if lt in ("on-site", "onsite") else lt
+                where.append(f"(location ILIKE ${i} OR description ILIKE ${i})")
+                args.append(f"%{like_val}%"); i += 1
+
+        # Salary range — extract numeric digits from salary TEXT and cast to INT
+        # This works for '70,000 - 100,000 a year', '$120k - $140k' etc.
+        # If the salary text has multiple numbers, we take the first one (MIN edge).
+        # NOTE: If you later add numeric columns, we can upgrade this easily.
+        if min_salary is not None:
+            where.append(
+                """(
+                     salary ~ '\\d' -- contains any digit
+                     AND CAST(NULLIF(regexp_replace(salary, '[^0-9]', '', 'g'), '') AS INT) >= $%s
+                   )""" % i
+            )
+            args.append(min_salary); i += 1
+
+        if max_salary is not None:
+            where.append(
+                """(
+                     salary ~ '\\d' 
+                     AND CAST(NULLIF(regexp_replace(salary, '[^0-9]', '', 'g'), '') AS INT) <= $%s
+                   )""" % i
+            )
+            args.append(max_salary); i += 1
+
+        where_sql = ("WHERE " + " AND ".join(where)) if where else ""
+        s = _normalize_sort(sort)
+        if s == "new":
+            order_sql = "ORDER BY created_at DESC"
+        elif s == "salary_high":
+            order_sql = """ORDER BY 
+                CASE WHEN salary ~ '\\d' 
+                     THEN CAST(NULLIF(regexp_replace(salary, '[^0-9]', '', 'g'), '') AS INT)
+                     ELSE NULL END DESC NULLS LAST, created_at DESC"""
+        else:  # salary_low
+            order_sql = """ORDER BY 
+                CASE WHEN salary ~ '\\d' 
+                     THEN CAST(NULLIF(regexp_replace(salary, '[^0-9]', '', 'g'), '') AS INT)
+                     ELSE NULL END ASC NULLS LAST, created_at DESC"""
+
+        offset = (page - 1) * page_size
+        query = f"""
+            SELECT job_id, job_name, location, salary, application_link, hr_contact_number,
+                   qualifications, preferences, benefits, mission_statement, created_at,
+                   company_name, description
+            FROM jobs
+            {where_sql}
+            {order_sql}
+            LIMIT $%s OFFSET $%s
+        """ % (i, i+1)
+        args.extend([page_size, offset])
+
+        rows = await conn.fetch(query, *args)
+        return [JobResponse(**dict(r)) for r in rows]
+    except Exception as e:
+        print("Error filtering jobs:", e)
+        raise HTTPException(status_code=500, detail="Could not retrieve jobs")
+    finally:
+        await conn.close()

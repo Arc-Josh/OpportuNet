@@ -7,6 +7,8 @@ from ai.chatbot import chatbot
 from security import authorization
 import json
 from fastapi.middleware.cors import CORSMiddleware
+from services.u_services import get_jobs_filtered
+from typing import Optional
 import services.email_services
 from database.db import connect_db 
 from services.u_services import remove_saved_job
@@ -121,8 +123,30 @@ async def create_job(job: JobCreate):
 
 
 @app.get("/jobs", response_model=list[JobResponse])
-async def list_jobs():
-    return await get_all_jobs()
+async def list_jobs(
+    search: Optional[str] = Query(None, description="keyword in title/company/description"),
+    company: Optional[str] = Query(None),
+    position: Optional[str] = Query(None, description="e.g., Frontend/Backend/Fullstack/Intern"),
+    location: Optional[str] = Query(None),
+    location_type: Optional[str] = Query(None, description="Remote/Hybrid/On-site"),
+    min_salary: Optional[int] = Query(None),
+    max_salary: Optional[int] = Query(None),
+    sort: Optional[str] = Query("new", description="new|salary_high|salary_low"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+):
+    return await get_jobs_filtered(
+        search=search,
+        company=company,
+        position=position,
+        location=location,
+        location_type=location_type,
+        min_salary=min_salary,
+        max_salary=max_salary,
+        sort=sort,
+        page=page,
+        page_size=page_size,
+    )
 
 
 @app.post("/save-job/{job_id}")
