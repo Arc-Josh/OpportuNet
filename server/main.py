@@ -5,6 +5,7 @@ from services.u_services import create_account, login, get_faq_answer, create_jo
 from services.resume_services import extract_text_stub
 from ai.chatbot import chatbot
 from security import authorization
+import boto3
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from services.u_services import get_jobs_filtered

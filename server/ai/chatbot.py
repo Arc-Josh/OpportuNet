@@ -43,24 +43,24 @@ async def chatbot(dialogue:str,email:str,chat = None):
         
     return response.text, chat
 
-#def chatbot(dialogue: str):
-   # """
-    #Sends dialogue + system instructions to Gemini 2.5 Flash 
-   # and returns the AI-generated response text.
-    #"""
-   ## try:
-    #    model = genai.GenerativeModel(
-     #       model_name="gemini-2.5-flash",
-      #      system_instruction=instructions
-      #  )
-      #  response = model.generate_content(dialogue)
-     #   return response.text
-   # except Exception as e:
-   #     print("⚠️ Gemini API Error:", e)
-        # Safe fallback (to prevent FastAPI crash)
-    #    fallback_response = {
-   #         "hard_skills": ["Python", "SQL", "Machine Learning"],
-   #         "soft_skills": ["Teamwork", "Communication", "Problem Solving"],
-   #         "recruiter_tips": "Highlight measurable achievements, tailor your resume to the role, and emphasize impact-driven results."
-   #     }
-    #    return json.dumps(fallback_response)
+def res_chatbot(dialogue: str):
+    """
+    Sends dialogue + system instructions to Gemini 2.5 Flash 
+    and returns the AI-generated response text.
+    """
+    try:
+        model = genai.GenerativeModel(
+            model_name="gemini-2.5-flash",
+            system_instruction=instructions
+        )
+        response = model.generate_content(dialogue)
+        return response.text
+    except Exception as e:
+        print("⚠️ Gemini API Error:", e)
+         #Safe fallback (to prevent FastAPI crash)
+        fallback_response = {
+            "hard_skills": ["Python", "SQL", "Machine Learning"],
+            "soft_skills": ["Teamwork", "Communication", "Problem Solving"],
+            "recruiter_tips": "Highlight measurable achievements, tailor your resume to the role, and emphasize impact-driven results."
+        }
+        return json.dumps(fallback_response)
