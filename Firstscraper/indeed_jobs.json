@@ -17,7 +17,7 @@
       "Strong knowledge of SQL and relational databases.",
       "Ability to use Restful APIs to extract JSON data sets for processing into relational databases.",
       "Expertise in machine learning techniques, predictive modeling, clustering, and anomaly detection.",
-      "Expertise in data visualization skills using tools like Tableau, Power BI, Metabase, etc.",
+      "Expertise in data visualization skills using tools like Tableau, Power BI, Metabase, etc...",
       "Proficient in data analysis development tools and languages such as Python and R.",
       "Knowledge of statistical methods, hypothesis testing, A/B testing, and experimental design.",
       "Strong problem-solving skills with the ability to debug and troubleshoot issues effectively.",
@@ -44,13 +44,45 @@
     ]
   },
   {
+    "jobTitle": "Data - Data Scientist Mid Data Scientist Mid",
+    "company": "Pyramid Consulting, Inc",
+    "jobLocation": "Irving, TX 75063",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=84e2cd92ece761a3",
+    "salary": "$60 - $65 an hour - Contract",
+    "benefits": [
+      "Pay Range: $60 - $65/hour.",
+      "Employee benefits include, but are not limited to, health insurance (medical, dental, vision), 401(k) plan, and paid sick leave (depending on work location)."
+    ],
+    "qualifications": [
+      "Overall experience is 7 to 8 years.",
+      "3 years of experience with statistical data science techniques, feature engineering, customer segmentation etc.",
+      "3 years of experience with SQL, PySpark and Python.",
+      "3 years of experience training, evaluating and deploying Machine Learning models.",
+      "3 years of experience with productionizing and deploying ML workloads in AWS/Azure.",
+      "Familiarity with containerized application tooling and deployments (Docker/Kubernetes).",
+      "Bachelor’s Degree or higher in Computer Science/Engineering/Math, or relevant experience.",
+      "Experience with Databricks platform.",
+      "Experience building ML models with large amounts of structured and unstructured data."
+    ],
+    "description": "Immediate need for a talented Data - Data Scientist Mid. This is a 12 months contract opportunity with long-term potential and is located in Irving, TX (Onsite).",
+    "preferences": [],
+    "responsibilities": [
+      "Research, prototype, and develop AI solutions to build personalized systems.",
+      "Build, deploy and analyze AI solutions and perform statistical experiments when deploying new AI products.",
+      "Stay up to date with emerging technology and learn new technologies/libraries/frameworks.",
+      "Learn and partner with peers across multiple disciplines, such as data, product, and systems design.",
+      "Deliver on time with a high bar on quality of research, innovation and engineering."
+    ]
+  },
+  {
     "jobTitle": "Senior Data Scientist - Optimization",
     "company": "Tiger Analytics",
     "jobLocation": "Remote in Dallas, TX",
     "jobUrl": "https://www.indeed.com/viewjob?jk=9216e5a3f20fe686",
     "salary": "Full-time",
     "benefits": [
-      "This position offers an excellent opportunity for significant career development in a fast-growing and challenging entrepreneurial environment with a high degree of individual responsibility."
+      "This position offers an excellent opportunity for significant career development in a fast-growing and challenging entrepreneurial environment with a high degree of individual responsibility.",
+      "Tiger Analytics provides equal employment opportunities to applicants and employees without regard to race, color, religion, age, sex, sexual orientation, gender identity/expression, pregnancy, national origin, ancestry, marital status, protected veteran status, disability status, or any other basis as protected by federal, state, or local law."
     ],
     "qualifications": [
       "Proven experience 10+ years working as a Data Scientist, with a focus on supply chain optimization and inventory allocation.",
@@ -76,44 +108,6 @@
     ]
   },
   {
-    "jobTitle": "Sr Data Scientist GenAI",
-    "company": "Select Minds LLC",
-    "jobLocation": "Dallas, TX 75235 \n(Dallas Love Field area)",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=0adc95909d448a8e",
-    "salary": "$150,000 - $210,000 a year - Full-time",
-    "benefits": [
-      "Competitive salary",
-      "Flexible schedule",
-      "Opportunity for advancement"
-    ],
-    "qualifications": [
-      "10+ years of experience in data science / ML, with substantial work in NLP, LLMs, or Generative AI.",
-      "Deep hands-on experience in Python, using frameworks like PyTorch, TensorFlow, HuggingFace etc.",
-      "Proven track record building transformer/NLP / LLM models; experience with fine-tuning, prompt engineering.",
-      "Solid experience with information retrieval / search: keyword + semantic search, embeddings, vector databases.",
-      "Experience working in production / deploying models (batch and streaming), working with MLOps practices.",
-      "Strong algorithmic / statistical / mathematical fundamentals. Ability to reason about model behaviour, bias, uncertainty.",
-      "Good communicator: able to translate complex technical detail to business / non-technical stakeholders."
-    ],
-    "description": "Sr Data Scientist (NLP / LLM / Generative AI) Location: Dallas, TX",
-    "preferences": [
-      "Master's in Computer Science, Computational Linguistics, Statistics, Machine Learning or related field.",
-      "Experience with multimodal models (vision + text) or emerging LLMs and agent-based systems.",
-      "Experience with open source LLMs & toolkits; familiarity with LangChain or similar frameworks.",
-      "Prior experience in regulated environments (finance, risk, legal, compliance) with strong governance, privacy requirements."
-    ],
-    "responsibilities": [
-      "Design, build, fine-tune, and deploy LLMs, transformer-based NLP models, and GenAI solutions for both batch and real-time/streaming contexts.",
-      "Own all major components of ML pipelines: data ingestion, cleaning, pre-processing (structured & unstructured), embedding, search & retrieval, prompt engineering, RAG (Retrieval-Augmented Generation).",
-      "Collaborate closely with ML Engineers, MLOps, software engineering, product, compliance, legal etc., to move models from prototype to production—ensuring reliability, scalability, monitoring, and maintainability.",
-      "Define and implement evaluation frameworks: accuracy, bias, fairness, hallucination, consistency, latency; run UAT, stress-tests, drift detection.",
-      "Optimize models and pipelines for performance, cost, and efficiency.",
-      "Ensure best practices in model development: version control, repeatability, documentation, governance, and ethical AI use.",
-      "Mentor more junior data scientists; help build team skills in NLP, GenAI practices, prompt engineering, fine-tuning.",
-      "Identify new use cases; prototype innovations in GenAI/NLP; keep up with latest research and open source developments, decide what to adopt."
-    ]
-  },
-  {
     "jobTitle": "Data Scientist",
     "company": "Select Minds LLC",
     "jobLocation": "Hybrid work in Dallas, TX 75235",
@@ -121,47 +115,48 @@
     "salary": "$65 - $75 an hour - Full-time",
     "benefits": [
       "HYBRID",
-      "Competitive Salary",
-      "Opportunity for Advancement",
-      "Training & Development"
+      "Competitive salary",
+      "Opportunity for advancement",
+      "Training & development"
     ],
     "qualifications": [
-      "Bachelor's Degree in Mathematics, Computer/Data Science, Information Technology, or a Related Field, or Equivalent Experience.",
-      "Advanced Experience in Data Science, Machine Learning, AI, or Optimization Projects.",
+      "Bachelor's degree in Mathematics, Computer/Data Science, Information Technology, or a related field, or equivalent experience.",
+      "Advanced experience in data science, machine learning, AI, or optimization projects.",
       "Proficiency in Python and SQL.",
-      "Strong Understanding of Statistical Methods, Experimental Design, and Model Validation.",
-      "Experience with Data Pipelines and Relevant Programming Libraries (e.g., Pandas, NumPy, Scikit-learn, XGBoost, TensorFlow, Pyspark).",
-      "Familiarity with Data Visualization Tools (e.g., Tableau, Plotly, Streamlit)."
+      "Strong understanding of statistical methods, experimental design, and model validation.",
+      "Experience with data pipelines and relevant programming libraries (e.g., Pandas, NumPy, Scikit-learn, XGBoost, TensorFlow, Pyspark).",
+      "Familiarity with data visualization tools (e.g., Tableau, Plotly, Streamlit)."
     ],
-    "description": "Data Scientist – Integrated Operations at Dallas, TX (Hybrid Remote). Must be authorized to work in the U.S. Occasional on-site presence required for meetings, training, or business needs. Limited business travel may be required.",
+    "description": "No description provided",
     "preferences": [
-      "Experience with AWS Cloud Services (e.g., SageMaker, Lambda, Glue, EMR).",
-      "Exposure to Specialized Analytics Areas such as Simulation, Graph Analytics, or Video Analytics."
+      "Experience with AWS cloud services (e.g., SageMaker, Lambda, Glue, EMR).",
+      "Exposure to specialized analytics areas such as simulation, graph analytics, or video analytics."
     ],
     "responsibilities": [
-      "6+ Years of Experience in Machine Learning and Data Science.",
-      "Strong Understanding of Generative AI, Retrieval Augmented Generation, Agentic Workflow, Statistical Methods, Data Structures, and Algorithms.",
-      "Strong Programming Skills in Python; Experience with Machine Learning Libraries and Generative AI Frameworks (e.g., Pandas, NumPy, Matplotlib, Seaborn, TensorFlow, PyTorch, Scikit-learn, LangChain) and LLMs.",
-      "Experience Developing and Deploying AI Solutions on Cloud Platforms (e.g., AWS, Azure, or GCP).",
-      "Experience in Building Asynchronous Python APIs.",
-      "Experience with Data Visualization Tools such as Matplotlib, Seaborn, or Tableau.",
-      "Familiarity with Cloud Platforms such as AWS, Azure, or Google Cloud for Deploying AI Solutions.",
-      "Proven Experience in Developing and Deploying Machine Learning Models in a Production Environment.",
-      "Experience Working with Large Datasets and Performing Data Analysis"
+      "6+ years of experience in Machine Learning and Data Science.",
+      "Strong understanding of Generative AI, Retrieval Augmented Generation, Agentic Workflow, Statistical methods, data structures, and algorithms.",
+      "Strong programming skills in Python; experience with Machine Learning libraries and Generative AI frameworks (e.g., Pandas, NumPy, Matplotlib, Seaborn, TensorFlow, PyTorch, scikit-learn, LangChain) and LLMs.",
+      "Experience developing and deploying AI solutions on cloud platforms (e.g., AWS, Azure, or GCP).",
+      "Experience in building Asynchronous Python APIs.",
+      "Experience with data visualization tools such as Matplotlib, Seaborn, or Tableau.",
+      "Familiarity with cloud platforms such as AWS, Azure, or Google Cloud for deploying AI solutions.",
+      "Proven experience in developing and deploying machine learning models in a production environment.",
+      "Experience working with large datasets and performing data analysis."
     ]
   },
   {
     "jobTitle": "Sr. Staff Data Scientist, Machine Learning",
     "company": "Varo Bank",
-    "jobLocation": "Dallas, TX",
+    "jobLocation": "Hybrid work in Dallas, TX",
     "jobUrl": "https://www.indeed.com/viewjob?jk=fcbae146e73f48b6",
     "salary": "$210,000 - $280,000 a year - Full-time",
     "benefits": [
-      "Eligible for a bonus, equity, and competitive benefits"
+      "For cash compensation, we set standard ranges for all US-based roles based on function, level, and geographic location, benchmarked against similar-stage growth companies. Per applicable law, the salary range for this role is $210,000 - $280,000. Final offer amounts are determined by multiple factors as well as candidate experience and expertise and may vary from the identified range.",
+      "This role is also eligible for a bonus, equity, and competitive benefits."
     ],
     "qualifications": [
       "7+ years of experience in Analytics, Data Science or Data Engineering as an individual contributor",
-      "An advanced degree in a quantitative field - computer science, engineering, statistics, operations research, economics, etc.",
+      "An advanced degree in a quantitative field - computer science, engineering, statistics, operations research, economics, etc",
       "Credit and / or Fraud Risk modeling experience in consumer finance is nice to have",
       "Strong problem solving skills with an emphasis on translating real-life problems into a concrete model development strategy. Blend academic rigor with a sense of pragmatism for rapidly prototyping and delivering solutions",
       "Experienced in using Python for analysis and modeling",
@@ -176,45 +171,9 @@
       "Develop custom models and algorithms to apply to large datasets, as well as, processes for monitoring and analyzing their performance",
       "Mine and analyze data from different resources, and use predictive modeling to increase and optimize customer experiences, customer acquisition, underwriting and other business outcomes",
       "Assess the effectiveness and accuracy of new data sources and data gathering techniques",
-      "Understand and apply proper risk framework to your analysis and modeling",
+      "Understand and apply proper risk framework to your analysis and modeling.",
       "Work with stakeholders throughout the organization to identify opportunities for leveraging data to drive business decisions",
       "Collaborate cross functionally to implement models and monitor outcomes"
-    ]
-  },
-  {
-    "jobTitle": "Applied Scientist – Research Products",
-    "company": "Thomson Reuters",
-    "jobLocation": "Hybrid work in Frisco, TX 75034",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=14ec870ec01abd1b",
-    "salary": "$108,500 - $201,500 a year - Full-time",
-    "benefits": [
-      "Hybrid Work Model: We’ve adopted a flexible hybrid working environment (2-3 days a week in the office depending on the role)",
-      "Flexibility & Work-Life Balance: Flex My Way is a set of supportive workplace policies designed to help manage personal and professional responsibilities, including work from anywhere for up to 8 weeks per year",
-      "Career Development and Growth: By fostering a culture of continuous learning and skill development, we prepare our talent to tackle tomorrow’s challenges and deliver real-world solutions",
-      "Industry Competitive Benefits: We offer comprehensive benefit plans including flexible vacation, two company-wide Mental Health Days off, access to the Headspace app, retirement savings, and tuition reimbursement",
-      "Culture: Globally recognized, award-winning reputation for inclusion and belonging, flexibility, work-life balance, and more",
-      "Social Impact: Employees have two paid volunteer days off annually and opportunities to get involved with pro-bono consulting projects and Environmental, Social, and Governance (ESG) initiatives",
-      "Making a Real-World Impact: We help our customers pursue justice, truth, and transparency"
-    ],
-    "qualifications": [
-      "PhD or Master’s in a relevant discipline",
-      "Experience researching, building, and evaluating NLP systems",
-      "Solid engineering skills for prototyping; experience contributing to a shared codebase; and familiarity with workflows for remote development (AWS, Azure or similar)",
-      "Outstanding communication, problem-solving, and analysis skills",
-      "Demonstrated ability to communicate AI concepts to a diverse audience"
-    ],
-    "description": "Applied Scientist – Research Products Are you excited about working at the forefront of applied research in an industry setting? Thomson Reuters Labs in the USA is seeking scientists with a passion for solving problems using state-of-the-art information retrieval, natural language processing and generative AI. What does Thomson Reuters Labs do? We experiment, we build, we deliver. We support the organization and our customers through applied research in informational retrieval and natural language processing. We work closely with product and domain experts to identify compelling solutions at the intersection of user needs and technical feasibility. Our team is designing the next generation of search technology for Legal and Tax Professionals globally. We drive AI innovation for Thomson Reuters’ Core Research Products, including Westlaw, Practical Law, and Checkpoint.",
-    "preferences": [
-      "Experience designing and implementing solutions with large language models",
-      "Relevant publications at ACL, EMNLP, NAACL, NeurIPS, ICLR, SIGIR, KDD, or similar.",
-      "Experience writing production code and ensuring well-managed software delivery"
-    ],
-    "responsibilities": [
-      "Take ideas through the end-to-end model development lifecycle (task design, data creation, training, evaluation and model governance)",
-      "Think creatively about new capabilities generative AI can unlock for our customers",
-      "Work with stakeholders to define scope, determine feasibility, and translate business/customer objectives into technical requirements",
-      "Create functional POCs to test new capabilities and Product concepts",
-      "Write clean code, participate in code reviews, and contribute to well-managed software delivery in a production environment"
     ]
   },
   {
@@ -225,18 +184,18 @@
     "salary": "$111,000 - $185,000 a year - Full-time",
     "benefits": [
       "Remote First Culture",
-      "Health Care Coverage",
-      "Education Reimbursement",
+      "Health Care Coverage*",
+      "Education Reimbursement*",
       "Competitive Paid Time Off",
       "4 Self-Care Days per year",
-      "National Holidays",
+      "National Holidays*",
       "2 Founder Days + Juneteenth Observed",
-      "Paid Volunteer Time",
-      "Charitable contribution match",
-      "Monthly Wellness or Home Office Reimbursement",
+      "Paid Volunteer Time*",
+      "Charitable contribution match*",
+      "Monthly Wellness or Home Office Reimbursement*",
       "Access to Modern Health (mental health platform)",
-      "Parental Leave",
-      "Retirement Plan with match/contribution"
+      "Parental Leave*",
+      "Retirement Plan with match/contribution*"
     ],
     "qualifications": [
       "Experience working with text data to build Deep Learning and ML models, both supervised and unsupervised. Experience with deep learning in other modalities such as vision and speech would be a strong bonus.",
@@ -248,7 +207,7 @@
       "Excellent communication and teamwork skills.",
       "Fluent in written and spoken English."
     ],
-    "description": "When you join Turnitin, you'll be welcomed into a company that is a recognized innovator in the global education space. For over 25 years, Turnitin has partnered with educational institutions to promote honesty, consistency, and fairness across all subject areas and assessment types. Over 21,000 academic institutions, publishers, and corporations use our services: Feedback Studio, Originality, Gradescope, ExamSoft, Similarity, and iThenticate. Experience a remote-centric culture that empowers you to work with purpose and accountability in a way that best suits you, supported by a comprehensive package that prioritizes your overall well-being. Our diverse community of colleagues are all unified by a shared desire to make a difference in education. Turnitin is a global organization with team members in over 35 countries including the United States, Mexico, United Kingdom, Australia, Japan, India, and the Philippines. Turnitin, LLC is an equal opportunity employer- vets/disabled.",
+    "description": "Machine Learning is integral to the continued success of our company. Our product roadmap is exciting and ambitious. You will join a global team of curious, helpful, and independent scientists and engineers, united by a commitment to deliver cutting-edge, well-engineered Machine Learning systems. You will work closely with product and engineering teams across Turnitin to integrate Machine Learning into a broad suite of learning, teaching and integrity products. We are in a unique position to deliver Machine Learning used by hundreds of thousands of instructors teaching millions of students around the world. Your contributions will have global reach and scale. Billions of papers have been submitted to the Turnitin platform, and hundreds of millions of answers have been graded on the Gradescope and Examsoft platforms. Machine Learning powers our AI Writing detection system, gives automated feedback on student writing, investigates authorship of student writing, revolutionizes the creation and grading of assessments, and plays a critical role in many back-end processes.",
     "preferences": [
       "Familiarity in coding for at-scale production, ranging from best practices to building back-end API services or stand-alone libraries.",
       "Essential dev-ops skills (we use Docker, AWS EC2/Batch/Lambda).",
@@ -277,10 +236,7 @@
     "salary": "Full-time",
     "benefits": [],
     "qualifications": [
-      "M.S. or Ph.D. in Computer Science, Electrical Engineering, Biomedical Engineering, Statistics, Applied Mathematics or related field."
-    ],
-    "description": "We are seeking a motivated Data Scientist to research, develop, and enhance machine learning and deep learning algorithms that drive innovative healthcare solutions. This role involves maintaining high data quality standards, collaborating with clinical and business partners to understand their needs, and translating advanced research into practical applications. The ideal candidate will assist in building and improving deep learning frameworks, manage projects independently, and work effectively both individually and within cross-functional teams. Staying current with emerging technologies and demonstrating strong communication, attention to detail, and persistence are essential for success in this role.",
-    "preferences": [
+      "M.S. or Ph.D. in Computer Science, Electrical Engineering, Biomedical Engineering, Statistics, Applied Mathematics or related field.",
       "Strong foundation in state-of-the-art deep learning architectures (e.g., vision transformers) for computer vision tasks including image classification, object detection, and semantic segmentation.",
       "Proficiency in deep learning libraries and frameworks, including PyTorch and TensorFlow.",
       "Proficiency in C++ regarding object-oriented programming, data structure and performance optimization technique.",
@@ -288,7 +244,10 @@
       "Solid knowledge of model deployment tools, including ONNX, LibTorch, and TensorRT.",
       "Strong grasp of model evaluation metrics, benchmarking, and best practices for computer vision model validation.",
       "Self-driven with the ability to deliver on ambiguous projects with incomplete data.",
-      "Excellent written communication skills, especially in writing technical manuscripts.",
+      "Excellent written communication skills, especially in writing technical manuscripts."
+    ],
+    "description": "We are seeking a motivated Data Scientist to research, develop, and enhance machine learning and deep learning algorithms that drive innovative healthcare solutions. This role involves maintaining high data quality standards, collaborating with clinical and business partners to understand their needs, and translating advanced research into practical applications. The ideal candidate will assist in building and improving deep learning frameworks, manage projects independently, and work effectively both individually and within cross-functional teams. Staying current with emerging technologies and demonstrating strong communication, attention to detail, and persistence are essential for success in this role.",
+    "preferences": [
       "Experience and knowledge in healthcare domain with successful outcomes.",
       "Experience with CUDA programming for developing custom GPU kernels, optimizing computational performance, and accelerating deep learning workflows."
     ],
@@ -306,11 +265,25 @@
   },
   {
     "jobTitle": "Data Scientist",
+    "company": "Spectral MD Inc",
+    "jobLocation": "Dallas, TX 75201 (Uptown area)",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=f1e2d3c4b5a67890",
+    "salary": "Not specified",
+    "benefits": [],
+    "qualifications": [],
+    "description": "No description provided",
+    "preferences": [],
+    "responsibilities": []
+  },
+  {
+    "jobTitle": "Data Scientist",
     "company": "Rhapsody",
-    "jobLocation": "Remote in Dallas, TX 75201",
+    "jobLocation": "Hybrid work in Dallas, TX 75201",
     "jobUrl": "https://www.indeed.com/viewjob?jk=eb48d0156c9fa160",
     "salary": "Full-time",
-    "benefits": [],
+    "benefits": [
+      "Bachelor’s or Master’s degree in Data Science, Statistics, Computer Science, or a related field (or equivalent experience)"
+    ],
     "qualifications": [
       "3+ years of experience in data science, machine learning, or applied analytics",
       "Strong Python skills (e.g., pandas, NumPy, matplotlib, scikit-learn)",
@@ -319,7 +292,7 @@
       "Experience working with structured data and building basic models (e.g., classification, regression)",
       "Curiosity about AI/ML systems and a willingness to learn quickly through real-world application"
     ],
-    "description": "Rhapsody is expanding its AI and data science capabilities to drive experimentation, predictive modeling, system evaluation, and actionable insights across our product ecosystem. We’re hiring a Data Scientist to contribute to high-impact initiatives—including ML-based patient matching, churn prediction, forecasting, and GenAI workflow support. You’ll work closely with AI and engineering teammates to evaluate models, build predictive solutions, and uncover insights that improve both product performance and internal decision-making. This role offers the opportunity to work across a wide range of data science projects—from improving patient-matching logic to analyzing GenAI behavior—and to help shape how data science evolves across the company.",
+    "description": "About Rhapsody: We all know that our health care system is complicated. Getting data from one provider to another, or from a provider to a health insurance company, is frustrating for virtually everyone. Imagine developing solutions that help make these data transactions easier and faster. That is what we do at Rhapsody; we make interoperability platforms that allow data – such as patient encounter details, lab results, and billing information – to move seamlessly from one system to another. While most people will not ever see our products and services during a medical encounter, our interoperability platforms are running behind the scenes. Think of them as the central nervous system helping to move data where it needs to be to improve the patient experience. To learn more about Rhapsody, visit www.rhapsody.health If using your expertise in a way that impacts our health care system, patient care, and population health sounds like something you would find rewarding, apply today! This is a remote position. However, preference is for someone local to Dallas, TX.",
     "preferences": [
       "Exposure to evaluating or experimenting with neural networks",
       "Familiarity with model evaluation techniques (e.g., precision/recall, ROC, drift detection)",
@@ -339,41 +312,18 @@
     ]
   },
   {
-    "jobTitle": "Data Scientist",
-    "company": "Rhapsody",
-    "jobLocation": "Remote in Dallas, TX 75201",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=123456789abcdef0",
-    "salary": "Not specified",
-    "benefits": [],
-    "qualifications": [],
-    "description": "No description provided",
-    "preferences": [],
-    "responsibilities": []
-  },
-  {
     "jobTitle": "Data Scientist with Big Data",
     "company": "Sonoma Consulting Inc.",
     "jobLocation": "Plano, TX",
     "jobUrl": "https://www.indeed.com/viewjob?jk=98e1765874f056f1",
     "salary": "Not specified",
-    "benefits": [
-      "All your information will be kept confidential according to EEO guidelines."
-    ],
+    "benefits": [],
     "qualifications": [
       "Strong quantitative skills"
     ],
-    "description": "Important Note: Candidates should have the following experience",
-    "preferences": [
-      "The below is not necessary for this position. These are the responsibilities of the new big data architect position we are hiring for"
-    ],
-    "responsibilities": [
-      "Reason for contingent headcount?",
-      "Workload",
-      "What is the project(s) name?",
-      "What specific departments will they interact with?",
-      "What phase is the project currently in?",
-      "Ongoing Support"
-    ]
+    "description": "No description provided",
+    "preferences": [],
+    "responsibilities": []
   },
   {
     "jobTitle": "Data Scientist",
@@ -391,11 +341,10 @@
       "Excellent written and verbal communication skills for coordinating across teams.",
       "A drive to learn and master new technologies and techniques.",
       "5-7 years of experience manipulating data sets and building statistical models.",
-      "Master’s or PHD in Statistics, Mathematics, Computer Science or another quantitative field."
+      "Master’s or PHD in Statistics, Mathematics, Computer Science or another quantitative field, and is familiar with the following software/tools: Coding knowledge and experience with several languages: C, C++, Java, JavaScript, etc."
     ],
     "description": "Peoplevisor is seeking an experienced Data Scientist who will support our product, sales, leadership and marketing teams with insights gained from analyzing company data. The ideal candidate is adept at using large data sets to find opportunities for product and process optimization and using models to test the effectiveness of different courses of action. They must have strong experience using a variety of data mining/data analysis methods, using a variety of data tools, building and implementing models, using/creating algorithms and creating/running simulations. They must have a proven ability to drive business results with their data-based insights.",
     "preferences": [
-      "Coding knowledge and experience with several languages: C, C++, Java, JavaScript, etc.",
       "Knowledge and experience in statistical and data mining techniques: GLM/Regression, Random Forest, Boosting, Trees, text mining, social network analysis, etc.",
       "Experience querying databases and using statistical computer languages: R, Python, SLQ, etc.",
       "Experience using web services: Redshift, S3, Spark, DigitalOcean, etc.",
@@ -416,41 +365,6 @@
     ]
   },
   {
-    "jobTitle": "Data Scientist",
-    "company": "Forman Technology Group",
-    "jobLocation": "Dallas, TX 75201 \n(Downtown area)",
-    "jobUrl": "https://www.indeed.com/viewjob?jk=2d9426a592bcb002",
-    "salary": "$92,153 - $119,396 a year - Full-time",
-    "benefits": [
-      "401(k)",
-      "Dental insurance",
-      "Health insurance",
-      "Paid time off"
-    ],
-    "qualifications": [
-      "Bachelor’s or Master’s degree in Computer Science, Data Science, Statistics, Mathematics, or a related field.",
-      "2+ years of hands-on experience in data analysis, machine learning, or statistical modeling.",
-      "Proficiency in Python (NumPy, Pandas, Scikit-learn) or R.",
-      "Strong knowledge of SQL and database management systems.",
-      "Experience with data visualization tools (e.g., Power BI, Tableau, Matplotlib, Seaborn).",
-      "Understanding of supervised and unsupervised learning, regression, classification, and clustering algorithms.",
-      "Familiarity with cloud platforms (AWS, GCP, or Azure) is a plus.",
-      "Excellent analytical thinking, problem-solving, and communication skills."
-    ],
-    "description": "We are looking for a data-driven professional to join our team as a Data Scientist. In this role, you will leverage advanced analytics, statistical methods, and machine learning techniques to uncover insights, optimize business performance, and support strategic initiatives. You will work closely with product, engineering, and business teams to design data models, interpret trends, and translate complex findings into actionable business strategies. Your contributions will directly influence product enhancements, operational efficiency, and customer experience through data-backed decision-making.",
-    "preferences": [],
-    "responsibilities": [
-      "Collect, clean, and preprocess structured and unstructured datasets for analysis.",
-      "Develop and implement machine learning and predictive modeling techniques to solve business problems.",
-      "Perform exploratory data analysis (EDA) and extract meaningful insights.",
-      "Collaborate with cross-functional teams to define business requirements and data needs.",
-      "Design and evaluate A/B tests and statistical models to measure performance and outcomes.",
-      "Visualize and present data insights through dashboards, reports, and storytelling tools.",
-      "Optimize model performance and ensure scalability for production environments.",
-      "Stay updated with the latest advancements in data science, AI, and analytics tools."
-    ]
-  },
-  {
     "jobTitle": "Sr. Data Scientist",
     "company": "Ample IT Services",
     "jobLocation": "Irving, TX 75038 \n(Cottonwood area)",
@@ -458,15 +372,12 @@
     "salary": "Not specified",
     "benefits": [],
     "qualifications": [
-      "Experience in ML, NLP, MLOps, & CI/CD",
-      "Expertise in Python, SQL, Kubernetes, & model monitoring tools like Grafana"
+      "Exp in ML, NLP, MLOps, & CI/CD, as well as expertise in Python, SQL, Kubernetes, & model monitoring tools like Grafana."
     ],
-    "description": "Master's degree in Computer Science, Data Science, Engineering, Technology or related field, along with 2 years of experience in developing & producing Machine Learning (ML) & natural language processing (NLP) models. The role involves deploying models in Kubernetes with CI/CD pipelines, applying MLOps practices & performing advanced data analysis using Python & SQL to address business challenges.",
+    "description": "Master's deg in Comp Sci, Data Sci, Engg, Tech or related field, along with 2 yrs of exp in dvlp & producing Machine Learning (ML) & ntrl lang processing (NLP) models. The role involves deploying models in Kubernetes with CI/CD pipelines, apply MLOps practices & performing advanced data analysis using Python & SQL to address biz challenges.",
     "preferences": [],
     "responsibilities": [
-      "Building real-time ML pipelines with Spark & Airflow",
-      "Measuring & improving NLP model performance",
-      "Using AI to drive forecasting & business insights"
+      "Responsibilities include building real-time ML pipelines with Spark & Airflow, measuring & improving NLP model performance, & using AI to drive forecasting & biz insights."
     ]
   },
   {
@@ -522,6 +433,79 @@
       "Apply data mining techniques to discover hidden patterns and relationships in data, uncovering valuable insights for business improvement.",
       "Optimize model performance through iterative experimentation, feature engineering, and hyperparameter tuning, ensuring robustness and scalability.",
       "Collaborate with IT teams to deploy and integrate machine learning models into production systems, monitoring performance and making necessary improvements."
+    ]
+  },
+  {
+    "jobTitle": "Data Scientist",
+    "company": "SelectMinds",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=4a0298aaaa5bdf3e",
+    "salary": "Contract",
+    "benefits": [],
+    "qualifications": [
+      "Bachelor’s degree in data science, data analytics, or related field",
+      "Master’s degree or Ph.D. in a quantitative field, such as statistics, computer science, mathematics, or engineering",
+      "Proficiency in Python, Java, or Kotlin",
+      "Knowledge of data science toolkits such as R, NumPy, and MatLab",
+      "Experience with big data analytics technologies such as Spark and Hadoop",
+      "Experience with data visualization tools such as D3.js and Tableau",
+      "Expertise in data mining and machine learning",
+      "Working knowledge of statistical models and business intelligence",
+      "Familiarity with cloud-based infrastructure",
+      "Ability to store and process unstructured data with NoSQL databases and machine learning models."
+    ],
+    "description": "We are seeking a data scientist to join our business intelligence team to help us make better business decisions based on our data. The ideal candidate will have a working knowledge of statistics, mathematics, and data science programming languages (e.g., SQL, R, Python). Your primary responsibilities will be performing statistical analyses, running custom SQL queries, and identifying patterns and trends that can improve our products’ and services’ efficiency and usability. You will also be expected to maintain and improve our data infrastructure and tools.",
+    "preferences": [],
+    "responsibilities": [
+      "Formulates and leads guided, multifaceted analytic studies against large volumes of data.",
+      "Interprets and analyzes data using exploratory mathematic and statistical techniques based on the scientific method.",
+      "Coordinates research and analytic activities utilizing various data points (unstructured and structured) and employ programming to clean, massage, and organize the data.",
+      "Experiments against data points, provide information based on experiment results and provide previously undiscovered solutions to command data challenges.",
+      "Leads all data experiments tasked by the Data Science Team.",
+      "Coordinates with Data Engineers to build data environments providing data identified by Data Analysts, Data Integrators, Knowledge Managers, and Intel Analysts.",
+      "Develops methodology and processes for prioritization and scheduling of projects.",
+      "Analyzes problems and determines root causes.",
+      "Defines company data assets (data models), spark, sparkSQL, and hiveSQL jobs to populate data models.",
+      "Works closely with all business units and engineering teams to develop strategy for long term data platform architecture."
+    ]
+  },
+  {
+    "jobTitle": "Senior Engineer - AI/ML/Data Scientist",
+    "company": "Fission Labs",
+    "jobLocation": "Dallas, TX",
+    "jobUrl": "https://www.indeed.com/viewjob?jk=5c80d8dab82627ea",
+    "salary": "Full-time",
+    "benefits": [
+      "BRING YOUR PASSION AND FUN. Corporate culture woven from highly diverse perspectives and insights.",
+      "BALANCE WORK AND PERSONAL TIME LIKE A BOSS. Resources and flexibility to more easily integrate your work and your life.",
+      "BECOME A CERTIFIED “SMARTY PANTS.” Ongoing training and development opportunities for even the most insatiable learner.",
+      "START-UP SPIRIT (Good ten plus years, yet we maintain it)",
+      "FLEXIBLE WORKING HOURS"
+    ],
+    "qualifications": [
+      "Bachelor's or Master's degree in Computer Science, Engineering, Mathematics, or related fields.",
+      "4 to 10 years of experience in building AI models with NLP and data engineering.",
+      "Strong programming skills in Python, and familiarity with libraries such as PyTorch, TensorFlow, and Scikit-Learn.",
+      "Solid understanding of machine learning concepts, algorithms, and statistical methods. Experience with data preprocessing, cleaning, and feature engineering techniques.",
+      "Strong analytical and problem-solving skills, with attention to detail.",
+      "Excellent communication skills, with the ability to present complex technical concepts to both technical and non-technical audiences."
+    ],
+    "description": "No description provided",
+    "preferences": [
+      "Experience with cloud-based machine learning platforms and services, such as AWS Sage Maker or Google Cloud ML Engine.",
+      "Knowledge of distributed computing, parallel processing, and big data technologies such as Spark and Hadoop.",
+      "Familiarity with natural language processing techniques and tools, such as spaCy and NLTK.",
+      "Experience with containerization and orchestration technologies such as Docker and Kubernetes."
+    ],
+    "responsibilities": [
+      "3+ years with AI / ML /data-platform products. should be more like,\"experience with taking an AI product/platform from ideation to market\" or similar. GenAI is also MUST HAVE.",
+      "Design and develop AI models and algorithms using machine learning techniques and tools, with a focus on NLP.",
+      "Work with large datasets, including cleaning, preprocessing, and transforming data to ensure its quality and relevance.",
+      "Collaborate with cross-functional teams to identify and understand business requirements, use cases, and project objectives.",
+      "Implement and integrate machine learning models into production systems and workflows, and optimize their performance.",
+      "Develop tools and frameworks for automating the data engineering process, data ingestion, and feature engineering.",
+      "Stay up-to-date with the latest research and industry trends in machine learning and NLP, and apply them to improve our models and solutions.",
+      "Document and communicate technical specifications, algorithms, and results to both technical and non-technical stakeholders."
     ]
   }
 ]

@@ -127,79 +127,63 @@ async function scrapeJobDetails(browser, jobUrl, jobTitle) {
     if (!success) {
       await page.close();
       return {
+        salary: "Not specified",
         description: "No description provided",
         responsibilities: [],
         qualifications: [],
         preferences: [],
-        benefits: [],
-        salary: "Not specified",
+        benefits: []
       };
     }
   
-    // Prefer waiting for JD container; if it doesn't show, still try to proceed.
     try {
-      await page.waitForSelector('#jobDescriptionText, .jobsearch-jobDescriptionText', { timeout: 10000 });
-    } catch (_) { /* ignore */ }
+      await page.waitForSelector('#jobDescriptionText, .jobsearch-jobDescriptionText', { timeout: 8000 });
+    } catch (_) {
+      await new Promise(res => setTimeout(res, 1500));
+    }
   
-    // Grab salary (if present)
+    const jobText = await page.evaluate(() => {
+      const root = document.querySelector('#jobDescriptionText, .jobsearch-jobDescriptionText');
+      if (!root) return '';
+      const parts = [];
+      root.querySelectorAll('h1,h2,h3,h4,p,li,div').forEach(n => {
+        const t = (n.innerText || '').trim();
+        if (t) parts.push(t);
+      });
+      return parts.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    });
+  
     const salary = await page.evaluate(() => {
       const el = document.querySelector('[data-testid="salary"], #salaryInfoAndJobType');
       return el ? el.innerText.trim() : '';
     });
   
-    // Extract HTML + a “paragraph-friendly” text snapshot.
-    // We’ll send both to the AI so it can choose better cues from HTML if it wants.
-    const { jdHTML, jdText } = await page.evaluate(() => {
-      const root = document.querySelector('#jobDescriptionText, .jobsearch-jobDescriptionText');
-      if (!root) return { jdHTML: '', jdText: '' };
-  
-      const html = root.innerHTML;
-  
-      // Build a clean text by joining block elements with single newlines,
-      // avoiding the line-per-word mess from deeply nested spans.
-      const blocks = [];
-      root.querySelectorAll('p, li, div, h1, h2, h3, h4').forEach(n => {
-        const t = (n.innerText || '').replace(/\s+/g, ' ').trim();
-        if (t) blocks.push(t);
-      });
-      const text = blocks.join('\n');
-  
-      return { jdHTML: html, jdText: text };
-    });
-  
     await page.close();
   
-    // --- Call your FastAPI AI endpoint (AI does 100% of parsing) ---
     try {
       const { data: aiData } = await axios.post(
         "http://127.0.0.1:8000/parse-job-description",
-        // Send BOTH html & text; your backend prompt already expects "text"—we’ll pass
-        // html as a hint appended after the text. If you want, you can update the backend
-        // prompt to handle a separate field.
-        { text: `${jdText}\n\n---HTML START---\n${jdHTML}\n---HTML END---` },
+        { text: jobText },
         { headers: { "Content-Type": "application/json" }, timeout: 20000 }
       );
   
       return {
         salary: salary || "Not specified",
         description: aiData.description || "No description provided",
-        responsibilities: Array.isArray(aiData.responsibilities) ? aiData.responsibilities : [],
-        qualifications: Array.isArray(aiData.qualifications) ? aiData.qualifications : [],
-        preferences: Array.isArray(aiData.preferences) ? aiData.preferences : [],
-        benefits: Array.isArray(aiData.benefits) ? aiData.benefits : [],
+        responsibilities: aiData.responsibilities || [],
+        qualifications: aiData.qualifications || [],
+        preferences: aiData.preferences || [],
+        benefits: aiData.benefits || []
       };
     } catch (err) {
       console.error(`AI parse failed for ${jobTitle}: ${err.message}`);
-  
-      // Minimal fallback: don’t try to be clever—no local bulletizing/splitting.
-      const raw = jdText && jdText.trim() ? jdText.trim() : (jdHTML && jdHTML.trim() ? jdHTML.trim() : "");
       return {
         salary: salary || "Not specified",
-        description: raw || "No description provided",
+        description: jobText || "No description provided",
         responsibilities: [],
         qualifications: [],
         preferences: [],
-        benefits: [],
+        benefits: []
       };
     }
 }
@@ -246,27 +230,40 @@ async function postJobWithRetry(payload, backendUrl, retries = 3, delayMs = 2000
 async function sendJobsToBackend() {
     const jobsData = JSON.parse(fs.readFileSync('indeed_jobs.json', 'utf-8'));
     const backendUrl = config.backend_url || 'http://localhost:8000/jobs-create';
-
+  
+    const asBlock = (arrOrStr) => {
+      if (!arrOrStr) return null;
+      if (Array.isArray(arrOrStr)) {
+        const cleaned = arrOrStr
+          .map(s => (s || '').toString().trim())
+          .filter(Boolean);
+        if (!cleaned.length) return null;
+        // Store as nice bullet block so your frontend renders cleanly
+        return cleaned.map(s => `• ${s}`).join('\n');
+      }
+      return arrOrStr.toString();
+    };
+  
     for (const job of jobsData) {
-        const payload = {
-            job_name: job.jobTitle || 'Unknown',
-            company_name: job.company || 'Unknown',
-            location: job.jobLocation || 'Unknown',
-            salary: job.salary || null,
-            description: Array.isArray(job.description) ? job.description.join('\n') : (job.description || null),
-            responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities.join('\n') : (job.responsibilities || null),
-            qualifications: Array.isArray(job.qualifications) ? job.qualifications.join('\n') : (job.qualifications || null),
-            preferences: Array.isArray(job.preferences) ? job.preferences.join('\n') : (job.preferences || null),
-            benefits: Array.isArray(job.benefits) ? job.benefits.join('\n') : (job.benefits || null),
-            application_link: job.jobUrl || 'N/A',
-          };
-
-        const res = await postJobWithRetry(payload, backendUrl, 3, 2000);
-        if (res.success) {
-            console.log(`✓ Posted job to backend: ${payload.job_name}`);
-        } else {
-            console.error(`✗ Failed to post job after retries: ${payload.job_name}`, res.error);
-        }
+      const payload = {
+        job_name: job.jobTitle || 'Unknown',
+        company_name: job.company || 'Unknown',
+        location: job.jobLocation || 'Unknown',
+        salary: job.salary || null,
+        description: (job.description && job.description.trim()) ? job.description.trim() : null,
+        responsibilities: asBlock(job.responsibilities),
+        qualifications: asBlock(job.qualifications),
+        preferences: asBlock(job.preferences),
+        benefits: asBlock(job.benefits),
+        application_link: job.jobUrl || 'N/A',
+      };
+  
+      const res = await postJobWithRetry(payload, backendUrl, 3, 2000);
+      if (res.success) {
+        console.log(`✓ Posted job to backend: ${payload.job_name}`);
+      } else {
+        console.error(`✗ Failed to post job after retries: ${payload.job_name}`, res.error);
+      }
     }
 }
 
