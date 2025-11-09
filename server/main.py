@@ -9,6 +9,11 @@ import json
 from fastapi.middleware.cors import CORSMiddleware
 from services.u_services import get_jobs_filtered
 from typing import Optional
+from fastapi import APIRouter
+from pydantic import BaseModel
+import openai
+from dotenv import load_dotenv
+import os
 import services.email_services
 from database.db import connect_db 
 from services.u_services import remove_saved_job
@@ -35,6 +40,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.post("/signup")
 async def signup(user: UserCreate):
@@ -242,3 +250,49 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
+
+
+# ---------------------------
+# OpenAI for job info
+# ---------------------------
+
+router = APIRouter()
+
+class RawDescription(BaseModel):
+    text: str
+
+@router.post("/parse-job-description")
+async def parse_job_description(data: RawDescription):
+    prompt = f"""
+    You are a job description parsing assistant. Extract and format the job posting into clean fields.
+
+    INPUT TEXT:
+    {data.text}
+
+    OUTPUT FORMAT (JSON):
+    {{
+      "description": "...",
+      "responsibilities": ["...","..."],
+      "qualifications": ["...","..."],
+      "preferences": ["...","..."],
+      "benefits": ["...","..."]
+    }}
+
+    Rules:
+    - Do NOT lose meaning.
+    - Keep bullet items whole (no splitting mid-sentence).
+    - Remove prefixes like "-", "*" and "•"
+    - Make every bullet start with Capital letter.
+    - If a section is missing, return an empty list.
+    """
+
+    completion = openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        response_format={ "type": "json_object" }
+    )
+    
+    parsed = completion.choices[0].message.content
+    return json.loads(parsed)
+
+app.include_router(router)

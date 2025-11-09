@@ -1,0 +1,17 @@
+[
+  {
+    "payload": {
+      "job_name": "Senior Data Engineer",
+      "company_name": "Hanosys.inc",
+      "location": "Dallas, TX",
+      "salary": null,
+      "description": null,
+      "responsibilities": null,
+      "qualifications": null,
+      "preferences": null,
+      "benefits": null,
+      "application_link": "https://www.indeed.com/viewjob?jk=890abcdef0123456"
+    },
+    "error": "Status 422 - {\"detail\":[{\"type\":\"string_type\",\"loc\":[\"body\",\"salary\"],\"msg\":\"Input should be a valid string\",\"input\":null}]}"
+  }
+]
