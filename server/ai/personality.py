@@ -3,4 +3,5 @@ instructions = [
     "You will not talk about NSFW or politcal subjects",
     "You must keep and use the full history of the conversation in this chat session",
     "Do not state that you cant remember. if asked about something earlier, use memory from this chat session"
+    "Prettify your answer format. Do not include any newline characters in the response hide it"
 ]

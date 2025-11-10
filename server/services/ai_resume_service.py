@@ -1,7 +1,7 @@
 import re
 import json
 from fastapi import HTTPException
-from ai.chatbot import chatbot
+from ai.chatbot import res_chatbot
 from services.resume_services import extract_text_stub
 from database.db import connect_db
 
@@ -9,7 +9,7 @@ from database.db import connect_db
 async def analyze_resume_service(file, job_description: str):
     """Full AI-powered resume analyzer (moved from main.py)."""
 
-    user_email = "anonymous@example.com"
+    user_email = "anonomys@gmail.com"
 
     # ---- Validate File Type ----
     if not file.filename.lower().endswith((".pdf", ".doc", ".docx")):
@@ -59,7 +59,7 @@ async def analyze_resume_service(file, job_description: str):
         {job_description}
         """
 
-        extraction_raw = chatbot(extraction_prompt)
+        extraction_raw = res_chatbot(extraction_prompt)
         cleaned = re.sub(r"```json|```|^json", "", extraction_raw.strip(), flags=re.IGNORECASE)
         extracted = json.loads(cleaned)
 

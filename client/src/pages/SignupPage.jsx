@@ -1,45 +1,57 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import SignupForm from '../components/oldSignupForm';
+import SignupForm from '../components/SignupForm';
+import '../styles/authStyles.css';
+import logo from '../assets/logo.png';
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const [showLogin, setShowLogin] = useState(false);
 
   const handleSignup = async(signupData) => {
-    console.log('Signup data:', signupData);
-    // TODO: Connect to backend
-    const response = await fetch('http://localhost:8000/signup',{
+    const response = await fetch('http://localhost:8000/signup', {
       method: 'POST',
-      headers: {
-        'Content-Type':'application/json'
-      },
+      headers: { 'Content-Type':'application/json' },
       body: JSON.stringify({
-        //credentials: 'include',
         name: signupData.name,
         email: signupData.email,
         password: signupData.password,
-        enabled: signupData.enabled 
+        enabled: signupData.enabled
       }),
     });
+
     const data = await response.json();
     if(response.ok){
-      alert('Account created!')
-      console.log('success')
-    }else{
-      alert(data.message || 'Failed to create account')
-      console.log('failure')
+      alert('Account created!');
+      navigate('/login');
+    } else {
+      alert(data.message || 'Failed to create account');
     }
-    navigate('/login'); 
-  };
-
-  const toggleForm = () => {
-    navigate('/login');
   };
 
   return (
-    <div>
-      <SignupForm onSignup={handleSignup} toggleForm={toggleForm} />
+    <div className="login-page">
+
+      <div className="signup-hero">
+        <div className="overlay">
+          <h1>Create Your Account 🎉</h1>
+          <p>Join Opportunet and start matching with IT & CS opportunities today.</p>
+        </div>
+      </div>
+
+      <div className="login-panel">
+        <div className="auth-container">
+          <div className="login-brand">
+            <img src={logo} alt="Opportunet Logo" className="brand-logo" />
+            <h2 className="brand-heading">Opportunet</h2>
+          </div>
+
+          <SignupForm
+            onSignup={handleSignup}
+            toggleForm={() => navigate('/login')}
+          />
+        </div>
+      </div>
+      
     </div>
   );
 };

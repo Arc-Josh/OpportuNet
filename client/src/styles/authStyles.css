@@ -52,6 +52,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .password-input-wrapper input {
@@ -223,4 +224,142 @@
   object-fit: cover;
   margin-bottom: 1rem;
   border: 3px solid #2e7d32;
+}
+
+/* Root container */
+.login-page {
+  display: flex;
+  height: 100vh;
+  background-color: #f4fdf5;
+  font-family: 'Inter', sans-serif;
+}
+
+/* LEFT: Image or gradient area */
+.login-hero {
+  flex: 1;
+  background: linear-gradient(
+      rgba(46, 125, 50, 0.6),
+      rgba(46, 125, 50, 0.7)
+    ),
+    url('../assets/fiends.png') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 60px;
+  position: relative;
+}
+
+.overlay {
+  text-align: center;
+  max-width: 400px;
+}
+
+.overlay h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.overlay p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* Login form container */
+.login-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 2rem;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Adjust the form box */
+.auth-container {
+  max-width: 420px;
+  width: 100%;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.6s ease-in;
+}
+
+/* Subtle fade animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive: stack layout for small screens */
+@media (max-width: 900px) {
+  .login-page {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .login-hero {
+    height: 40vh;
+    padding: 30px;
+  }
+
+  .login-panel {
+    height: 60vh;
+    box-shadow: none;
+  }
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0px;
+  margin-bottom: 1.5rem;
+}
+
+.brand-logo {
+  height: 42px;
+  width: auto;
+}
+
+.brand-heading {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #2e7d32;
+  margin: 0;
+}
+
+.show-password-btn {
+  background: rgb(226, 211, 2);
+  border: #2e7d32;
+  cursor: pointer;
+  height: 25px;
+  width: 25px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .95rem;
+  color: #555;
+}
+
+.signup-hero {
+  flex: 1;
+  background: linear-gradient(
+      rgba(46, 125, 50, 0.6),
+      rgba(46, 125, 50, 0.7)
+    ),
+    url('../assets/friends2.jpg') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding: 60px;
+  position: relative;
 }

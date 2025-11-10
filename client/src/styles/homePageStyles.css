@@ -88,18 +88,22 @@ body {
 }
 
 .hero-logo {
-  width: 400px; /* adjust size */
+  width: 400px; 
   height: 400px;
-  object-fit: cover; /* keeps proportions while filling circle */
-  border-radius: 50%; /* makes it circular */
-  border: 6px solid white; /* optional border for contrast */
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3); /* optional depth */
+  object-fit: cover; 
+  object-position: 10%;
+  margin-right: 20px;
+  border-radius: 50%; 
+  border: 6px solid #00853E; 
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
 }
 
 /* ALTERNATING FEATURES SECTION */
 .alt-features-section {
   padding: 100px 40px;
-  background: url('../assets/feature.jpg') center/cover no-repeat;
+  background: url('../assets/women.jpeg') center/cover no-repeat;
+  border-top: 4px solid #00853E;
+  border-bottom: 4px solid #00853E;
   color: white;
   text-align: center;
   position: relative;
@@ -118,9 +122,24 @@ body {
   align-items: center;
   justify-content: space-between;
   margin: 60px 0;
-  padding: 40px;
+  transform: scale(0.7);
+  padding: 20px;
   background: whitesmoke; 
   border-radius: 16px;
+}
+
+.alt-features-section .feature-row:nth-child(2) {
+  margin-left: 600px;   
+  margin-right: 0;
+}
+
+.alt-features-section .feature-row:nth-child(3) {
+  margin-right: 600px;  
+  margin-left: 0;
+}
+
+.alt-features-section .feature-row:nth-child(4) {
+  margin-left: 600px;
 }
 
 .feature-row.reverse {

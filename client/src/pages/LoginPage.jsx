@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import LoginForm from '../components/LoginForm';
 import { storeToken } from '../storage/token';
 import { AuthContext } from '../context/AuthContext'; // ✅ import the context
+import '../styles/authStyles.css'; 
+import logo from '../assets/logo.png';  
+
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -26,13 +29,13 @@ const LoginPage = () => {
           return false;
         }
 
-        // ✅ Save to localStorage as before
+        //  Save to localStorage as before
         storeToken(token);
 
-        // ✅ Update global auth state so Navbar re-renders immediately
+        //  Update global auth state so Navbar re-renders immediately
         login(token);
 
-        // ✅ Redirect after login
+        //  Redirect after login
         navigate("/dashboard");
         return true;
       } else {
@@ -52,8 +55,23 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
-      <div className="login-wrapper">
-        <LoginForm onLogin={handleLogin} toggleForm={toggleForm} />
+      {/* LEFT SIDE: Image or Gradient */}
+      <div className="login-hero">
+        <div className="overlay">
+          <h1>Welcome Back 👋</h1>
+          <p>Sign in to explore new CS & IT opportunities through Opportunet.</p>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE: Login Form */}
+      <div className="login-panel">
+        <div className="auth-container">
+          <div className="login-brand">
+          <img src={logo} alt="Opportunet Logo" className="brand-logo" />
+          <h2 className="brand-heading">Opportunet</h2>
+        </div>
+          <LoginForm onLogin={handleLogin} toggleForm={toggleForm} />
+        </div>
       </div>
     </div>
   );

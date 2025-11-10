@@ -20,6 +20,8 @@ from services.resume_services import extract_text_stub
 from ai.chatbot import chatbot
 from database.db import connect_db
 from security import authorization
+import json
+from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
 
 # ---------------------------
@@ -43,13 +45,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-# ---------------------------
-# Auth + Account
-# ---------------------------
-chat_sesh = {}
-
 @app.post("/signup")
 async def signup(user: UserCreate):
     new_user = await create_account(user)
@@ -63,7 +58,10 @@ async def signup(user: UserCreate):
 
 @app.post("/login")
 async def u_login(user: UserLogin):
+    global chat_sesh
+    chat_sesh = {}
     user = await login(user)
+    
     token = user.get("access_token")
     if token:
         return {"token": token}
@@ -90,9 +88,11 @@ async def chatbot_endpoint(request: ChatbotRequest, token: str = Depends(authori
     global chat_sesh
     email = authorization.get_user(token)
     chat = chat_sesh.get(email)
-    answer, new_chat = await chatbot(request.question, email, chat)
+    answer, new_chat = await chatbot(request.question,email,chat)
+    print(chat_sesh)
     chat_sesh[email] = new_chat
-    return {"email": email, "answer": answer}
+    print(chat_sesh)
+    return {"email": email, "answer":answer}
 
 
 # ---------------------------
@@ -110,8 +110,30 @@ async def create_job(job: JobCreate):
 
 
 @app.get("/jobs", response_model=list[JobResponse])
-async def list_jobs():
-    return await get_all_jobs()
+async def list_jobs(
+    search: Optional[str] = Query(None, description="keyword in title/company/description"),
+    company: Optional[str] = Query(None),
+    position: Optional[str] = Query(None, description="e.g., Frontend/Backend/Fullstack/Intern"),
+    location: Optional[str] = Query(None),
+    location_type: Optional[str] = Query(None, description="Remote/Hybrid/On-site"),
+    min_salary: Optional[int] = Query(None),
+    max_salary: Optional[int] = Query(None),
+    sort: Optional[str] = Query("new", description="new|salary_high|salary_low"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=100),
+):
+    return await get_jobs_filtered(
+        search=search,
+        company=company,
+        position=position,
+        location=location,
+        location_type=location_type,
+        min_salary=min_salary,
+        max_salary=max_salary,
+        sort=sort,
+        page=page,
+        page_size=page_size,
+    )
 
 
 @app.post("/save-job/{job_id}")
@@ -204,32 +226,3 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
-
-
-# ---------------------------
-# Profile Endpoints
-# ---------------------------
-@app.get("/profile")
-async def profile_get():
-    return await get_profile()
-
-@app.post("/update_profile")
-async def profile_update(
-    fullName: str = Form(...),
-    email: str = Form(...),
-    education: str = Form(""),
-    bio: str = Form(""),
-    experience: str = Form(""),
-    profilePic: UploadFile = File(None),
-    resume: UploadFile = File(None),
-):
-    return await save_profile(
-        fullName=fullName,
-        email=email,
-        education=education,
-        bio=bio,
-        experience=experience,
-        profilePic=profilePic,
-        resume=resume,
-    )
-

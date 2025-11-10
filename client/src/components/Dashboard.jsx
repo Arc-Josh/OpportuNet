@@ -10,9 +10,16 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    salary: '',
+    search: '',
+    company: '',
+    salaryMin: '',
+    salaryMax: '',
     location: '',
-    position: ''
+    locationType: '',   
+    position: '',       
+    sort: 'new',
+    page: 1,
+    pageSize: 25,
   });
 
   const fetchJobs = async (filters) => {
@@ -27,6 +34,20 @@ const Dashboard = () => {
       if (filters.salary) params.append('salary', filters.salary.replace('k', '000'));
       if (filters.location) params.append('location', filters.location);
       if (filters.position) params.append('position', filters.position);
+      if (filters.salaryMin) params.append('min_salary', String(filters.salaryMin));
+      if (filters.salaryMax) params.append('max_salary', String(filters.salaryMax));
+      if (filters.location) params.append('location', filters.location);
+      if (filters.position) params.append('position', filters.position);
+      if (filters.locationType) params.append('location_type', filters.locationType);
+      if (filters.search) params.append('search', filters.search);
+      if (filters.company) params.append('company', filters.company);
+      if (filters.sort) params.append('sort', filters.sort);         
+      if (filters.page) params.append('page', String(filters.page));
+      if (filters.pageSize) params.append('page_size', String(filters.pageSize));
+
+      params.append("sort", filters.sort || "new");
+      params.append("page", filters.page || 1);
+      params.append("page_size", filters.pageSize || 25);
 
       const response = await fetch(`http://localhost:8000/jobs?${params.toString()}`, {
         headers: {
@@ -44,8 +65,8 @@ const Dashboard = () => {
       const normalizedJobs = data.map(job => ({
         job_id: job.job_id,
         jobTitle: job.jobTitle || job.job_name || "Untitled Job",
-        company: job.company || "Unknown Company",
-        jobLocation: job.jobLocation || job.location || "N/A",
+        company: job.company_name || "Unknown Company",
+        jobLocation: job.location || job.location || "N/A",
         jobUrl: job.jobUrl || null,
         salary: job.salary || "Not Specified",
         description: job.description || "",
