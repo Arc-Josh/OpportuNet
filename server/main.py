@@ -242,25 +242,20 @@ async def profile_get(token: str = Depends(authorization.oauth2_scheme)):
 
 @app.post("/update_profile")
 async def profile_update(
-    fullName: str = Form(""),
-    email: str = Form(""),
-    education: str = Form(""),
-    bio: str = Form(""),
-    experience: str = Form(""),
+  fullName: str = Form(...),
+    email: str = Form(...),
     profilePic: UploadFile = File(None),
     resume: UploadFile = File(None),
 ):
-    """Save or update profile information"""
+    """Save or update user's profile and upload files to S3."""
     try:
         return await save_profile(
             fullName=fullName,
             email=email,
-            education=education,
-            bio=bio,
-            experience=experience,
             profilePic=profilePic,
             resume=resume,
         )
     except Exception as e:
         print("Error saving profile:", e)
         raise HTTPException(status_code=500, detail="Failed to save profile")
+
