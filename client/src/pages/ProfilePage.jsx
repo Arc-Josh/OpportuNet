@@ -15,11 +15,28 @@ const ProfilePage = () => {
   const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(true);
 
-  // Fetch saved profile data when component loads
+  //  Fetch saved profile data when component loads
   useEffect(() => {
     const fetchProfile = async () => {
+      const token = localStorage.getItem("token"); // get token from localStorage
+      if (!token) {
+        console.warn("⚠️ No token found — please log in first.");
+        return;
+      }
+
       try {
-        const response = await fetch("http://localhost:8000/profile");
+        const response = await fetch("http://localhost:8000/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`, //  include token
+          },
+        });
+
+        if (response.status === 401) {
+          console.error("Unauthorized — please log in again.");
+          setMessage("⚠️ Session expired. Please log in again.");
+          return;
+        }
+
         if (response.ok) {
           const data = await response.json();
           setFormData({
@@ -32,25 +49,28 @@ const ProfilePage = () => {
           setProfilePic(data.profilePic || null);
           setResume(data.resume ? `http://localhost:8000/${data.resume}` : null);
           setIsEditing(false);
+        } else {
+          console.error("Failed to fetch profile:", response.statusText);
         }
       } catch (err) {
         console.error("Error fetching profile:", err);
       }
     };
+
     fetchProfile();
   }, []);
 
-  // Handle form input changes
+  //  Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Handle file uploads
+  //  Handle file uploads
   const handleProfilePicChange = (e) => setProfilePic(e.target.files[0]);
   const handleResumeChange = (e) => setResume(e.target.files[0]);
 
-  // Submit updated profile
+  //  Submit updated profile
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("Saving...");
@@ -59,20 +79,32 @@ const ProfilePage = () => {
     Object.entries(formData).forEach(([key, value]) =>
       formDataToSend.append(key, value)
     );
-    if (profilePic instanceof File) formDataToSend.append("profilePic", profilePic);
+
+    if (profilePic instanceof File)
+      formDataToSend.append("profilePic", profilePic);
     if (resume instanceof File) formDataToSend.append("resume", resume);
+
+    const token = localStorage.getItem("token"); // get token again
 
     try {
       const response = await fetch("http://localhost:8000/update_profile", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`, //  include token here
+        },
         body: formDataToSend,
       });
 
+      if (response.status === 401) {
+        setMessage("⚠️ Session expired. Please log in again.");
+        return;
+      }
+
       if (response.ok) {
-        setMessage("✅ Profile updated successfully!");
+        setMessage(" Profile updated successfully!");
         setIsEditing(false);
       } else {
-        setMessage("❌ Failed to update profile.");
+        setMessage(" Failed to update profile.");
       }
     } catch (err) {
       console.error(err);
@@ -80,10 +112,8 @@ const ProfilePage = () => {
     }
   };
 
-  // Switch to edit mode
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+  //  Switch to edit mode
+  const handleEdit = () => setIsEditing(true);
 
   return (
     <div className="profile-page">
@@ -106,14 +136,25 @@ const ProfilePage = () => {
             )}
 
             <h3>{formData.fullName || "Your Name"}</h3>
-            <p><strong>Email:</strong> {formData.email}</p>
-            <p><strong>Education:</strong> {formData.education}</p>
-            <p><strong>Bio:</strong> {formData.bio}</p>
-            <p><strong>Experience:</strong> {formData.experience}</p>
+            <p>
+              <strong>Email:</strong> {formData.email}
+            </p>
+            <p>
+              <strong>Education:</strong> {formData.education}
+            </p>
+            <p>
+              <strong>Bio:</strong> {formData.bio}
+            </p>
+            <p>
+              <strong>Experience:</strong> {formData.experience}
+            </p>
 
             {resume && (
               <p>
-                📄 <a href={resume} target="_blank" rel="noreferrer">View Resume</a>
+                📄{" "}
+                <a href={resume} target="_blank" rel="noreferrer">
+                  View Resume
+                </a>
               </p>
             )}
 
@@ -201,7 +242,12 @@ const ProfilePage = () => {
               <label>Upload Resume (PDF only):</label>
               <input type="file" accept=".pdf" onChange={handleResumeChange} />
               {resume && !(resume instanceof File) && (
-                <p>📄 <a href={resume} target="_blank" rel="noreferrer">View Current Resume</a></p>
+                <p>
+                  📄{" "}
+                  <a href={resume} target="_blank" rel="noreferrer">
+                    View Current Resume
+                  </a>
+                </p>
               )}
             </div>
 

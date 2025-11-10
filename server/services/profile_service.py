@@ -5,14 +5,19 @@ from database.db import connect_db
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-async def get_profile():
-    """Fetch the single saved profile (for demo, not per-user yet)."""
+
+async def get_profile(email: str):
+    """Fetch the profile for the given user."""
     conn = await connect_db()
     try:
-        row = await conn.fetchrow("SELECT * FROM profiles LIMIT 1")
+        query = "SELECT * FROM profiles WHERE email = $1 LIMIT 1"
+        row = await conn.fetchrow(query, email)
         if not row:
             return {}
         return dict(row)
+    except Exception as e:
+        print("Profile fetch error:", e)
+        raise HTTPException(status_code=500, detail="Error fetching profile")
     finally:
         await conn.close()
 
@@ -35,7 +40,7 @@ async def save_profile(fullName, email, education, bio, experience, profilePic=N
             with open(resume_path, "wb") as f:
                 f.write(await resume.read())
 
-        # Insert or update profile
+       
         query = """
             INSERT INTO profiles (full_name, email, education, bio, experience, profile_pic, resume)
             VALUES ($1, $2, $3, $4, $5, $6, $7)

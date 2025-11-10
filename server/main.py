@@ -12,7 +12,7 @@ from models.user import (
 from services.u_services import (
     create_account, login, get_faq_answer, create_job_entry, get_all_jobs,
     remove_saved_job, create_scholarship_entry, get_all_scholarships,
-    save_scholarship_for_user, get_saved_scholarships, remove_saved_scholarship
+    save_scholarship_for_user, get_saved_scholarships, remove_saved_scholarship, get_jobs_filtered
 )
 from services.ai_resume_service import analyze_resume_service
 from services.profile_service import get_profile, save_profile
@@ -23,6 +23,8 @@ from security import authorization
 import json
 from fastapi.middleware.cors import CORSMiddleware
 import services.email_services
+from typing import Optional
+
 
 # ---------------------------
 # App Initialization
@@ -226,3 +228,39 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
+
+@app.get("/profile")
+async def profile_get(token: str = Depends(authorization.oauth2_scheme)):
+    """Fetch user profile data"""
+    email = authorization.get_user(token)
+    try:
+        return await get_profile(email)
+    except Exception as e:
+        print("Error fetching profile:", e)
+        raise HTTPException(status_code=500, detail="Failed to fetch profile")
+
+
+@app.post("/update_profile")
+async def profile_update(
+    fullName: str = Form(""),
+    email: str = Form(""),
+    education: str = Form(""),
+    bio: str = Form(""),
+    experience: str = Form(""),
+    profilePic: UploadFile = File(None),
+    resume: UploadFile = File(None),
+):
+    """Save or update profile information"""
+    try:
+        return await save_profile(
+            fullName=fullName,
+            email=email,
+            education=education,
+            bio=bio,
+            experience=experience,
+            profilePic=profilePic,
+            resume=resume,
+        )
+    except Exception as e:
+        print("Error saving profile:", e)
+        raise HTTPException(status_code=500, detail="Failed to save profile")
