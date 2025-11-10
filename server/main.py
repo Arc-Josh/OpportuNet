@@ -92,6 +92,8 @@ async def chatbot_endpoint(request: ChatbotRequest, token: str = Depends(authori
     chat = chat_sesh.get(email)
     answer, new_chat = await chatbot(request.question,email,chat)
     print(chat_sesh)
+    if not chat_sesh:
+        answer = "Hello, I am Opie. How can I help you today?"
     chat_sesh[email] = new_chat
     print(chat_sesh)
     return {"email": email, "answer":answer}

@@ -3,14 +3,36 @@ import axios from "axios";
 import "../styles/chatbotStyles.css";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../storage/token";
+import opie from "../assets/Opie.png"
 
 const Chatbot = () => {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [profilePic, setProfilePic] = useState(null);
   const chatEndRef = useRef(null);
   const navigate = useNavigate();
 
+  // Fetch user profile picture
+  useEffect(() => {
+    const fetchProfilePic = async () => {
+      const token = getToken();
+      if (!token) return;
+
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProfilePic(res.data.profile_pic_url || null);
+      } catch (err) {
+        console.error("Error fetching profile pic:", err);
+      }
+    };
+
+    fetchProfilePic();
+  }, []);
+
+  // Handle sending message
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -45,6 +67,7 @@ const Chatbot = () => {
     }
   };
 
+  // Auto-scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
@@ -59,8 +82,22 @@ const Chatbot = () => {
             key={i}
             className={`message ${msg.sender === "user" ? "user-msg" : "bot-msg"}`}
           >
-            {msg.sender === "bot" && (
-              <div className="bot-icon">O</div>
+            {msg.sender === "bot" ? (
+              <img
+                src={opie}
+                alt="Opie"
+                className="avatar bot-avatar"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "https://via.placeholder.com/40?text=O";
+                }}
+              />
+            ) : (
+              <img
+                src={profilePic || "https://via.placeholder.com/40?text=U"}
+                alt="User"
+                className="avatar user-avatar"
+              />
             )}
             <div className="msg-text">{msg.text}</div>
           </div>
@@ -68,7 +105,15 @@ const Chatbot = () => {
 
         {loading && (
           <div className="message bot-msg">
-            <div className="bot-icon">O</div>
+            <img
+              src="/assets/Opie.png"
+              alt="Opie"
+              className="avatar bot-avatar"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "https://via.placeholder.com/40?text=O";
+              }}
+            />
             <div className="typing-dots">
               <span></span><span></span><span></span>
             </div>

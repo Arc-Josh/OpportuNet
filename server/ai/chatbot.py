@@ -1,10 +1,12 @@
 import os
 from google import genai
 from google.genai import types
+from google.genai.errors import ServerError
 from dotenv import load_dotenv
 import json
 from .personality import instructions
 from .toolkit import get_info, get_user_info
+import asyncio
 
 # Load environment variables
 load_dotenv()
@@ -12,6 +14,22 @@ load_dotenv()
 # Configure Gemini with API key
 api_key = os.getenv("GOOGLE_API_KEY")
 #genai.configure(api_key=api_key)
+
+async def safe_send_message(chat, message, retries=3, delay=2):
+    """
+    Safely send a message to Gemini, retrying if the model is overloaded (503).
+    """
+    for attempt in range(retries):
+        try:
+            response = chat.send_message(message=message)
+            return response
+        except ServerError as e:
+            if "503" in str(e):
+                print(f"[WARN] Gemini model overloaded. Retrying in {delay}s... (Attempt {attempt + 1}/{retries})")
+                await asyncio.sleep(delay)
+            else:
+                raise  # rethrow any non-503 errors
+    raise Exception("Gemini model unavailable after multiple retries.")
 
 async def chatbot(dialogue:str,email:str,chat = None):
     client = genai.Client()
@@ -31,7 +49,7 @@ async def chatbot(dialogue:str,email:str,chat = None):
             tools=[tools]
         )
         chat = client.chats.create(model = "gemini-2.5-flash",config=config)
-    response = chat.send_message(message =f"User email: {email}\nQuestion: {dialogue}")
+    response = await safe_send_message(chat, f"User email: {email}\nQuestion: {dialogue}")
     
     part = response.candidates[0].content.parts[0]
 
