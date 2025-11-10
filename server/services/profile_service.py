@@ -1,73 +1,61 @@
 import os
-import shutil
-from fastapi import UploadFile
-
-# In-memory store for now — replace with database later
-user_profile = {
-    "email": "",
-    "fullName": "",
-    "education": "",
-    "bio": "",
-    "experience": "",
-    "profilePic": None,
-    "resume": None,
-}
+from fastapi import UploadFile, HTTPException
+from database.db import connect_db
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-
-def get_profile():
-    """
-    Retrieve the user profile details.
-    """
-    return user_profile
-
-
-def save_profile(
-    fullName: str,
-    email: str,
-    education: str = "",
-    bio: str = "",
-    experience: str = "",
-    profilePic: UploadFile = None,
-    resume: UploadFile = None,
-):
-    """
-    Save or update the user's profile details, profile picture, and resume.
-    """
-
+async def get_profile():
+    """Fetch the single saved profile (for demo, not per-user yet)."""
+    conn = await connect_db()
     try:
-        profile_path = None
+        row = await conn.fetchrow("SELECT * FROM profiles LIMIT 1")
+        if not row:
+            return {}
+        return dict(row)
+    finally:
+        await conn.close()
+
+
+async def save_profile(fullName, email, education, bio, experience, profilePic=None, resume=None):
+    """Save or update the user profile and uploaded files."""
+    conn = await connect_db()
+    try:
+        # Handle file uploads
+        profile_pic_path = None
         resume_path = None
 
-        # Save profile picture
         if profilePic:
-            profile_path = os.path.join(UPLOAD_DIR, profilePic.filename)
-            with open(profile_path, "wb") as buffer:
-                shutil.copyfileobj(profilePic.file, buffer)
-            user_profile["profilePic"] = profile_path
+            profile_pic_path = os.path.join(UPLOAD_DIR, profilePic.filename)
+            with open(profile_pic_path, "wb") as f:
+                f.write(await profilePic.read())
 
-        # Save resume file
         if resume:
             resume_path = os.path.join(UPLOAD_DIR, resume.filename)
-            with open(resume_path, "wb") as buffer:
-                shutil.copyfileobj(resume.file, buffer)
-            user_profile["resume"] = resume_path
+            with open(resume_path, "wb") as f:
+                f.write(await resume.read())
 
-        # Update remaining fields
-        user_profile.update(
-            {
-                "email": email,
-                "fullName": fullName,
-                "education": education,
-                "bio": bio,
-                "experience": experience,
-            }
+        # Insert or update profile
+        query = """
+            INSERT INTO profiles (full_name, email, education, bio, experience, profile_pic, resume)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            ON CONFLICT (email) DO UPDATE
+            SET full_name = EXCLUDED.full_name,
+                education = EXCLUDED.education,
+                bio = EXCLUDED.bio,
+                experience = EXCLUDED.experience,
+                profile_pic = EXCLUDED.profile_pic,
+                resume = EXCLUDED.resume,
+                updated_at = NOW()
+            RETURNING *;
+        """
+        result = await conn.fetchrow(
+            query, fullName, email, education, bio, experience, profile_pic_path, resume_path
         )
 
-        return {"message": "Profile updated successfully"}
-
+        return dict(result)
     except Exception as e:
-        print("Error in save_profile:", e)
-        return {"error": str(e)}
+        print("Profile save error:", e)
+        raise HTTPException(status_code=500, detail="Error saving profile")
+    finally:
+        await conn.close()

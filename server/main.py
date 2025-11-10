@@ -211,9 +211,7 @@ async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(aut
 # ---------------------------
 @app.get("/profile")
 async def profile_get():
-    """Fetch user profile data."""
-    return get_profile()
-
+    return await get_profile()
 
 @app.post("/update_profile")
 async def profile_update(
@@ -225,8 +223,7 @@ async def profile_update(
     profilePic: UploadFile = File(None),
     resume: UploadFile = File(None),
 ):
-    """Update user profile data and files."""
-    return save_profile(
+    return await save_profile(
         fullName=fullName,
         email=email,
         education=education,
@@ -235,3 +232,4 @@ async def profile_update(
         profilePic=profilePic,
         resume=resume,
     )
+
