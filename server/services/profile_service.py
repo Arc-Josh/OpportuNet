@@ -71,13 +71,13 @@ async def save_profile(fullName, email, profilePic=None, resume=None):
         # Upload profile picture to S3 (if provided)
         if profilePic is not None:
             pic_filename = f"profile_pics/{email}_{profilePic.filename}"
-            s3_client.upload_fileobj(profilePic.file, S3_BUCKET_NAME, pic_filename, ExtraArgs={"ACL":"public-read"})
+            s3_client.upload_fileobj(profilePic.file, S3_BUCKET_NAME, pic_filename)
             profile_pic_url = f"https://{S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{pic_filename}"
 
         # Upload resume to S3 (if provided)
         if resume is not None:
             resume_filename = f"resumes/{email}_{resume.filename}"
-            s3_client.upload_fileobj(resume.file, S3_BUCKET_NAME, resume_filename,ExtraArgs={"ACL":"public-read"})
+            s3_client.upload_fileobj(resume.file, S3_BUCKET_NAME, resume_filename)
             resume_url = f"https://{S3_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com/{resume_filename}"
 
         # Update user record in database

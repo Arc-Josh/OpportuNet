@@ -4,33 +4,43 @@ import "../styles/dashboardStyles.css";
 const ScholarshipFilters = ({ currentFilters, onFilterApply }) => {
   const [filters, setFilters] = useState(currentFilters);
 
-  const handleChange = (key, value) => {
-    const updated = { ...filters, [key]: value };
-    setFilters(updated);
+  const update = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const resetFilters = () => {
+    const reset = {
+      q: "",
+      min_amount: "",
+      max_amount: "",
+      deadline_before: ""
+    };
+    setFilters(reset);
+    onFilterApply(reset);
   };
 
   return (
     <div className="filters-panel">
       <h3 className="filters-title">Scholarship Filters</h3>
 
-      {/* Search */}
+      {/* Keyword Search */}
       <div className="filter-group">
         <label>Keyword Search</label>
         <input
           type="text"
-          placeholder="e.g. Women in STEM, Cybersecurity"
+          placeholder="e.g. STEM, Women, First-gen"
           value={filters.q || ""}
-          onChange={(e) => handleChange("q", e.target.value)}
+          onChange={(e) => update("q", e.target.value)}
         />
       </div>
 
-      {/* Funding Amount */}
+      {/* Min & Max Amount */}
       <div className="filter-group">
         <label>Minimum Amount ($)</label>
         <input
           type="number"
           value={filters.min_amount || ""}
-          onChange={(e) => handleChange("min_amount", e.target.value)}
+          onChange={(e) => update("min_amount", e.target.value)}
         />
       </div>
 
@@ -39,55 +49,28 @@ const ScholarshipFilters = ({ currentFilters, onFilterApply }) => {
         <input
           type="number"
           value={filters.max_amount || ""}
-          onChange={(e) => handleChange("max_amount", e.target.value)}
+          onChange={(e) => update("max_amount", e.target.value)}
         />
       </div>
 
       {/* Deadline */}
       <div className="filter-group">
-        <label>Deadline On/Before</label>
+        <label>Deadline On or Before</label>
         <input
           type="date"
           value={filters.deadline_before || ""}
-          onChange={(e) => handleChange("deadline_before", e.target.value)}
+          onChange={(e) => update("deadline_before", e.target.value)}
         />
       </div>
 
-      <div className="filter-group">
-        <label>Deadline On/After</label>
-        <input
-          type="date"
-          value={filters.deadline_after || ""}
-          onChange={(e) => handleChange("deadline_after", e.target.value)}
-        />
-      </div>
+      {/* Buttons */}
+      <button className="apply-filters" onClick={() => onFilterApply(filters)}>
+        Apply Filters
+      </button>
 
-      {/* Action Buttons */}
-      <div className="filter-actions">
-        <button
-          className="apply-filters"
-          onClick={() => onFilterApply(filters)}
-        >
-          Apply Filters
-        </button>
-
-        <button
-          className="reset-filters"
-          onClick={() => {
-            const reset = {
-              q: "",
-              min_amount: "",
-              max_amount: "",
-              deadline_before: "",
-              deadline_after: "",
-            };
-            setFilters(reset);
-            onFilterApply(reset);
-          }}
-        >
-          Reset Filters
-        </button>
-      </div>
+      <button className="reset-filters" onClick={resetFilters}>
+        Reset Filters
+      </button>
     </div>
   );
 };

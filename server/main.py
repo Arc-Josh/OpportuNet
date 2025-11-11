@@ -196,42 +196,52 @@ async def create_scholarship(scholarship: ScholarshipCreate):
 
 @app.get("/scholarships", response_model=list[ScholarshipResponse])
 async def list_scholarships(
-    q: str = Query(None),                
-    min_amount: int = Query(None),       
-    max_amount: int = Query(None),      
-    deadline_before: str = Query(None),  
-    deadline_after: str = Query(None),  
+    q: str = Query(None),
+    min_amount: int = Query(None),
+    max_amount: int = Query(None),
+    deadline_before: str = Query(None),
 ):
     all_scholarships = await get_all_scholarships()
     results = all_scholarships
 
-    # Text Search (title, description, eligibility)
+    # Keyword search in title or description
     if q:
+        q_lower = q.lower()
         results = [
             s for s in results
-            if q.lower() in (s.scholarship_title or "").lower()
-            or q.lower() in (s.description or "").lower()
-            or q.lower() in (s.eligibility or "").lower()
+            if q_lower in (s.scholarship_title or "").lower()
+            or q_lower in (s.description or "").lower()
         ]
 
-    # Clean and compare amounts (extract numbers)
-    def extract_amount(a):
-        if not a:
+    # Convert amount "$250,000" → 250000 safely
+    def parse_amount(amount_str):
+        try:
+            return int("".join(filter(str.isdigit, amount_str)))
+        except:
             return None
-        cleaned = ''.join(ch for ch in a if ch.isdigit())
-        return int(cleaned) if cleaned.isdigit() else None
 
-    if min_amount:
-        results = [s for s in results if extract_amount(s.amount) and extract_amount(s.amount) >= min_amount]
+    # Filter by minimum amount
+    if min_amount is not None:
+        results = [
+            s for s in results
+            if s.amount and parse_amount(s.amount) is not None
+            and parse_amount(s.amount) >= min_amount
+        ]
 
-    if max_amount:
-        results = [s for s in results if extract_amount(s.amount) and extract_amount(s.amount) <= max_amount]
+    # Filter by maximum amount
+    if max_amount is not None:
+        results = [
+            s for s in results
+            if s.amount and parse_amount(s.amount) is not None
+            and parse_amount(s.amount) <= max_amount
+        ]
 
+    # Deadline filter (ISO formatted date comparison)
     if deadline_before:
-        results = [s for s in results if s.deadline and str(s.deadline) <= deadline_before]
-
-    if deadline_after:
-        results = [s for s in results if s.deadline and str(s.deadline) >= deadline_after]
+        results = [
+            s for s in results
+            if s.deadline and str(s.deadline) <= deadline_before
+        ]
 
     return results
 

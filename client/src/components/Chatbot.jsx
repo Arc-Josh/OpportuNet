@@ -74,7 +74,7 @@ const Chatbot = () => {
 
   return (
     <div className="chatbot-container">
-      <header className="chatbot-header">Opie</header>
+      <header className="chatbot-header">Opie - Your Career Assistant</header>
 
       <div className="chat-window">
         {messages.map((msg, i) => (

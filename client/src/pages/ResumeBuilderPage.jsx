@@ -156,6 +156,10 @@ const ResumeBuilderPage = () => {
   return (
     <div className="resume-page">
       <div className="resume-container">
+        <h1 className="resume-page-title">Resume Analyzer</h1>
+        <p className="resume-page-subtitle">
+        Optimize your resume for the job you want — instantly.
+        </p>
         {/* Stepper */}
         <div className="stepper">
           <div className={`step ${step === 1 ? "active" : step > 1 ? "done" : ""}`}>
@@ -179,16 +183,17 @@ const ResumeBuilderPage = () => {
           <div className="upload-section">
             <h2>UPLOAD YOUR RESUME</h2>
             <p className="subtitle">Upload your resume to get started</p>
-            <form onSubmit={handleResumeUpload}>
-              <label className="upload-button">
+            <form onSubmit={handleResumeUpload} className="upload-btn-row">
+              <label className="upload-btn">
                 Upload PDF
                 <input type="file" accept=".pdf" hidden onChange={handleFileChange} />
               </label>
-              {file && <p className="file-name">📄 {file.name}</p>}
-              <button type="submit" className="analyze-btn">
+
+              <button type="submit" className="upload-btn">
                 Next
               </button>
             </form>
+            {file && <p className="file-name">📄 {file.name}</p>}
             {error && <p className="error">{error}</p>}
           </div>
         )}

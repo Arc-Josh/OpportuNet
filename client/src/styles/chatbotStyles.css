@@ -15,40 +15,50 @@ body {
 
 /* Chat container */
 .chatbot-container {
+  position: relative;
+  width: 80%;         
+  max-width: 1100px;   
+  margin: 40px auto;   
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background-color:#d4ffd5;
+  height: 80vh;       
+  overflow: hidden;
 }
 
 /* Header */
 .chatbot-header {
-  background-color: var(--primary-green);
+  background: linear-gradient(135deg, #00853e, #4caf50);
   color: white;
   text-align: center;
-  padding: 1rem;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.2rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 /* Chat window */
 .chat-window {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 1.4rem 1.8rem;
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 /* Message bubbles */
 .message {
   display: flex;
   align-items: flex-end;
-  gap: 10px;
-  margin: 10px 0;
-  max-width: 80%;
+  gap: 12px;
+  max-width: 75%;
+  animation: fadeIn 0.2s ease;
 }
 
 .bot-msg {
@@ -80,7 +90,6 @@ body {
   border-color: var(--accent-green);
 }
 
-/* Chat bubble text */
 .msg-text {
   background-color: var(--accent-green);
   color: var(--text-dark);
@@ -92,18 +101,22 @@ body {
 }
 
 .user-msg .msg-text {
-  background-color: var(--secondary-green);
+  background-color: #00853e;
   color: white;
-  border-bottom-right-radius: 0;
+  padding: 12px 16px;
+  border-radius: 18px 18px 0 18px;
+  max-width: 70%;
 }
 
 .bot-msg .msg-text {
-  background-color: var(--background-light);
-  border: 1px solid var(--accent-green);
-  border-bottom-left-radius: 0;
+  background-color: #e8ffe9;
+  border: 1px solid #bde9c1;
+  padding: 12px 16px;
+  border-radius: 18px 18px 18px 0;
+  max-width: 70%;
+  color: #2b2b2b;
 }
 
-/* Typing dots animation */
 .typing-dots span {
   height: 8px;
   width: 8px;
@@ -128,37 +141,63 @@ body {
   100% { opacity: 0.2; }
 }
 
-/* Input form */
 .chatbot-form {
   display: flex;
-  position: sticky;
-  bottom: 0;
-  background: var(--background-light);
-  padding: 0.8rem;
-  border-top: 1px solid #ddd;
+  padding: 1rem;
+  background: #ffffff;
+  border-top: 1px solid #e6e6e6;
 }
 
 .chatbot-input {
   flex: 1;
-  padding: 0.7rem;
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  outline: none;
+  padding: 0.75rem 1rem;
+  border: 1px solid #c8c8c8;
+  border-radius: 24px;
   font-size: 1rem;
 }
 
 .chatbot-button {
-  background-color: var(--primary-green);
+  background: #00853e;
   color: white;
   border: none;
-  padding: 0 1.2rem;
-  margin-left: 0.5rem;
-  border-radius: 25px;
+  padding: 0 1.3rem;
+  margin-left: 0.6rem;
+  border-radius: 24px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.3s;
+  transition: 0.2s;
 }
 
 .chatbot-button:hover {
-  background-color: var(--secondary-green);
+  background: #4caf50;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chatbot-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 40px;
+  background: linear-gradient(135deg, #e8fbe7, #d4ffd5);
+  overflow: hidden; 
+}
+
+.chatbot-page::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 650px;
+  height: 650px;
+  background: url('../assets/Opie.png') no-repeat center/contain;
+  opacity: 0.05;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
 }
