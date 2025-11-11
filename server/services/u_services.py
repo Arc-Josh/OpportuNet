@@ -296,6 +296,10 @@ async def get_all_scholarships():
  
             if 'details' not in row_dict and 'field' in row_dict:
                 row_dict['details'] = row_dict.get('field')
+            
+            if 'application_link' in row_dict and 'url' not in row_dict:
+                row_dict['url'] = row_dict['application_link']
+
             scholarships.append(ScholarshipResponse(**row_dict))
         return scholarships
     except Exception as e:
@@ -346,10 +350,10 @@ async def get_saved_scholarships(user_email: str):
         
         select_parts.append('s.eligibility')
         
-        if 'url' in available_cols:
-            select_parts.append('s.url')
+        if 'application_link' in available_cols:
+            select_parts.append('s.application_link AS url')
         else:
-            select_parts.append('NULL as url')
+            select_parts.append('NULL AS url')
         
         select_parts.append('ss.created_at')
         

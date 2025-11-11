@@ -60,6 +60,7 @@ const SavedScholarshipsPage = () => {
         <div className="saved-scholarships-list">
           {savedScholarships.map((sch) => (
             <div key={sch.scholarship_id} className="saved-card">
+              {console.log(sch)}
               {/* Logo placeholder */}
               <div className="company-logo">
                 <div className="logo-placeholder">
@@ -86,16 +87,15 @@ const SavedScholarshipsPage = () => {
 
               {/* Actions */}
               <div className="job-actions">
-                {sch.url && (
                   <a
-                    href={sch.url}
+                    href={sch.url || `https://www.google.com/search?q=${encodeURIComponent(sch.scholarship_title + ' apply')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="apply-link"
                   >
                     Apply Here
                   </a>
-                )}
+                
                 <button
                   className="remove-btn"
                   onClick={() => handleRemove(sch.scholarship_id)}
