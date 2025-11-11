@@ -449,4 +449,29 @@
   .recruiter-tips h2 {
     color: #333;
   }
+  /* ===== Make all text after Searchability section black ===== */
+.insights-card,
+.insights-card h2,
+.insights-card h3,
+.insights-card p,
+.insights-card li,
+.insights-card span,
+.insights-card div,
+.ats-info-inline,
+.hard-skills,
+.soft-skills,
+.recruiter-tips {
+  color: #000 !important; /* change green text to black */
+}
+
+/* Keep green bars (table headers) and badges white-on-green */
+.ats-table th,
+.skills-table th,
+.recruiter-tips-table th,
+.ats-badge,
+.ats-badge.gray,
+.score-circle {
+  color: #fff !important;
+}
+
 }
