@@ -62,23 +62,36 @@ const Dashboard = () => {
       const data = await response.json();
 
   
+      const normalizeList = (val) => {
+        if (!val) return [];
+        return val
+          .split("\n")
+          .map(line => line.replace(/^•\s*/, "").trim())
+          .filter(Boolean);
+      };
+      
       const normalizedJobs = data.map(job => ({
         job_id: job.job_id,
-        jobTitle: job.jobTitle || job.job_name || "Untitled Job",
-        company: job.company_name || "Unknown Company",
-        jobLocation: job.location || job.location || "N/A",
-        jobUrl: job.jobUrl || null,
-        salary: job.salary || "Not Specified",
-        description: job.description || "",
-        benefits: job.benefits || "",
-        qualifications: job.qualifications || "",
-        preferences: job.preferences || "",
-        mission_statement: job.mission_statement || "",
-        hr_contact_number: job.hr_contact_number || ""
+        jobTitle: job.job_name ?? "Untitled Job",
+        company: job.company_name ?? "Unknown Company",
+        jobLocation: job.location ?? "N/A",
+        jobUrl: job.application_link ?? null,
+        salary: job.salary ?? "Not Specified",
+        description: job.description ?? "",
+      
+        responsibilities: normalizeList(job.responsibilities),
+        qualifications: normalizeList(job.qualifications),
+        preferences: normalizeList(job.preferences),
+        benefits: normalizeList(job.benefits),
+      
+        mission_statement: job.mission_statement ?? "",
+        hr_contact_number: job.hr_contact_number ?? ""
       }));
 
       setJobs(normalizedJobs);
       setCurrentJobIndex(0);
+      console.log("Raw job response:", data[0]);
+      console.log("Normalized job:", normalizedJobs[0]);
     } catch (err) {
       setError(err.message);
       console.error("Job fetch error:", err);

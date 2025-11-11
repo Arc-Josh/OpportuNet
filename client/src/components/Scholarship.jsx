@@ -11,12 +11,11 @@ const Scholarship = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
-    fieldOfStudy: [], 
-    deadline: "",
-    gpa: "",
-    location: "",
-    fundingAmount: "",
-    residency: "",
+    q: "",
+    min_amount: "",
+    max_amount: "",
+    deadline_before: "",
+    deadline_after: "",
   });
 
   const fetchScholarships = async (filters) => {
@@ -28,14 +27,11 @@ const Scholarship = () => {
       if (!token) throw new Error("No authentication token found");
 
       const params = new URLSearchParams();
-      if (filters.fieldOfStudy.length > 0)
-        params.append("fieldOfStudy", filters.fieldOfStudy.join(","));
-      if (filters.deadline) params.append("deadline", filters.deadline);
-      if (filters.gpa) params.append("gpa", filters.gpa);
-      if (filters.location) params.append("location", filters.location);
-      if (filters.fundingAmount)
-        params.append("fundingAmount", filters.fundingAmount);
-      if (filters.residency) params.append("residency", filters.residency);
+      if (filters.q) params.append("q", filters.q);
+      if (filters.min_amount) params.append("min_amount", filters.min_amount);
+      if (filters.max_amount) params.append("max_amount", filters.max_amount);
+      if (filters.deadline_before) params.append("deadline_before", filters.deadline_before);
+      if (filters.deadline_after) params.append("deadline_after", filters.deadline_after);
 
       const response = await fetch(
         `http://localhost:8000/scholarships?${params.toString()}`,
@@ -58,7 +54,11 @@ const Scholarship = () => {
 
   useEffect(() => {
     fetchScholarships(filters);
-  }, [filters]);
+  }, []);
+
+  const applyFilters = () => {
+    fetchScholarships(filters);
+  };
 
   const handleSave = async () => {
     try {
@@ -99,7 +99,7 @@ const Scholarship = () => {
 
   return (
     <div className="dashboard-container">
-      <ScholarshipFilters currentFilters={filters} onFilterChange={setFilters} />
+      <ScholarshipFilters currentFilters={filters} onFilterApply={(newFilters) => { setFilters(newFilters); applyFilters(); }} />
 
       <div className="job-view">
         {scholarships.length > 0 ? (

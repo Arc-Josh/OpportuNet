@@ -1,133 +1,141 @@
-/* Container */
+/* Page Container */
 .saved-jobs-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px;
+  background: #f4f6f9;
+  min-height: 100vh;
 }
 
-/* Page title */
+/* Title */
 .saved-title {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: white;
+  width: 100%;
+  text-align: left;
+  max-width: 1000px;
+  margin-bottom: 20px;
+  color: #2b2d42;
   font-size: 1.8rem;
   font-weight: 600;
 }
 
-/* Saved jobs list */
+/* List */
 .saved-jobs-list {
+  width: 100%;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 22px;
 }
 
-/* Individual job card */
+/* Saved Job Card */
 .saved-card {
-  background: #ffffff;
-  padding: 1.2rem 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
 .saved-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.15);
 }
 
-/* Header with logo */
+/* Header Layout */
 .saved-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.8rem;
+  gap: 20px;
 }
 
-/* Logo placeholder */
+/* Logo */
 .logo-placeholder {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
+  background: #4CAF50;
+  color: white;
   border-radius: 50%;
-  background: #e9ecef;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #495057;
+  font-size: 1.3rem;
 }
 
-/* Job headings */
+/* Meta Info */
 .saved-card h3 {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   color: #2b2d42;
+  font-weight: 600;
 }
 
 .saved-card p {
   margin: 4px 0;
-  color: #555;
+  color: #4a4e69;
+  font-size: 1rem;
+}
+
+.meta {
+  margin-top: 6px;
+  display: flex;
+  gap: 12px;
+  color: #6c757d;
   font-size: 0.95rem;
 }
 
-/* Meta info row */
-.meta {
-  color: #6c757d;
-  font-size: 0.9rem;
+.salary-badge {
+  background: #e6f4ea;
+  color: #2e7d32;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
-/* Job actions row */
+/* Actions Row */
 .job-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
+  justify-content: flex-end;
+  margin-top: 18px;
+  gap: 14px;
 }
 
-/* Apply and Reject buttons */
+/* Buttons */
 .apply-link,
 .remove-btn {
-  display: inline-block;
-  min-width: 120px;   
-  text-align: center;
-  font-size: 0.95rem;
+  padding: 10px 18px;
+  border-radius: 8px;
   font-weight: 600;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-/* Apply button specific */
 .apply-link {
-  background-color: #4caf50;
+  background: #4CAF50;
   color: white;
   text-decoration: none;
-  border: none;
 }
 
 .apply-link:hover {
-  background-color: #45a049;
-  transform: translateY(-1px);
+  transform: scale(1.05);
 }
 
-/* Remove button specific */
 .remove-btn {
-  background-color: #fa5252;
+  background: #e63946;
   color: white;
-  border: none;
 }
 
 .remove-btn:hover {
-  background-color: #e03131;
-  transform: translateY(-1px);
+  transform: scale(1.05);
 }
 
-/* Empty state + loading */
+/* Empty State */
 .no-jobs,
 .loading {
-  text-align: center;
-  color: #666;
-  font-size: 1rem;
-  margin-top: 2rem;
+  margin-top: 40px;
+  color: #6c757d;
+  font-size: 1.1rem;
 }
