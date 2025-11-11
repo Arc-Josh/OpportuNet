@@ -1,242 +1,318 @@
 const puppeteer = require("puppeteer");
-const createCsvWriter = require("csv-writer").createObjectCsvWriter;
-const csvParse = require("csv-parse");
 const fs = require("fs");
+const path = require("path");
 
-const API_KEY = JSON.parse(fs.readFileSync("config.json")).api_key;
+const CFG_PATH = path.join(__dirname, "config.json");
+const CFG = fs.existsSync(CFG_PATH) ? JSON.parse(fs.readFileSync(CFG_PATH, "utf8")) : {};
 
-async function writeToCsv(data, outputFile) {
-    let success = false;
-    while (!success) {
-
-        if (!data || data.length === 0) {
-            throw new Error("No data to write!");
-        }
-        const fileExists = fs.existsSync(outputFile);
-    
-        if (!(data instanceof Array)) {
-            data = [data]
-        }
-    
-        const headers = Object.keys(data[0]).map(key => ({id: key, title: key}))
-    
-        const csvWriter = createCsvWriter({
-            path: outputFile,
-            header: headers,
-            append: fileExists
-        });
-        try {
-            await csvWriter.writeRecords(data);
-            success = true;
-        } catch (e) {
-            console.log("Failed data", data);
-            throw new Error("Failed to write to csv");
-        }
-    }
-}
-
-async function readCsv(inputFile) {
-    const results = [];
-    const parser = fs.createReadStream(inputFile).pipe(csvParse.parse({
-        columns: true,
-        delimiter: ",",
-        trim: true,
-        skip_empty_lines: true
-    }));
-
-    for await (const record of parser) {
-        results.push(record);
-    }
-    return results;
-}
-
-function range(start, end) {
-    const array = [];
-    for (let i=start; i<end; i++) {
-        array.push(i);
-    }
-    return array;
-}
-
-function getScrapeOpsUrl(url, location="us") {
+function getScrapeOpsUrl(url, apiKey, country = "us") {
+    if (!apiKey) return url;
     const params = new URLSearchParams({
-        api_key: API_KEY,
-        url: url,
-        country: location
+        api_key: apiKey,
+        url,
+        country,
+        residential: true
     });
     return `https://proxy.scrapeops.io/v1/?${params.toString()}`;
 }
 
-async function scrapeSearchResults(browser, keyword, pageNumber, locality, location="us", retries=3) {
-    let tries = 0;
-    let success = false;
+function ensureAbsoluteUrl(u) {
+    if (!u) return u;
+    if (u.startsWith("http://") || u.startsWith("https://")) return u;
+    return "https://www.linkedin.com" + (u.startsWith("/") ? "" : "/") + u;
+}
 
-    while (tries <= retries && !success) {
-        
-        const formattedKeyword = keyword.replace(" ", "+");
-        const formattedLocality = locality.replace(" ", "+");
-
-        const page = await browser.newPage();
+async function retryPageGoto(page, url, tries = 3, timeout = 15000) {
+    for (let i = 1; i <= tries; i++) {
         try {
-            const url = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=${formattedKeyword}&location=${formattedLocality}&original_referer=&start=${pageNumber*10}`;
-    
-            const proxyUrl = getScrapeOpsUrl(url, location);
-            await page.goto(proxyUrl, { timeout: 0 });
-
-            console.log(`Successfully fetched: ${url}`);
-
-            const divCards = await page.$$("div[class='base-search-card__info']");
-
-            for (const divCard of divCards) {
-
-                const nameElement = await divCard.$("h4[class='base-search-card__subtitle']");
-                const name = await page.evaluate(element => element.textContent, nameElement);
-
-                const jobTitleElement = await divCard.$("h3[class='base-search-card__title']");
-                const jobTitle = await page.evaluate(element => element.textContent, jobTitleElement);
-
-                const parentElement = await page.evaluateHandle(element => element.parentElement, divCard);
-
-                const aTag = await parentElement.$("a");
-                const link = await page.evaluate(element => element.getAttribute("href"), aTag);
-
-                const jobLocationElement = await divCard.$("span[class='job-search-card__location']");
-                const jobLocation = await page.evaluate(element => element.textContent, jobLocationElement);
-
-                const searchData = {
-                    name: name.trim(),
-                    job_title: jobTitle.trim(),
-                    url: link.trim(),
-                    location: jobLocation.trim()
-                };
-
-                await writeToCsv([searchData], `${keyword.replace(" ", "-")}.csv`);
-            }
-
-            success = true;
-
+            await page.goto(url, { timeout, waitUntil: "networkidle2" });
+            return true;
         } catch (err) {
-            console.log(`Error: ${err}, tries left ${retries - tries}`);
-            tries++;
+            if (i === tries) return false;
+            await new Promise(r => setTimeout(r, 1000 * i));
+        }
+    }
+    return false;
+}
 
-        } finally {
-            await page.close();
-        } 
+async function scrapeSearchResults(browser, keyword, pageNum, locality, options) {
+    const results = [];
+    const page = await browser.newPage();
+    try {
+        const formattedKeyword = encodeURIComponent(keyword);
+        const formattedLocality = encodeURIComponent(locality);
+        const url = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=${formattedKeyword}&location=${formattedLocality}&original_referer=&start=${pageNum * 10}`;
+        const target = options.useProxy ? getScrapeOpsUrl(url, options.apiKey, options.country) : url;
+
+        const ok = await retryPageGoto(page, target, options.retries || 3, options.timeout || 20000);
+        if (!ok) throw new Error("navigation_failed");
+
+        const html = await page.content();
+        // detect clear proxy error JSON (do not treat normal LinkedIn HTML as error)
+        const lower = html.toLowerCase();
+        if (html.trim().startsWith("{") && (lower.includes("error") || lower.includes("scrapeops") || lower.includes("credits"))) {
+            throw new Error("proxy_error_or_block");
+        }
+
+        // primary selector
+        const cards = await page.$$("div.base-search-card__info");
+        if (!cards || cards.length === 0) {
+            // fallback: anchors that look like jobs
+            const fallback = await page.evaluate(() => {
+                const out = [];
+                document.querySelectorAll("a[href]").forEach(a => {
+                    const href = a.getAttribute("href") || "";
+                    if (href.includes("/jobs/") || href.includes("/company/")) {
+                        out.push({
+                            name: (a.querySelector("h4") && a.querySelector("h4").innerText) || "",
+                            job_title: (a.querySelector("h3") && a.querySelector("h3").innerText) || a.innerText || "",
+                            url: href,
+                            location: (a.querySelector("span") && a.querySelector("span").innerText) || ""
+                        });
+                    }
+                });
+                return out;
+            });
+            return fallback;
+        }
+
+        for (const card of cards) {
+            const name = await card.$eval("h4.base-search-card__subtitle", el => el.innerText).catch(() => "");
+            const title = await card.$eval("h3.base-search-card__title", el => el.innerText).catch(() => "");
+            const loc = await card.$eval("span.job-search-card__location", el => el.innerText).catch(() => "");
+            const parentHandle = await page.evaluateHandle(el => el.parentElement, card);
+            const aTag = await parentHandle.$("a");
+            const href = aTag ? await page.evaluate(el => el.getAttribute("href"), aTag).catch(() => "") : "";
+            if (!href) continue;
+            results.push({
+                name: (name || "").trim(),
+                job_title: (title || "").trim(),
+                url: (href || "").trim(),
+                location: (loc || "").trim()
+            });
+        }
+        return results;
+    } finally {
+        try { await page.close(); } catch (e) {}
     }
 }
 
-async function startCrawl(keyword, pages, locality, location, concurrencyLimit, retries) {
-    const pageList = range(0, pages);
+async function fetchJobDetail(browser, job, options) {
+    const page = await browser.newPage();
+    const fullUrl = ensureAbsoluteUrl(job.url);
+    try {
+        const target = options.useProxy ? getScrapeOpsUrl(fullUrl, options.apiKey, options.country) : fullUrl;
+        const ok = await retryPageGoto(page, target, options.retries || 3, options.timeout || 20000);
+        if (!ok) throw new Error("detail_nav_failed");
 
-    const browser = await puppeteer.launch();
-
-    while (pageList.length > 0) {
-        const currentBatch = pageList.splice(0, concurrencyLimit);
-        const tasks = currentBatch.map(page => scrapeSearchResults(browser, keyword, page, locality, location, retries));
-
-        try {
-            await Promise.all(tasks);
-        } catch (err) {
-            console.log(`Failed to process batch: ${err}`);
+        const html = await page.content();
+        // detect clear proxy errors only
+        const lower = html.toLowerCase();
+        if (html.trim().startsWith("{") && (lower.includes("error") || lower.includes("scrapeops") || lower.includes("credits"))) {
+            throw new Error("proxy_error_or_block");
         }
+
+        // Try JSON-LD first for description & salary
+        let rawDesc = "";
+        let salary = null;
+        try {
+            const jsonLd = await page.$$eval('script[type="application/ld+json"]', nodes => nodes.map(n => n.textContent).join('\n'));
+            if (jsonLd) {
+                for (const chunk of jsonLd.split('\n')) {
+                    try {
+                        const parsed = JSON.parse(chunk);
+                        if (parsed) {
+                            if (!rawDesc && parsed.description) {
+                                rawDesc = String(parsed.description).replace(/<br\s*\/?>/gi, '\n').replace(/<\/?[^>]+(>|$)/g, '');
+                            }
+                            // JSON-LD salary/baseSalary handling
+                            if (!salary) {
+                                // common schema.org patterns
+                                const bs = parsed.baseSalary || parsed.salary || parsed.compensation || parsed.baseWage;
+                                if (bs) {
+                                    if (typeof bs === 'string') {
+                                        salary = bs;
+                                    } else if (typeof bs === 'object') {
+                                        // baseSalary could be a value object or a nested structure
+                                        if (bs.value && typeof bs.value === 'object') {
+                                            const v = bs.value;
+                                            if (v.minValue || v.maxValue) {
+                                                const min = v.minValue ? String(v.minValue) : null;
+                                                const max = v.maxValue ? String(v.maxValue) : null;
+                                                salary = (min && max) ? `${min} - ${max} ${v.currency || ''}` : (min || max || null);
+                                            } else if (v.value) {
+                                                salary = String(v.value);
+                                            }
+                                        } else if (bs.minValue || bs.maxValue) {
+                                            const min = bs.minValue ? String(bs.minValue) : null;
+                                            const max = bs.maxValue ? String(bs.maxValue) : null;
+                                            salary = (min && max) ? `${min} - ${max} ${bs.currency || ''}` : (min || max || null);
+                                        } else if (bs.value) {
+                                            salary = String(bs.value);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (rawDesc && salary) break;
+                    } catch (e) { /* ignore parse errors */ }
+                }
+            }
+        } catch (e) {}
+
+        // description fallbacks
+        if (!rawDesc || rawDesc.length < 20) {
+            const selectors = [
+                "div.show-more-less-html__markup",
+                "section.show-more-less-html",
+                "div#jobDescriptionText",
+                "div[class*='description']"
+            ];
+            for (const sel of selectors) {
+                try {
+                    const txt = await page.$eval(sel, el => el.innerText.trim()).catch(() => "");
+                    if (txt && txt.length > 20) { rawDesc = txt; break; }
+                } catch (e) {}
+            }
+        }
+
+        if (!rawDesc || rawDesc.length < 20) {
+            const bodyText = html.replace(/\s+/g, " ").trim();
+            rawDesc = bodyText.slice(0, 2000);
+        }
+
+        // salary fallbacks: DOM selectors then regex on html text
+        if (!salary) {
+            const salarySelectors = [
+                "[data-test-job-salary]",
+                "span.salary",
+                "div.salary",
+                "[class*='salary']",
+                "li[class*='salary']",
+                "p[class*='salary']"
+            ];
+            for (const sel of salarySelectors) {
+                try {
+                    const s = await page.$eval(sel, el => el.innerText.trim()).catch(() => "");
+                    if (s && s.length > 2) { salary = s; break; }
+                } catch (e) {}
+            }
+        }
+
+        if (!salary) {
+            // regex fallback: find common dollar amounts with optional period (/yr, per year, /mo, /hr)
+            const text = html.replace(/\u00A0/g, ' ');
+            const re = /(\$\s?\d{1,3}(?:[,\d{3}]*)(?:\.\d+)?(?:\s*(?:per|\/)?\s*(?:year|yr|month|mo|hour|hr|annum))?)/ig;
+            const m = text.match(re);
+            if (m && m.length) salary = m[0].trim();
+        }
+
+        // try to capture some job criteria if present
+        const criteria = {};
+        try {
+            const items = await page.$$eval("li.description__job-criteria-item", nodes => nodes.map(n => n.innerText));
+            if (items && items.length >= 1) {
+                criteria.seniority = items[0].replace(/Seniority level/i, "").trim();
+                if (items[1]) criteria.position_type = items[1].replace(/Employment type/i, "").trim();
+                if (items[2]) criteria.job_function = items[2].replace(/Job function/i, "").trim();
+                if (items[3]) criteria.industry = items[3].replace(/Industries/i, "").trim();
+            }
+        } catch (e) {}
+
+        return {
+            name: job.name || null,
+            job_title: job.job_title || null,
+            url: fullUrl,
+            location: job.location || null,
+            description: rawDesc || null,
+            salary: salary || null,
+            criteria
+        };
+    } finally {
+        try { await page.close(); } catch (e) {}
+    }
+}
+
+/**
+ * Public runner function that backend can call.
+ * options:
+ *  - keywords: array of strings
+ *  - locations: array of strings
+ *  - pagesPerQuery: number
+ *  - concurrency: number
+ *  - retries: number
+ *  - apiKey: string (optional) - overrides config.json api_key
+ *  - useProxy: boolean (default true)
+ *  - timeout: navigation timeout ms
+ */
+async function runLinkedScraper(opts = {}) {
+    const options = {
+        keywords: opts.keywords || ["software engineer"],
+        locations: opts.locations || ["Dallas, Texas, United States"],
+        pagesPerQuery: opts.pagesPerQuery || 1,
+        concurrency: opts.concurrency || 3,
+        retries: typeof opts.retries === "number" ? opts.retries : 3,
+        apiKey: opts.apiKey || CFG.api_key || "",
+        useProxy: typeof opts.useProxy === "boolean" ? opts.useProxy : true,
+        country: opts.country || "us",
+        timeout: opts.timeout || 20000
+    };
+
+    const browser = await puppeteer.launch({ headless: true });
+    const searchResults = [];
+    for (const keyword of options.keywords) {
+        for (const loc of options.locations) {
+            for (let p = 0; p < options.pagesPerQuery; p++) {
+                const pageItems = await scrapeSearchResults(browser, keyword, p, loc, options);
+                if (pageItems && pageItems.length) {
+                    searchResults.push(...pageItems);
+                }
+            }
+        }
+    }
+
+    const detailed = [];
+    for (let i = 0; i < searchResults.length; i += options.concurrency) {
+        const batch = searchResults.slice(i, i + options.concurrency);
+        const proms = batch.map(j => fetchJobDetail(browser, j, options).catch(e => { return { error: String(e), url: j.url }; }));
+        const res = await Promise.all(proms);
+        for (const r of res) if (r) detailed.push(r);
     }
 
     await browser.close();
+
+    return {
+        generated_at: new Date().toISOString(),
+        search_count: searchResults.length,
+        detail_count: detailed.length,
+        searches: searchResults,
+        details: detailed
+    };
 }
 
-async function processJob(browser, row, location, retries = 3) {
-    const url = row.url;
-    let tries = 0;
-    let success = false;
-
-    
-    while (tries <= retries && !success) {
-        const page = await browser.newPage();
-
+// CLI usage: when run directly, save results to JSON file
+if (require.main === module) {
+    (async () => {
         try {
-            const response = await page.goto(getScrapeOpsUrl(url, location), { timeout: 0 });
-            if (!response || response.status() !== 200) {
-                throw new Error("Failed to fetch page, status:", response.status());
-            }
-
-            const jobCriteria = await page.$$("li[class='description__job-criteria-item']");
-            if (jobCriteria.length < 4) {
-                throw new Error("Job Criteria Not Found!");
-            }
-
-            const seniority = (await page.evaluate(element => element.textContent, jobCriteria[0])).replace("Seniority level", "");
-            const positionType = (await page.evaluate(element => element.textContent, jobCriteria[1])).replace("Employment type", "");
-            const jobFunction = (await page.evaluate(element => element.textContent, jobCriteria[2])).replace("Job function", "");
-            const industry = (await page.evaluate(element => element.textContent, jobCriteria[3])).replace("Industries", "");
-
-            const jobData = {
-                name: row.name,
-                seniority: seniority.trim(),
-                position_type: positionType.trim(),
-                job_function: jobFunction.trim(),
-                industry: industry.trim()
-            }
-            await writeToCsv([jobData], `${row.name.replace(" ", "-")}-${row.job_title.replace(" ", "-")}.csv`);
-
-            success = true;
-            console.log("Successfully parsed", row.url);
-
-
-        } catch (err) {
-            tries++;
-            console.log(`Error: ${err}, tries left: ${retries-tries}, url: ${getScrapeOpsUrl(url)}`);
-
-        } finally {
-            await page.close();
+            const out = await runLinkedScraper({
+                keywords: CFG.keywords || ["software engineer"],
+                locations: CFG.locations || ["Dallas, Texas, United States"],
+                pagesPerQuery: CFG.pagesPerQuery || 1,
+                concurrency: CFG.concurrency || 3,
+                retries: CFG.retries || 3,
+                apiKey: CFG.api_key || "",
+                useProxy: typeof CFG.useProxy === "boolean" ? CFG.useProxy : true,
+                country: CFG.country || "us"
+            });
+            const outPath = path.join(__dirname, "linkedin_all_jobs.json");
+            fs.writeFileSync(outPath, JSON.stringify(out, null, 2), "utf8");
+            console.log("Saved results to", outPath);
+        } catch (e) {
+            console.error("Run failed:", e);
+            process.exit(1);
         }
-    } 
+    })();
 }
 
-async function processResults(csvFile, location, concurrencyLimit, retries) {
-    const rows = await readCsv(csvFile);
-    const browser = await puppeteer.launch();;
-
-    while (rows.length > 0) {
-        const currentBatch = rows.splice(0, concurrencyLimit);
-        const tasks = currentBatch.map(row => processJob(browser, row, location, retries));
-
-        try {
-            await Promise.all(tasks);
-        } catch (err) {
-            console.log(`Failed to process batch: ${err}`);
-        }
-    }
-    await browser.close();
-
-}
-
-async function main() {
-    const keywords = ["software engineer"];
-    const concurrencyLimit = 5;
-    const pages = 1;
-    const location = "us";
-    const locality = "United States";
-    const retries = 3;
-    const aggregateFiles = [];
-
-    for (const keyword of keywords) {
-        console.log("Crawl starting");
-        console.time("startCrawl");
-        await startCrawl(keyword, pages, locality, location, concurrencyLimit, retries);
-        console.timeEnd("startCrawl");
-        console.log("Crawl complete");
-        aggregateFiles.push(`${keyword.replace(" ", "-")}.csv`);
-    }
-
-
-    console.log("Starting scrape");
-    for (const file of aggregateFiles) {
-        console.time("processResults");
-        await processResults(file, location, concurrencyLimit, retries);
-        console.timeEnd("processResults");
-    }
-    console.log("Scrape complete");
-}
-
-
-main();
+// export for backend integration
+module.exports = { runLinkedScraper };

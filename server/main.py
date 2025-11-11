@@ -265,15 +265,24 @@ async def profile_update(
 
 router = APIRouter()
 
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 class RawDescription(BaseModel):
     text: str
+
 
 SYSTEM_PROMPT = """You are a deterministic parser that restructures raw job descriptions into clean sections for a job board UI.
 
 GOALS
+- Before the scrape copy the entire job description text and display it as it would appear on the original job posting.
 - Reorganize only the given text into these sections, in this exact order:
   Description, Responsibilities, Qualifications, Preferences, Benefits.
 - Do not invent content. If a section is missing, return an empty list (or an empty string for Description).
+- If description is an empty string, do not send to backend.
+- If a job doesn't have a description send that job to the failedJobs = [];
+- Exclude jobs from front-end with no salary information.
+- Exclude jobs from front-end with no job description.
 - Keep original wording. You may join hard/soft wraps so sentences read naturally.
 
 LIST RULES
