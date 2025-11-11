@@ -261,3 +261,51 @@ async def profile_update(
         print("Error saving profile:", e)
         raise HTTPException(status_code=500, detail="Failed to save profile")
 
+router = APIRouter()
+
+class RawDescription(BaseModel):
+    text: str
+
+SYSTEM_PROMPT = """You are a deterministic parser that restructures raw job descriptions into clean sections for a job board UI.
+
+GOALS
+- Reorganize only the given text into these sections, in this exact order:
+  Description, Responsibilities, Qualifications, Preferences, Benefits.
+- Do not invent content. If a section is missing, return an empty list (or an empty string for Description).
+- Keep original wording. You may join hard/soft wraps so sentences read naturally.
+
+LIST RULES
+- If the source had bullets, keep bullets; otherwise, keep paragraphs.
+- Convert runs of short orphan lines (e.g., 'R', 'Java', 'Scala', 'AWS', 'Azure', 'Statistics', 'Mathematics', 'Physics')
+  into a single bullet as a comma-separated phrase appended to the previous bullet or sentence.
+- Never output a bullet that is a single word or an incomplete phrase.
+
+FORMATTING
+- Output valid JSON only, exactly in this schema:
+{
+  "description": "<string>",
+  "responsibilities": ["<bullet or full line>", ...],
+  "qualifications": ["<bullet or full line>", ...],
+  "preferences": ["<bullet or full line>", ...],
+  "benefits": ["<bullet or full line>", ...]
+}
+- Preserve original order; collapse multiple blank lines to one.
+"""
+
+@router.post("/parse-job-description")
+async def parse_job_description(data: RawDescription):
+    try:
+        completion = openai.chat.completions.create(
+            model="gpt-4o-mini",
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": data.text},
+            ],
+        )
+        parsed = completion.choices[0].message.content
+        return json.loads(parsed) 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Parser error: {str(e)[:300]}")
+
+app.include_router(router)
