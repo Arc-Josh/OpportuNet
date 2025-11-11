@@ -307,7 +307,7 @@ async function mainScraper() {
     console.log(`\n========== Scraping Completed Successfully ==========\n`);
 }
 
-const scrapeintervalmin = 1; 
+/*const scrapeintervalmin = 1; 
 async function runScraper() {
     await mainScraper();
     console.log(`Waiting for ${scrapeintervalmin} minutes before next scrape...`);
@@ -317,6 +317,6 @@ async function runScraper() {
     await runScraper(); 
     setInterval(runScraper, scrapeintervalmin * 60 * 1000); 
 })();
-
+*/
 
 
