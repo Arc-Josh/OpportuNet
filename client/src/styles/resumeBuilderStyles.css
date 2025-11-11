@@ -37,8 +37,8 @@
 .circle {
   width: 38px;
   height: 38px;
-  background: #ccc;
-  color: white;
+  background: yellow;
+  color: black;
   border-radius: 50%;
   margin: 0 auto;
   display: flex;
@@ -48,11 +48,11 @@
 }
 
 .step.active .circle {
-  background: #006400;
+  background: yellow;
 }
 
 .step.done .circle {
-  background: #228b22;
+  background: yellow;
 }
 
 .line {
