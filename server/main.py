@@ -1,7 +1,9 @@
 from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, Form, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
+from fastapi import APIRouter
+from pydantic import BaseModel
+import openai
 # Models
 from models.user import (
     UserCreate, UserLogin, UserResponse, ChatbotRequest,
