@@ -269,7 +269,7 @@ async function sendJobsToBackend() {
 
 async function mainScraper() {
     const browser = await puppeteer.launch({ headless: true });
-    const keywords = ['Data Scientist'];
+    const keywords = ['Data Scientist', 'Machine Learning Engineer', 'AI Specialist', 'Software Engineer', 'Data Engineer', 'Cybersecurity', 'Cloud Engineer', 'DevOps Engineer', 'Full Stack Developer', 'Backend Developer'];
     const locations = ['Dallas, TX'];  
     const totalPages = 1;
     const results = [];
@@ -305,6 +305,24 @@ async function mainScraper() {
 
     await browser.close();
     console.log(`\n========== Scraping Completed Successfully ==========\n`);
+}
+
+/*const scrapeintervalmin = 1; 
+async function runScraper() {
+    await mainScraper();
+    console.log(`Waiting for ${scrapeintervalmin} minutes before next scrape...`);
+}
+
+(async () => {
+    await runScraper(); 
+    setInterval(runScraper, scrapeintervalmin * 60 * 1000); 
+})();
+*/
+
+if (require.main === module) {
+  mainScraper()
+    .then(() => { console.log('Scraper finished'); process.exit(0); })
+    .catch(err => { console.error('Scraper failed:', err); process.exit(1); });
 }
 
 

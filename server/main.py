@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import openai
 from dotenv import load_dotenv
 import os
+import re
 
 # Models
 from models.user import (
@@ -303,7 +304,7 @@ class RawDescription(BaseModel):
 SYSTEM_PROMPT = """You are a deterministic parser that restructures raw job descriptions into clean sections for a job board UI.
 
 GOALS
-- Before the scrape copy the entire job description text and display it as it would appear on the original job posting.
+- Before the editing copy the entire job description text and display it as it would appear on the original job posting.
 - Reorganize only the given text into these sections, in this exact order:
   Description, Responsibilities, Qualifications, Preferences, Benefits.
 - Do not invent content. If a section is missing, return an empty list (or an empty string for Description).
@@ -311,6 +312,9 @@ GOALS
 - If a job doesn't have a description send that job to the failedJobs = [];
 - Exclude jobs from front-end with no salary information.
 - Exclude jobs from front-end with no job description.
+- If job description is less than 100 words, send that job to the failedJobs = [];
+- If job description is more than 500 words, truncate the first 500 words only.
+- If job description, responsibilities, description, qualifications, and preferences are empty, send that job to the failedJobs = [];
 - Keep original wording. You may join hard/soft wraps so sentences read naturally.
 
 LIST RULES
@@ -333,17 +337,53 @@ FORMATTING
 
 @router.post("/parse-job-description")
 async def parse_job_description(data: RawDescription):
+    text = (data.text or "").strip()
+    # normalize whitespace and count words
+    words = re.findall(r"\S+", text)
+    word_count = len(words)
+
+    # if too short, signal caller so job is excluded from frontend
+    if word_count < 60:
+        raise HTTPException(status_code=422, detail="Job description too short (<60 words)")
+
+    # truncate to first 300 words if too long
+    if word_count > 300:
+        text = " ".join(words[:300])
+
     try:
         completion = openai.chat.completions.create(
             model="gpt-4o-mini",
             response_format={"type": "json_object"},
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": data.text},
+                {"role": "user", "content": text},
             ],
+            temperature=0.0,
         )
         parsed = completion.choices[0].message.content
-        return json.loads(parsed) 
+        parsed_json = json.loads(parsed)
+
+        # Normalize lists to arrays and remove empty entries
+        for k in ("responsibilities", "qualifications", "preferences", "benefits"):
+            v = parsed_json.get(k)
+            if isinstance(v, str):
+                parsed_json[k] = [line.strip() for line in v.splitlines() if line.strip()]
+            elif isinstance(v, list):
+                parsed_json[k] = [str(x).strip() for x in v if str(x).strip()]
+            else:
+                parsed_json[k] = []
+
+        # require a non-empty qualifications section; reject if missing
+        if not parsed_json.get("qualifications") or len(parsed_json["qualifications"]) == 0:
+            raise HTTPException(status_code=422, detail="Parsed content missing qualifications - exclude from frontend")
+
+        # ensure description present (fallback to truncated input if needed)
+        if not parsed_json.get("description") or not str(parsed_json.get("description")).strip():
+            parsed_json["description"] = text
+
+        return parsed_json
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Parser error: {str(e)[:300]}")
 

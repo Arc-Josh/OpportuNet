@@ -290,6 +290,46 @@ async function runLinkedScraper(opts = {}) {
     };
 }
 
+async function postJobsToBackend(jobs, backendUrl) {
+    const axios = require('axios');
+    backendUrl = backendUrl || (CFG.backend_url || 'http://localhost:8000/jobs-create');
+
+    const asBlock = (arrOrStr) => {
+        if (!arrOrStr) return null;
+        if (Array.isArray(arrOrStr)) {
+            const cleaned = arrOrStr.map(s => (s || '').toString().trim()).filter(Boolean);
+            if (!cleaned.length) return null;
+            return cleaned.map(s => `• ${s}`).join('\n');
+        }
+        return arrOrStr.toString();
+    };
+
+    for (const j of jobs) {
+        // j may be the detailed object returned by fetchJobDetail
+        const payload = {
+            job_name: j.job_title || j.jobTitle || 'Unknown',
+            company_name: j.name || j.company || 'Unknown',
+            location: j.location || 'Unknown',
+            salary: j.salary || null,
+            description: (j.description && j.description.trim()) ? j.description.trim() : null,
+            responsibilities: asBlock(j.responsibilities || j.responsibility || null),
+            qualifications: asBlock(j.qualifications || j.qualify || null),
+            preferences: asBlock(j.preferences || null),
+            benefits: asBlock(j.benefits || null),
+            // include raw criteria for frontend filters (seniority, position_type, job_function, industry)
+            criteria: j.criteria || null,
+            application_link: j.url || j.application_link || null,
+            source: 'linkedin'  // helpful for backend/front-end filtering
+        };
+        try {
+            const res = await axios.post(backendUrl, payload, { timeout: 15000 });
+            console.log(`Posted: ${payload.job_name} -> ${res.status}`);
+        } catch (err) {
+            console.error(`Failed to post ${payload.job_name}:`, err.message || err);
+        }
+    }
+}
+
 // CLI usage: when run directly, save results to JSON file
 if (require.main === module) {
     (async () => {
@@ -307,6 +347,9 @@ if (require.main === module) {
             const outPath = path.join(__dirname, "linkedin_all_jobs.json");
             fs.writeFileSync(outPath, JSON.stringify(out, null, 2), "utf8");
             console.log("Saved results to", outPath);
+
+            // send to backend (uncomment to enable)
+            await postJobsToBackend(out.details || out.searches || [], CFG.backend_url);
         } catch (e) {
             console.error("Run failed:", e);
             process.exit(1);
