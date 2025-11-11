@@ -4,6 +4,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi import APIRouter
 from pydantic import BaseModel
 import openai
+from dotenv import load_dotenv
+import os
+
 # Models
 from models.user import (
     UserCreate, UserLogin, UserResponse, ChatbotRequest,
@@ -192,27 +195,43 @@ async def create_scholarship(scholarship: ScholarshipCreate):
 
 @app.get("/scholarships", response_model=list[ScholarshipResponse])
 async def list_scholarships(
-    field: list[str] = Query(None),
-    deadline: str = Query(None),
-    gpa: float = Query(None),
-    location: str = Query(None),
-    amount: int = Query(None),
-    residency: str = Query(None),
+    q: str = Query(None),                
+    min_amount: int = Query(None),       
+    max_amount: int = Query(None),      
+    deadline_before: str = Query(None),  
+    deadline_after: str = Query(None),  
 ):
     all_scholarships = await get_all_scholarships()
     results = all_scholarships
-    if field:
-        results = [s for s in results if any(f in (s.field or []) for f in field)]
-    if deadline:
-        results = [s for s in results if str(s.deadline) <= deadline]
-    if gpa:
-        results = [s for s in results if s.gpa and s.gpa >= gpa]
-    if location:
-        results = [s for s in results if s.location and location.lower() in s.location.lower()]
-    if amount:
-        results = [s for s in results if s.amount and s.amount >= amount]
-    if residency:
-        results = [s for s in results if s.residency and residency.lower() in s.residency.lower()]
+
+    # Text Search (title, description, eligibility)
+    if q:
+        results = [
+            s for s in results
+            if q.lower() in (s.scholarship_title or "").lower()
+            or q.lower() in (s.description or "").lower()
+            or q.lower() in (s.eligibility or "").lower()
+        ]
+
+    # Clean and compare amounts (extract numbers)
+    def extract_amount(a):
+        if not a:
+            return None
+        cleaned = ''.join(ch for ch in a if ch.isdigit())
+        return int(cleaned) if cleaned.isdigit() else None
+
+    if min_amount:
+        results = [s for s in results if extract_amount(s.amount) and extract_amount(s.amount) >= min_amount]
+
+    if max_amount:
+        results = [s for s in results if extract_amount(s.amount) and extract_amount(s.amount) <= max_amount]
+
+    if deadline_before:
+        results = [s for s in results if s.deadline and str(s.deadline) <= deadline_before]
+
+    if deadline_after:
+        results = [s for s in results if s.deadline and str(s.deadline) >= deadline_after]
+
     return results
 
 
@@ -232,6 +251,10 @@ async def list_saved_scholarships(token: str = Depends(authorization.oauth2_sche
 async def delete_saved_scholarship(scholarship_id: int, token: str = Depends(authorization.oauth2_scheme)):
     user_email = authorization.get_user(token)
     return await remove_saved_scholarship(user_email, scholarship_id)
+
+# ---------------------------
+# Profile
+# ---------------------------
 
 @app.get("/profile")
 async def profile_get(token: str = Depends(authorization.oauth2_scheme)):
@@ -262,6 +285,11 @@ async def profile_update(
     except Exception as e:
         print("Error saving profile:", e)
         raise HTTPException(status_code=500, detail="Failed to save profile")
+
+
+# ---------------------------
+# OpenAI job parser
+# ---------------------------
 
 router = APIRouter()
 

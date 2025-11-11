@@ -8,15 +8,13 @@
   box-sizing: border-box;
 }
 
-/* Container: supports both classnames used earlier */
 .dashboard,
 .dashboard-container {
-  display: flex;
-  align-items: flex-start;    
+  display: grid;
+  grid-template-columns: 280px 1fr; 
   gap: 25px;
   padding: 25px;
-  background: #f4f6f9;
-  min-height: 100vh;
+  background: white;
   width: 100%;
 }
 
@@ -30,6 +28,7 @@
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  border: 1px solid #e6e9ef;
 }
 
 .filters-title {
@@ -66,22 +65,34 @@
   outline: none;
 }
 
+.apply-filters,
 .reset-filters {
-  margin-top: 15px;
-  color: #2b2d42;
-  padding: 10px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  background: #ffffff;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s, color 0.2s;
   width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.apply-filters {
+  margin-top: 10px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+}
+
+.apply-filters:hover {
+  background: #449d47;
+}
+
+.reset-filters {
+  background: red;
+  color: white;
 }
 
 .reset-filters:hover {
-  background: #4CAF50;
-  color: white;
+  background: rgb(177, 0, 0);
 }
 
 /* ==============================
@@ -97,20 +108,26 @@
   padding-right: 10px;
 }
 
+.job-details h4 {
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+.job-details ul li {
+  margin-bottom: 6px;
+  line-height: 1.55;
+}
+
 /* ==============================
    Job Card 
    ============================== */
 .job-card {
-  width: 100%;                
-  max-width: 700px;            
-  min-width: 1000px;          
-  padding: 30px;
+  width: 100%;
+  max-width: none; 
+  min-width: 0;     
+  padding: 32px;
   background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -183,37 +200,6 @@
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 500;
-}
-
-/* --- Details --- */
-.job-details {
-  display: block;
-}
-
-.job-details h4 {
-  margin: 12px 0 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #2b2d42;
-  border-left: 3px solid #4CAF50;
-  padding-left: 8px;
-}
-
-.job-details p {
-  margin: 0 0 10px;
-  color: #495057;
-  line-height: 1.6;
-}
-
-.job-details ul {
-  margin: 0;
-  padding-left: 18px;
-  color: #495057;
-  line-height: 1.6;
-}
-
-.job-details li {
-  margin-bottom: 6px;
 }
 
 /* --- Contact --- */
@@ -319,3 +305,21 @@
     transform: scale(0.95);
   }
   
+  .filters-panel input,
+.filters-panel select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d6d8dd;
+  background: #fff;
+  width: 100%;
+}
+
+.scholarship-page-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+  padding: 25px;
+  background: #f4f6f9;
+  min-height: 100vh;
+}
+
